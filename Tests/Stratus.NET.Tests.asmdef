@@ -2,7 +2,6 @@
     "name": "Stratus.NET.Tests",
     "rootNamespace": "Stratus.Tests",
     "references": [
-        "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "Stratus.NET"
     ],
