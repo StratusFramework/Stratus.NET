@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Stratus
+namespace Stratus.Extensions
 {
 	public static class StratusEnumerableExtensions
 	{
@@ -189,7 +189,7 @@ namespace Stratus
 				}
 				hashset.Add(element);
 			}
-			return default(T);
+			return default;
 		}
 
 
@@ -441,7 +441,7 @@ namespace Stratus
 		/// </summary>
 		public static IEnumerable<T> Filter<T>(this IEnumerable<T> source, Func<T, bool> predicate)
 		{
-			return Enumerable.Where(source, predicate);
+			return source.Where(predicate);
 		}
 
 		/// <summary>
@@ -557,7 +557,7 @@ namespace Stratus
 		public static Dictionary<TKey, TValue[]> ToDictionary<TKey, TValue>(this IEnumerable<TKey> keys, Func<TKey, TValue[]> selector)
 		{
 			Dictionary<TKey, TValue[]> result = new Dictionary<TKey, TValue[]>();
-			foreach(var key in keys)
+			foreach (var key in keys)
 			{
 				result.Add(key, selector(key));
 			}

@@ -1,5 +1,4 @@
-﻿
-using Stratus;
+﻿using Stratus.Extensions;
 using Stratus.Utilities;
 
 using System;

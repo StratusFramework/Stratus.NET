@@ -1,6 +1,6 @@
-﻿namespace Stratus
+﻿namespace Stratus.Extensions
 {
-	public static class CharExtensions
+	public static class StratusCharExtensions
 	{
 		public static bool IsUpper(this char c)
 		{

@@ -2,19 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Stratus
+namespace Stratus.Extensions
 {
-	public static class DelegateExtensions
-	{
-		public static Predicate<T> ToPredicate<T>(this Func<T, bool> func)
-		{
-			return new Predicate<T>(func);
-		}
+    public static class StratusDelegateExtensions
+    {
+        public static Predicate<T> ToPredicate<T>(this Func<T, bool> func)
+        {
+            return new Predicate<T>(func);
+        }
 
-		public static Func<T, bool> ToFunc<T>(this Predicate<T> predicate)
-		{
-			return new Func<T, bool>(predicate);
-		}
+        public static Func<T, bool> ToFunc<T>(this Predicate<T> predicate)
+        {
+            return new Func<T, bool>(predicate);
+        }
 
         public static bool TryInvoke(this Action action)
         {
@@ -36,7 +36,7 @@ namespace Stratus
             return false;
         }
 
-        public static bool TryInvoke<T1, T2>(this Action<T1,T2> action, T1 arg1, T2 arg2)
+        public static bool TryInvoke<T1, T2>(this Action<T1, T2> action, T1 arg1, T2 arg2)
         {
             if (action != null)
             {

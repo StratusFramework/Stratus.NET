@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Stratus
+namespace Stratus.Extensions
 {
 	public static class StratusDictionaryExtensions
 	{
@@ -316,11 +316,11 @@ namespace Stratus
 			return result;
 		}
 
-		public static void AddFrom <TKey, TValue, TList>(this Dictionary<TKey, List<TValue>> self, 
+		public static void AddFrom<TKey, TValue, TList>(this Dictionary<TKey, List<TValue>> self,
 			Dictionary<TKey, TList> other)
 			where TList : IList<TValue>
 		{
-			foreach(var kvp in other)
+			foreach (var kvp in other)
 			{
 				if (!self.ContainsKey(kvp.Key))
 				{

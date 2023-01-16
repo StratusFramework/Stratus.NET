@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Stratus
+namespace Stratus.Extensions
 {
-	public static partial class StratusExtensions
+	public static class StratusIntegerExtensions
 	{
 		/// <summary>
 		/// Performs the action the specified number of times
@@ -12,7 +12,7 @@ namespace Stratus
 		/// <param name="action"></param>
 		public static void Iterate(this int x, Action action)
 		{
-			for(int i = 0; i < x; ++i)
+			for (int i = 0; i < x; ++i)
 			{
 				action();
 			}

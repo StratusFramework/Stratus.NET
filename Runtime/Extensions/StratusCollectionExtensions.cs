@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Collections;
-using Stratus.Extensions;
+using Stratus;
 
-namespace Stratus
+namespace Stratus.Extensions
 {
 	public static class StratusCollectionExtensions
 	{
