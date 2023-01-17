@@ -1,5 +1,6 @@
 ﻿//using Stratus.OdinSerializer;
 
+using System;
 using System.IO;
 
 //using UnityEngine;
@@ -68,6 +69,11 @@ namespace Stratus.Serialization
 		{
 			return JsonConvert.SerializeObject(value);
 			//return JsonUtility.ToJson(value);
+		}
+
+		public static object Deserialize(string serialization, Type type)
+		{
+			return JsonConvert.DeserializeObject(serialization, type);
 		}
 
 		public static T Deserialize<T>(string serialization)
