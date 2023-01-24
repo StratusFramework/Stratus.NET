@@ -16,7 +16,7 @@ namespace Stratus.Utilities
 		{
 			if (repeating)
 			{
-				return (int)Math.Pow((double)n, (double)r);
+				return (int)Pow(n, (double)r);
 			}
 			return Factorial(n) / Factorial(n - r);
 		}
@@ -38,9 +38,14 @@ namespace Stratus.Utilities
 			return result;
 		}
 
+		public static double Pow(double x, double y)
+		{
+			return Math.Pow(x, y);
+		}
+
 		public static float Pow(float x, float y)
 		{
-			return (float)Math.Pow(x, y);
+			return (float)Pow(x, y);
 		}
 
 		public static float Sin(float a)
@@ -55,5 +60,4 @@ namespace Stratus.Utilities
 
 		public const float PI = (float)Math.PI;
 	}
-
 }

@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Stratus.Utilities;
 using NUnit.Framework;
+using Stratus.Utilities;
 
 namespace Stratus.Editor.Tests
 {

@@ -10,7 +10,6 @@ namespace Stratus
 
 	public static class StratusEventSystemExtensions
 	{
-		//public static void Connect(this IStratusEventSubscriber obj, )
 	}
 
 	/// <summary>

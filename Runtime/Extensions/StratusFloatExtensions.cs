@@ -43,7 +43,7 @@ namespace Stratus.Extensions
 		/// <summary>
 		/// Rounds the given float value by N decimal places
 		/// </summary>
-		public static float Round(this float f, int digits = 2) => (float)Math.Round(f, digits, MidpointRounding.AwayFromZero);
+		public static float Round(this float f, int digits = 2) => (float)System.Math.Round(f, digits, MidpointRounding.AwayFromZero);
 
 		public static bool IsEven(this int value) => value % 2 == 0;
 		public static bool IsOdd(this int value) => value % 2 != 0;

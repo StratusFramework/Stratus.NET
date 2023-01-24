@@ -6,8 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-//using UnityEditor;
-
 namespace Stratus
 {
 	public interface IStratusAssetResolver<TAsset>
