@@ -68,7 +68,6 @@ namespace Stratus.Serialization
 		public static string Serialize(object value)
 		{
 			return JsonConvert.SerializeObject(value);
-			//return JsonUtility.ToJson(value);
 		}
 
 		public static object Deserialize(string serialization, Type type)
@@ -79,7 +78,6 @@ namespace Stratus.Serialization
 		public static T Deserialize<T>(string serialization)
 		{
 			return JsonConvert.DeserializeObject<T>(serialization);
-			//return JsonUtility.FromJson<T>(serialization);
 		}
 
 	}

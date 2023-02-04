@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
 
-namespace Stratus
+namespace Stratus.Models
 {
 	public struct StratusVector3Int
 	{
@@ -41,7 +41,10 @@ namespace Stratus
 			return new Vector3(value.x, value.y, value.z);
 		}
 	}
+}
 
+namespace Stratus.Models
+{
 	public struct StratusVector3
 	{
 		public float x { get; set; }

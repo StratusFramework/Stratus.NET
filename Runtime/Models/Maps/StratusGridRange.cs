@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Stratus.Models;
+
+using System.Collections.Generic;
 
 namespace Stratus.Utilities
 {
