@@ -8,5 +8,10 @@
 		{
 			return Generate().Next(min, max);
 		}
+
+		public static float Range(float min, float max)
+		{
+			return Generate().Next((int)min, (int)max);
+		}
 	}
 }
