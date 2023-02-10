@@ -81,4 +81,9 @@ namespace Stratus.Serialization
 		}
 
 	}
+
+	public class SerializeField : Attribute 
+	{
+	}
+
 }
