@@ -106,7 +106,7 @@ namespace Stratus
 
 			if (debug)
 			{
-				this.Info($"Redoing {action}");
+				this.Log($"Redoing {action}");
 			}
 			action.Execute(onFinished);
 			undoStack.Push(action);
@@ -123,7 +123,7 @@ namespace Stratus
 
 			if (debug)
 			{
-				this.Info($"Undoing {action}");
+				this.Log($"Undoing {action}");
 			}
 			action.Undo(onFinished);
 			redoStack.Push(action);
