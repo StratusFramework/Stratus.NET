@@ -3,7 +3,7 @@
 using System;
 using System.Numerics;
 
-namespace Stratus
+namespace Stratus.Models
 {
 	/// <summary>
 	/// Provides common functions related to mapping coordinate systems
@@ -77,43 +77,43 @@ namespace Stratus
 				switch (direction)
 				{
 					case CardinalDirection.NorthWest:
-						neighborRow = ((row - 1) + n) % (n);
-						neighborCol = ((col - 1) + n) % (n);
+						neighborRow = (row - 1 + n) % n;
+						neighborCol = (col - 1 + n) % n;
 						//neighbor = neighbors[r - 1 % n - 1, c - 1 % n - 1];
 						break;
 					case CardinalDirection.NorthEast:
-						neighborRow = ((row - 1) + n) % (n);
-						neighborCol = (col + 1) % (n);
+						neighborRow = (row - 1 + n) % n;
+						neighborCol = (col + 1) % n;
 						//neighbor = neighbors[r - 1 % n - 1, c + 1 % n - 1];
 						break;
 					case CardinalDirection.North:
-						neighborRow = ((row - 1) + n) % (n);
+						neighborRow = (row - 1 + n) % n;
 						neighborCol = col;
 						//neighbor = neighbors[r - 1 % n - 1, c];
 						break;
 					case CardinalDirection.West:
 						neighborRow = row;
-						neighborCol = ((col - 1) + n) % (n);
+						neighborCol = (col - 1 + n) % n;
 						//neighbor = neighbors[r, c - 1 % n - 1];
 						break;
 					case CardinalDirection.East:
 						neighborRow = row;
-						neighborCol = (col + 1) % (n);
+						neighborCol = (col + 1) % n;
 						//neighbor = neighbors[r, c + 1 % n - 1];
 						break;
 					case CardinalDirection.South:
-						neighborRow = (row + 1) % (n);
+						neighborRow = (row + 1) % n;
 						neighborCol = col;
 						//neighbor = neighbors[r + 1 % n - 1, c];
 						break;
 					case CardinalDirection.SouthWest:
-						neighborRow = (row + 1) % (n);
-						neighborCol = ((col - 1) + n) % (n);
+						neighborRow = (row + 1) % n;
+						neighborCol = (col - 1 + n) % n;
 						//neighbor = neighbors[r + 1 % n - 1, c - 1 % n - 1];
 						break;
 					case CardinalDirection.SouthEast:
-						neighborRow = (row + 1) % (n);
-						neighborCol = (col + 1) % (n);
+						neighborRow = (row + 1) % n;
+						neighborCol = (col + 1) % n;
 						//neighbor = neighbors[r + 1 % n - 1, c + 1 % n - 1];
 						break;
 				}
@@ -123,49 +123,49 @@ namespace Stratus
 				switch (direction)
 				{
 					case CardinalDirection.NorthWest:
-						neighborRow = (row - 1) % (n);
+						neighborRow = (row - 1) % n;
 						if (neighborRow < 0) neighborRow = 0;
-						neighborCol = (col - 1) % (n);
+						neighborCol = (col - 1) % n;
 						if (neighborCol < 0) neighborCol = 0;
 						//neighbor = neighbors[r - 1 % n - 1, c - 1 % n - 1];
 						break;
 					case CardinalDirection.NorthEast:
-						neighborRow = (row - 1) % (n);
+						neighborRow = (row - 1) % n;
 						if (neighborRow < 0) neighborRow = 0;
-						neighborCol = (col + 1) % (n);
+						neighborCol = (col + 1) % n;
 						//neighbor = neighbors[r - 1 % n - 1, c + 1 % n - 1];
 						break;
 					case CardinalDirection.North:
-						neighborRow = (row - 1) % (n);
+						neighborRow = (row - 1) % n;
 						if (neighborRow < 0) neighborRow = 0;
 						neighborCol = col;
 						//neighbor = neighbors[r - 1 % n - 1, c];
 						break;
 					case CardinalDirection.West:
 						neighborRow = row;
-						neighborCol = (col - 1) % (n);
+						neighborCol = (col - 1) % n;
 						if (neighborCol < 0) neighborCol = 0;
 						//neighbor = neighbors[r, c - 1 % n - 1];
 						break;
 					case CardinalDirection.East:
 						neighborRow = row;
-						neighborCol = (col + 1) % (n);
+						neighborCol = (col + 1) % n;
 						//neighbor = neighbors[r, c + 1 % n - 1];
 						break;
 					case CardinalDirection.South:
-						neighborRow = (row + 1) % (n);
+						neighborRow = (row + 1) % n;
 						neighborCol = col;
 						//neighbor = neighbors[r + 1 % n - 1, c];
 						break;
 					case CardinalDirection.SouthWest:
-						neighborRow = (row + 1) % (n);
-						neighborCol = (col - 1) % (n);
+						neighborRow = (row + 1) % n;
+						neighborCol = (col - 1) % n;
 						if (neighborCol < 0) neighborCol = 0;
 						//neighbor = neighbors[r + 1 % n - 1, c - 1 % n - 1];
 						break;
 					case CardinalDirection.SouthEast:
-						neighborRow = (row + 1) % (n);
-						neighborCol = (col + 1) % (n);
+						neighborRow = (row + 1) % n;
+						neighborCol = (col + 1) % n;
 						break;
 				}
 			}

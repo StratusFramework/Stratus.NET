@@ -1,4 +1,4 @@
-﻿namespace Stratus
+﻿namespace Stratus.Models
 {
 	public interface IStratusNamed
 	{
