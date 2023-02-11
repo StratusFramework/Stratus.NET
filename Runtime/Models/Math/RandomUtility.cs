@@ -1,6 +1,6 @@
-﻿namespace Stratus.Utilities
+﻿namespace Stratus.Models.Math
 {
-	public static class StratusRandom
+	public static class RandomUtility
 	{
 		private static System.Random Generate() => new System.Random();
 

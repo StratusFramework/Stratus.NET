@@ -2,7 +2,7 @@ using Stratus.Extensions;
 
 using System;
 using System.Collections.Generic;
-using Stratus.Utilities;
+using Stratus.Models.Math;
 
 namespace Stratus.Collections
 {
@@ -61,7 +61,7 @@ namespace Stratus.Collections
 		{
 			get
 			{
-				var randomIndex = StratusRandom.Range(0, indexSize);
+				var randomIndex = RandomUtility.Range(0, indexSize);
 				return values[randomIndex];
 			}
 		}

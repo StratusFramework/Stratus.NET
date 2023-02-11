@@ -149,7 +149,7 @@ namespace Stratus.Models.Maps
 		/// </summary>
 		public static float ManhattanDistance(StratusVector3Int a, StratusVector3Int b)
 		{
-			return Math.Abs(a.x - b.x) + Math.Abs(a.y - b.y);
+			return System.Math.Abs(a.x - b.x) + System.Math.Abs(a.y - b.y);
 		}
 		#endregion
 

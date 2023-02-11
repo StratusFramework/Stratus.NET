@@ -1,4 +1,4 @@
-﻿using Stratus.Utilities;
+﻿using Stratus.Models.Math;
 
 using System;
 
@@ -20,7 +20,7 @@ namespace Stratus.Data
 	[Serializable]
 	public class StratusFloatRange : StratusNumericRange<float>
 	{
-		public override float randomInRange => StratusRandom.Range(minimum, maximum);
+		public override float randomInRange => RandomUtility.Range(minimum, maximum);
 	}
 
 	/// <summary>
@@ -29,7 +29,7 @@ namespace Stratus.Data
 	[Serializable]
 	public class StratusIntegerRange : StratusNumericRange<int>
 	{
-		public override int randomInRange => StratusRandom.Range(minimum, maximum);
+		public override int randomInRange => RandomUtility.Range(minimum, maximum);
 	}
 
 }

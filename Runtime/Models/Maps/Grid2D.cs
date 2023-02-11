@@ -6,18 +6,18 @@ using System.Linq;
 
 namespace Stratus.Models.Maps
 {
-	public abstract class StratusMapBase<TObject>
+	public abstract class GridBase<TObject>
 		where TObject : class
 	{
 	}
 
-	public interface IStratusMap2D
+	public interface IGrid2D
 	{
 		CellLayout cellLayout { get; }
 		StratusVector3Int[] SearchPath(StratusVector3Int start, StratusVector3Int end);
 	}
 
-	public enum StratusDefaultMapLayer
+	public enum DefaultMapLayer
 	{
 		Terrain,
 		Object,
@@ -25,7 +25,7 @@ namespace Stratus.Models.Maps
 		Agent,
 	}
 
-	public class StratusSquareGrid
+	public class SquareGrid
 	{
 		public int xMax { get; private set; }
 		public int yMax { get; private set; }
@@ -35,12 +35,12 @@ namespace Stratus.Models.Maps
 
 		private Lazy<StratusVector3Int[]> _cells;
 
-		public StratusSquareGrid WithSize(int size)
+		public SquareGrid WithSize(int size)
 		{
 			return WithSize(new StratusVector3Int(size, size));
 		}
 
-		public StratusSquareGrid WithSize(StratusVector3Int size)
+		public SquareGrid WithSize(StratusVector3Int size)
 		{
 			xMin = yMin = 0;
 			yMax = size.y - 1;
@@ -79,12 +79,12 @@ namespace Stratus.Models.Maps
 	/// </summary>
 	/// <typeparam name="TObject"></typeparam>
 	/// <typeparam name="TLayer"></typeparam>
-	public class StratusMap2D<TObject, TLayer> : StratusMapBase<TObject>, IStratusMap2D
+	public class Grid2D<TObject, TLayer> : GridBase<TObject>, IGrid2D
 		where TLayer : Enum
 		where TObject : class
 	{
 		#region Properties
-		public StratusSquareGrid grid { get; }
+		public SquareGrid grid { get; }
 		public CellLayout cellLayout { get; }
 
 		private StratusBictionary<TLayer, Type> typesByLayer = new StratusBictionary<TLayer, Type>();
@@ -104,7 +104,7 @@ namespace Stratus.Models.Maps
 		#endregion
 
 		#region Constructors
-		public StratusMap2D(StratusSquareGrid grid, CellLayout layout)
+		public Grid2D(SquareGrid grid, CellLayout layout)
 		{
 			this.cellLayout = layout;
 			this.grid = grid;
@@ -114,8 +114,8 @@ namespace Stratus.Models.Maps
 			}
 		}
 
-		public StratusMap2D(StratusVector3Int size, CellLayout layout)
-			: this(new StratusSquareGrid().WithSize(size), layout)
+		public Grid2D(StratusVector3Int size, CellLayout layout)
+			: this(new SquareGrid().WithSize(size), layout)
 		{
 		}
 		#endregion
@@ -445,10 +445,10 @@ namespace Stratus.Models.Maps
 		}
 	}
 
-	public abstract class StratusMap2D<TObject> : StratusMap2D<TObject, StratusDefaultMapLayer>
+	public abstract class Grid2D<TObject> : Grid2D<TObject, DefaultMapLayer>
 		where TObject : class
 	{
-		protected StratusMap2D(StratusVector3Int size, CellLayout layout) : base(size, layout)
+		protected Grid2D(StratusVector3Int size, CellLayout layout) : base(size, layout)
 		{
 		}
 	}

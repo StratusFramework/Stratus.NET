@@ -1,4 +1,4 @@
-﻿using Stratus.Utilities;
+﻿using Stratus.Models.Math;
 
 using System;
 using System.Collections.Generic;
@@ -350,7 +350,7 @@ namespace Stratus.Extensions
 			for (int i = 0; i < list.Count; ++i)
 			{
 				T index = list[i];
-				int randomIndex = StratusRandom.Range(i, list.Count);
+				int randomIndex = RandomUtility.Range(i, list.Count);
 				list[i] = list[randomIndex];
 				list[randomIndex] = index;
 			}
@@ -364,7 +364,7 @@ namespace Stratus.Extensions
 		/// <returns></returns>
 		public static T Random<T>(this IList<T> list)
 		{
-			int randomSelection = StratusRandom.Range(0, list.Count);
+			int randomSelection = RandomUtility.Range(0, list.Count);
 			return list[randomSelection];
 		}
 

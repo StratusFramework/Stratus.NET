@@ -1,4 +1,4 @@
-﻿using Stratus.Utilities;
+﻿using Stratus.Models.Math;
 
 using System;
 using System.Numerics;
@@ -48,7 +48,7 @@ namespace Stratus.Models.Maps
 		/// Returns a random cardinal direction
 		/// </summary>
 		/// <returns></returns>
-		public static CardinalDirection randomCardinalDirection => (CardinalDirection)StratusRandom.Range(0, 7);
+		public static CardinalDirection randomCardinalDirection => (CardinalDirection)RandomUtility.Range(0, 7);
 
 		/// <summary>
 		/// 2D arrays use the row/column scheme, where rows are descending.

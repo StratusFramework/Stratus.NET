@@ -54,7 +54,7 @@ namespace Stratus.Models.Tests
 			Actor
 		}
 
-		public class MockMap : StratusMap2D<MockObject, MockLayer>
+		public class MockMap : Grid2D<MockObject, MockLayer>
 		{
 			public MockMap(StratusVector3Int size) : base(size, CellLayout.Rectangle)
 			{
