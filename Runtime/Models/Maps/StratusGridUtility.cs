@@ -1,10 +1,8 @@
-using Stratus.Models;
-
 using System;
 using System.Collections.Generic;
 using System.Numerics;
 
-namespace Stratus.Utilities
+namespace Stratus.Models.Maps
 {
 	public abstract class StratusGridUtility
 	{
@@ -15,7 +13,7 @@ namespace Stratus.Utilities
 			}
 		}
 
-		public static readonly StratusHexagonalOddRowDirection[] oddRowDirections = (StratusHexagonalOddRowDirection[])Enum.GetValues(typeof(StratusHexagonalOddRowDirection));
+		public static readonly HexagonalOddRowDirection[] oddRowDirections = (HexagonalOddRowDirection[])Enum.GetValues(typeof(HexagonalOddRowDirection));
 
 
 		public static float Lerp(float a, float b, float t)
@@ -177,7 +175,7 @@ namespace Stratus.Utilities
 		/// <param name="direction"></param>
 		/// <returns></returns>
 		public static StratusVector3Int FindNeighboringCellsOddRow(StratusVector3Int hex,
-			StratusHexagonalOddRowDirection direction)
+			HexagonalOddRowDirection direction)
 		{
 			int parity = hex.y & 1;
 			StratusVector3Int offset = oddRowDirectionValues[parity][(int)direction];
@@ -273,7 +271,7 @@ namespace Stratus.Utilities
 		/// <param name="n"></param>
 		/// <param name="predicate"></param>
 		/// <returns></returns>
-		public static StratusGridRange GetRangeHexOffset(StratusVector3Int origin, StratusGridSearchRangeArguments args, 
+		public static StratusGridRange GetRangeHexOffset(StratusVector3Int origin, StratusGridSearchRangeArguments args,
 			StratusTraversalPredicate<StratusVector3Int> predicate = null)
 		{
 			GridSearch.RangeSearch search

@@ -1,7 +1,7 @@
 using System;
 using System.Numerics;
 
-namespace Stratus
+namespace Stratus.Data
 {
 	/// <summary>
 	/// A pair between a variant an a generic key

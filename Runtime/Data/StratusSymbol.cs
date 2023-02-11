@@ -1,6 +1,6 @@
 using System;
 
-namespace Stratus
+namespace Stratus.Data
 {
 	/// <summary>
 	/// A symbol represents a key-value pair where the key is an identifying string

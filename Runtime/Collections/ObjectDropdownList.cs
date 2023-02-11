@@ -2,7 +2,7 @@
 
 using System.Collections.Generic;
 
-namespace Stratus
+namespace Stratus.Collections
 {
 	/// <summary>
 	/// A generic dropdown list that refers to a list of any given Object type

@@ -1,8 +1,6 @@
-﻿using Stratus.Models;
+﻿using System.Collections.Generic;
 
-using System.Collections.Generic;
-
-namespace Stratus.Utilities
+namespace Stratus.Models
 {
 	public class StratusGridRange : StratusSearchRange<StratusVector3Int, float>
 	{

@@ -4,7 +4,7 @@ using Stratus.Utilities;
 using System;
 using System.Collections.Generic;
 
-namespace Stratus
+namespace Stratus.Models
 {
 	public interface IStratusUndoAction
 	{
@@ -35,7 +35,7 @@ namespace Stratus
 		}
 
 		protected abstract void OnUndo(Action onFinished = null);
-		protected abstract void OnExecute(Action onFinished = null);		
+		protected abstract void OnExecute(Action onFinished = null);
 	}
 
 	public abstract class StratusUndoAction<T> : StratusUndoAction

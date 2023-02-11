@@ -6,7 +6,7 @@ using System;
 using System.Text;
 using Stratus.Extensions;
 
-namespace Stratus
+namespace Stratus.Data
 {
 	/// <summary>
 	/// An internally-managed list of symbols
@@ -134,7 +134,7 @@ namespace Stratus
 		{
 			// Look for the key in the list
 			StratusSymbol symbol = Find(key);
-			symbol.SetValue<T>(value);
+			symbol.SetValue(value);
 		}
 
 		/// <summary>
@@ -205,7 +205,7 @@ namespace Stratus
 		/// <returns></returns>
 		public bool Assert()
 		{
-			return symbols.HasDuplicateKeys((StratusSymbol s) => s.key);
+			return symbols.HasDuplicateKeys((s) => s.key);
 		}
 
 		/// <summary>
@@ -241,7 +241,7 @@ namespace Stratus
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return ((IEnumerable<StratusSymbol>)this.symbols).GetEnumerator();
-		} 
+		}
 		#endregion
 	}
 }

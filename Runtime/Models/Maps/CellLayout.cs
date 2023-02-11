@@ -1,4 +1,4 @@
-﻿namespace Stratus.Models
+﻿namespace Stratus.Models.Maps
 {
 	public enum CellLayout
 	{

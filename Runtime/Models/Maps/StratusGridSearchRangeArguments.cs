@@ -1,8 +1,6 @@
-﻿using Stratus.Models;
+﻿using System;
 
-using System;
-
-namespace Stratus.Utilities
+namespace Stratus.Models
 {
 	/// <summary>
 	/// Arguments to perform a range search

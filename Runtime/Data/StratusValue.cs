@@ -1,11 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-//using UnityEngine;
-using System;
-using Stratus.Serialization;
-//using UnityEngine.Serialization;
+﻿using Stratus.Serialization;
 
-namespace Stratus
+using System;
+
+namespace Stratus.Data
 {
 	public abstract class StratusValueBase
 	{
@@ -60,7 +57,7 @@ namespace Stratus
 		/// <summary>
 		/// The current ratio of the parameter when compared to its maximum as a percentage
 		/// </summary>
-		public float percentage => (total / maximum) * 100.0f;
+		public float percentage => total / maximum * 100.0f;
 		/// <summary>
 		/// Whether this parameter's current value is at its maximum value
 		/// </summary>

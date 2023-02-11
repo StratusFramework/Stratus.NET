@@ -2,7 +2,7 @@
 
 using System;
 
-namespace Stratus
+namespace Stratus.Data
 {
 	/// <summary>
 	/// Base class for numeric range fields

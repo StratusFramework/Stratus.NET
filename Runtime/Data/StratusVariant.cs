@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 
-namespace Stratus
+namespace Stratus.Data
 {
 	/// <summary>
 	/// A Variant is a dynamic value type which represent a variety of types.

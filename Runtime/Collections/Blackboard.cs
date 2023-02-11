@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System;
 using System.Numerics;
+using Stratus.Data;
 
 namespace Stratus
 {
