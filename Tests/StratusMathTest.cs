@@ -14,13 +14,13 @@ namespace Stratus.Editor.Tests
 		[TestCase(4, 24)]
 		public void Factorial(int n, int expected)
 		{
-			Assert.AreEqual(expected, StratusMath.Factorial(n));
+			Assert.AreEqual(expected, MathUtility.Factorial(n));
 		}
 
 		[TestCase(3, 2, true, 9)]
 		public void Permutations(int n, int r, bool repeating, int expected)
 		{
-			Assert.AreEqual(expected, StratusMath.Permutations(n, r, repeating));
+			Assert.AreEqual(expected, MathUtility.Permutations(n, r, repeating));
 		}
 	}
 }

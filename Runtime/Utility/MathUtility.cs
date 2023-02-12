@@ -2,7 +2,7 @@ using System;
 
 namespace Stratus.Utilities
 {
-	public static class StratusMath
+	public static class MathUtility
 	{
 		/// <summary>
 		/// A permutation is a way to select a part of a collection, or a set of things in which the order matters

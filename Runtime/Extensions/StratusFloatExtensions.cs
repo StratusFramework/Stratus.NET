@@ -1,3 +1,5 @@
+using Stratus.Models;
+
 using System;
 
 namespace Stratus.Extensions

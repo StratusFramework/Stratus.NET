@@ -1,14 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace Stratus
+namespace Stratus.Models
 {
-	[AttributeUsage(AttributeTargets.Field)]
-	public abstract class ArgumentAttribute : Attribute
-	{
-		public abstract void Execute(string argument);
-	}	
-
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
 	public class ClassDescriptionAttribute : DescriptionAttribute
 	{
@@ -24,18 +18,4 @@ namespace Stratus
 		{
 		}
 	}
-
-	[AttributeUsage(AttributeTargets.Parameter)]
-	public class ParameterRange : Attribute
-	{
-		public float min;
-		public float max;
-
-		public ParameterRange(float min, float max)
-		{
-			this.min = min;
-			this.max = max;
-		}
-	}
-
 }

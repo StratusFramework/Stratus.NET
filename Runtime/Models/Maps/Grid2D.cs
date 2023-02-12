@@ -336,14 +336,14 @@ namespace Stratus.Models.Maps
 			return StratusTraversableStatus.Valid;
 		}
 
-		public TObject[] GetObjectsInRange<UObject>(StratusVector3Int position, StratusGridSearchRangeArguments args, TLayer layer)
+		public TObject[] GetObjectsInRange<UObject>(StratusVector3Int position, GridSearchRangeArguments args, TLayer layer)
 			where UObject : TObject
 		{
 			var range = GetRange(position, args);
 			return range.Where(kvp => Contains(layer, kvp.Key)).Select(kvp => Get(layer, kvp.Key)).ToArray();
 		}
 
-		public TObject[] GetObjectsInRange<UObject>(UObject obj, StratusGridSearchRangeArguments args)
+		public TObject[] GetObjectsInRange<UObject>(UObject obj, GridSearchRangeArguments args)
 			where UObject : TObject
 		{
 			TLayer layer = GetLayer<UObject>();
@@ -366,9 +366,9 @@ namespace Stratus.Models.Maps
 		/// <summary>
 		/// Returns a given range starting from a cell
 		/// </summary>
-		public StratusGridRange GetRange(StratusVector3Int center, StratusGridSearchRangeArguments args)
+		public GridRange GetRange(StratusVector3Int center, GridSearchRangeArguments args)
 		{
-			StratusGridRange values = null;
+			GridRange values = null;
 			args.traversalCostFunction = GetTraversalCost;
 			args.traversableFunction += (pos) =>
 			{
@@ -380,13 +380,13 @@ namespace Stratus.Models.Maps
 				return StratusTraversableStatus.Valid;
 			};
 
-			values = StratusGridUtility.GetRange(center, args, cellLayout);
+			values = GridUtility.GetRange(center, args, cellLayout);
 
 			// If the min range is not 0...
 			if (args.minimum > 0)
 			{
 				// Remove those whose is less than min range
-				StratusGridRange filtered = new StratusGridRange();
+				GridRange filtered = new GridRange();
 				foreach (KeyValuePair<StratusVector3Int, float> kvp in values)
 				{
 					float cost = kvp.Value;
@@ -401,7 +401,7 @@ namespace Stratus.Models.Maps
 			return values;
 		}
 
-		public StratusGridRange GetRange(TLayer layer, TObject obj, StratusGridSearchRangeArguments args)
+		public GridRange GetRange(TLayer layer, TObject obj, GridSearchRangeArguments args)
 		{
 			StratusVector3Int? position = GetPosition(layer, obj);
 			if (!position.HasValue)
@@ -425,8 +425,8 @@ namespace Stratus.Models.Maps
 			return GetRange(position.Value, args);
 		}
 
-		public StratusGridRange GetRange(TLayer layer, TObject obj, int range) => GetRange(layer, obj, new StratusGridSearchRangeArguments(range));
-		public StratusGridRange GetRange(StratusVector3Int center, int range) => GetRange(center, new StratusGridSearchRangeArguments(range));
+		public GridRange GetRange(TLayer layer, TObject obj, int range) => GetRange(layer, obj, new GridSearchRangeArguments(range));
+		public GridRange GetRange(StratusVector3Int center, int range) => GetRange(center, new GridSearchRangeArguments(range));
 
 		/// <summary>
 		/// By default, the cost to travel to a given cell is 1. Override to account for difficult terrain and the like.
@@ -441,7 +441,7 @@ namespace Stratus.Models.Maps
 		public StratusVector3Int[] SearchPath(StratusVector3Int start, StratusVector3Int end) => SearchPath(start, end, IsTraversible);
 		public StratusVector3Int[] SearchPath(StratusVector3Int start, StratusVector3Int end, StratusTraversalPredicate<StratusVector3Int> isTraversible)
 		{
-			return StratusGridUtility.FindPath(start, end, cellLayout, isTraversible);
+			return GridUtility.FindPath(start, end, cellLayout, isTraversible);
 		}
 	}
 

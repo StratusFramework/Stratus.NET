@@ -5,15 +5,15 @@ namespace Stratus.Models
 	/// <summary>
 	/// Arguments to perform a range search
 	/// </summary>
-	public class StratusGridSearchRangeArguments
+	public class GridSearchRangeArguments
 	{
-		public StratusGridSearchRangeArguments(int minimum, int maximum)
+		public GridSearchRangeArguments(int minimum, int maximum)
 		{
 			this.minimum = minimum;
 			this.maximum = maximum;
 		}
 
-		public StratusGridSearchRangeArguments(int maximum)
+		public GridSearchRangeArguments(int maximum)
 		{
 			this.minimum = 0;
 			this.maximum = maximum;

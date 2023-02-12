@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Stratus
+namespace Stratus.Reflection
 {
 	/// <summary>
 	/// Stores reflection information about a given type

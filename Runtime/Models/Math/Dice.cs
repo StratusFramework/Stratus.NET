@@ -4,9 +4,9 @@ using Stratus.Models.Math;
 using System;
 using System.Linq;
 
-namespace Stratus.Models
+namespace Stratus.Models.Math
 {
-	public enum StratusDie
+	public enum Die
 	{
 		d1,
 		d4,
@@ -20,24 +20,24 @@ namespace Stratus.Models
 	/// <summary>
 	/// The roll of a single die
 	/// </summary>
-	public class StratusDieRoll
+	public class DieRoll
 	{
-		public StratusDieRoll(StratusDie die, int roll)
+		public DieRoll(Die die, int roll)
 		{
 			this.die = die;
 			this.roll = roll;
 		}
 
-		public StratusDie die { get; }
+		public Die die { get; }
 		public int roll { get; }
 	}
 
 	/// <summary>
 	/// The modifier for a given roll
 	/// </summary>
-	public class StratusDiceRollModifier
+	public class DiceRollModifier
 	{
-		public StratusDiceRollModifier(string label, int value)
+		public DiceRollModifier(string label, int value)
 		{
 			this.label = label;
 			this.value = value;
@@ -46,32 +46,32 @@ namespace Stratus.Models
 		public string label { get; }
 		public int value { get; }
 
-		public static implicit operator StratusDiceRollModifier(int value) => new StratusDiceRollModifier(string.Empty, value);
+		public static implicit operator DiceRollModifier(int value) => new DiceRollModifier(string.Empty, value);
 	}
 
 	/// <summary>
 	/// The roll of multiple dice, along with any modifiers
 	/// </summary>
-	public class StratusDiceRoll
+	public class DiceRoll
 	{
 		public string label { get; }
-		public StratusDieRoll[] dice { get; }
-		public StratusDiceRollModifier[] modifiers { get; private set; }
+		public DieRoll[] dice { get; }
+		public DiceRollModifier[] modifiers { get; private set; }
 		public int total { get; private set; }
 
-		public StratusDiceRoll(string label, params StratusDieRoll[] rolls)
+		public DiceRoll(string label, params DieRoll[] rolls)
 		{
 			this.label = label;
 			this.dice = rolls;
 			this.total = rolls.Sum(r => r.roll);
 		}
 
-		public StratusDiceRoll(Enum label, params StratusDieRoll[] rolls)
+		public DiceRoll(Enum label, params DieRoll[] rolls)
 			: this(label.ToString(), rolls)
 		{
 		}
 
-		public StratusDiceRoll WithModifiers(params StratusDiceRollModifier[] modifiers)
+		public DiceRoll WithModifiers(params DiceRollModifier[] modifiers)
 		{
 			this.modifiers = modifiers;
 			this.total = total + modifiers.Sum(m => m.value);
@@ -83,26 +83,26 @@ namespace Stratus.Models
 	/// Generates dice rolls based on the set arguments
 	/// </summary>
 	[Serializable]
-	public class StratusDiceRollSource
+	public class DiceRollSource
 	{
 		public string label { get; }
-		public StratusDie die { get; }
+		public Die die { get; }
 		public int n { get; }
-		public StratusDiceRollModifier[] modifiers { get; private set; }
+		public DiceRollModifier[] modifiers { get; private set; }
 
-		public StratusDiceRollSource(Enum label, StratusDie die, int n = 1)
+		public DiceRollSource(Enum label, Die die, int n = 1)
 			: this(label.ToString(), die, n)
 		{
 		}
 
-		public StratusDiceRollSource(string label, StratusDie die, int n = 1)
+		public DiceRollSource(string label, Die die, int n = 1)
 		{
 			this.label = label;
 			this.n = n;
 			this.die = die;
 		}
 
-		public StratusDiceRollSource WithModifiers(params StratusDiceRollModifier[] modifiers)
+		public DiceRollSource WithModifiers(params DiceRollModifier[] modifiers)
 		{
 			this.modifiers = modifiers;
 			return this;
@@ -110,16 +110,16 @@ namespace Stratus.Models
 
 		public int GetTotalModifiers() => modifiers.Sum(m => m.value);
 
-		public StratusDiceRoll Roll()
+		public DiceRoll Roll()
 		{
-			return StratusDice.Roll(label, die, n).WithModifiers(modifiers);
+			return Dice.Roll(label, die, n).WithModifiers(modifiers);
 		}
 	}
 
 	/// <summary>
 	/// Provides utility functions for generating dice rolls
 	/// </summary>
-	public static class StratusDice
+	public static class Dice
 	{
 		private static bool initialized { get; set; }
 		private static (string label, Func<int, int> func)? onNextRoll;
@@ -156,7 +156,7 @@ namespace Stratus.Models
 				// or if is to targeted at specific rolls and the requested roll has a matching label
 				string nextRollLabel = onNextRoll.Value.label;
 				if (nextRollLabel == null ||
-					(nextRollLabel != null && nextRollLabel == label))
+					nextRollLabel != null && nextRollLabel == label)
 				{
 					roll = onNextRoll.Value.func(roll);
 					if (consume)
@@ -169,25 +169,25 @@ namespace Stratus.Models
 			return false;
 		}
 
-		public static StratusDiceRoll Roll(string label, params StratusDie[] dice)
+		public static DiceRoll Roll(string label, params Die[] dice)
 		{
-			StratusDieRoll[] rolls = new StratusDieRoll[dice.Length];
+			DieRoll[] rolls = new DieRoll[dice.Length];
 			bool modified = false;
 			for (int i = 0; i < dice.Length; i++)
 			{
-				StratusDie die = dice[i];
+				Die die = dice[i];
 				int roll = Roll(die.ToInteger());
 				modified = ModifyRoll(label, ref roll, false);
-				rolls[i] = new StratusDieRoll(die, roll);
+				rolls[i] = new DieRoll(die, roll);
 			}
 			if (modified)
 			{
 				onNextRoll = null;
 			}
-			return new StratusDiceRoll(label, rolls);
+			return new DiceRoll(label, rolls);
 		}
 
-		public static StratusDiceRoll Roll(string label, StratusDie die, int n)
+		public static DiceRoll Roll(string label, Die die, int n)
 		{
 			return Roll(label, n.For(() => die).ToArray());
 		}
@@ -207,30 +207,30 @@ namespace Stratus.Models
 			}
 		}
 
-		public static int ToInteger(this StratusDie die)
+		public static int ToInteger(this Die die)
 		{
 			int result = 0;
 			switch (die)
 			{
-				case StratusDie.d1:
+				case Die.d1:
 					result = 1;
 					break;
-				case StratusDie.d4:
+				case Die.d4:
 					result = 4;
 					break;
-				case StratusDie.d6:
+				case Die.d6:
 					result = 6;
 					break;
-				case StratusDie.d8:
+				case Die.d8:
 					result = 8;
 					break;
-				case StratusDie.d10:
+				case Die.d10:
 					result = 10;
 					break;
-				case StratusDie.d12:
+				case Die.d12:
 					result = 12;
 					break;
-				case StratusDie.d20:
+				case Die.d20:
 					result = 20;
 					break;
 			}

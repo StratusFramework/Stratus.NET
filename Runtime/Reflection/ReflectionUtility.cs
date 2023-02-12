@@ -9,7 +9,7 @@ using Stratus.Extensions;
 
 namespace Stratus.Reflection
 {
-	public static partial class StratusReflection
+	public static partial class ReflectionUtility
 	{
 		public static T GetField<T>(string name, Type type, bool isStatic = true, object instance = null)
 		{

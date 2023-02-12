@@ -175,17 +175,17 @@ namespace Stratus
 		// Sine
 		public static float SineIn(float t)
 		{
-			return 1f - StratusMath.Cos(t * StratusMath.PI / 2f);
+			return 1f - MathUtility.Cos(t * MathUtility.PI / 2f);
 		}
 
 		public static float SineOut(float t)
 		{
-			return StratusMath.Sin(t * StratusMath.PI / 2f);
+			return MathUtility.Sin(t * MathUtility.PI / 2f);
 		}
 
 		public static float SineInOut(float t)
 		{
-			return 0.5f * (1f - StratusMath.Cos(StratusMath.PI * t));
+			return 0.5f * (1f - MathUtility.Cos(MathUtility.PI * t));
 		}
 
 		// Exponential
@@ -212,20 +212,20 @@ namespace Stratus
 		{
 			if (t == 0) return 0;
 			if (t == 1) return 1;
-			return -Power(2f, 10f * (t -= 1f)) * StratusMath.Sin((t - 0.1f) * (2f * StratusMath.PI) / 0.4f);
+			return -Power(2f, 10f * (t -= 1f)) * MathUtility.Sin((t - 0.1f) * (2f * MathUtility.PI) / 0.4f);
 		}
 
 		public static float ElasticOut(float t)
 		{
 			if (t == 0) return 0;
 			if (t == 1) return 1;
-			return Power(2f, -10f * t) * StratusMath.Sin((t - 0.1f) * (2f * StratusMath.PI) / 0.4f) + 1f;
+			return Power(2f, -10f * t) * MathUtility.Sin((t - 0.1f) * (2f * MathUtility.PI) / 0.4f) + 1f;
 		}
 
 		public static float ElasticInOut(float t)
 		{
-			if ((t *= 2f) < 1f) return -0.5f * StratusMath.Pow(2f, 10f * (t -= 1f)) * StratusMath.Sin((t - 0.1f) * (2f * StratusMath.PI) / 0.4f);
-			return Power(2f, -10f * (t -= 1f)) * StratusMath.Sin((t - 0.1f) * (2f * StratusMath.PI) / 0.4f) * 0.5f + 1f;
+			if ((t *= 2f) < 1f) return -0.5f * MathUtility.Pow(2f, 10f * (t -= 1f)) * MathUtility.Sin((t - 0.1f) * (2f * MathUtility.PI) / 0.4f);
+			return Power(2f, -10f * (t -= 1f)) * MathUtility.Sin((t - 0.1f) * (2f * MathUtility.PI) / 0.4f) * 0.5f + 1f;
 		}
 
 		// Smoothstep
@@ -316,7 +316,7 @@ namespace Stratus
 
 			if (!exponentCache[value].ContainsKey(exponent))
 			{
-				exponentCache[value].Add(exponent, StratusMath.Pow(value, exponent));
+				exponentCache[value].Add(exponent, MathUtility.Pow(value, exponent));
 			}
 
 			return exponentCache[value][exponent];

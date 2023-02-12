@@ -262,11 +262,11 @@ namespace Stratus.Models.Tests
 			map.Set(MockLayer.Actor, b, bStart);
 
 			// First, itself
-			MockObject[] objectsInRange = map.GetObjectsInRange(a, new StratusGridSearchRangeArguments(a.speed));
+			MockObject[] objectsInRange = map.GetObjectsInRange(a, new GridSearchRangeArguments(a.speed));
 			AssertLength(1, objectsInRange);
 			// Move B nex to A
 			map.Set(b, new StratusVector3Int(1, 0));
-			objectsInRange = map.GetObjectsInRange(a, new StratusGridSearchRangeArguments(a.speed));
+			objectsInRange = map.GetObjectsInRange(a, new GridSearchRangeArguments(a.speed));
 			AssertLength(2, objectsInRange);
 		}
 

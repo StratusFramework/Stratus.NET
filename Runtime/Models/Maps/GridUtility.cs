@@ -1,10 +1,12 @@
+using Stratus.Models.Math;
+
 using System;
 using System.Collections.Generic;
 using System.Numerics;
 
 namespace Stratus.Models.Maps
 {
-	public abstract class StratusGridUtility
+	public abstract class GridUtility
 	{
 		public class GridSearch : StratusSearch<StratusVector3Int>
 		{
@@ -216,18 +218,145 @@ namespace Stratus.Models.Maps
 					break;
 			}
 			return result;
+		}	
+
+		public static T GetNeighbor<T>(T[,] neighbors, int row, int col, CardinalDirection direction, bool wrap = false)
+		{
+			// (x + N - 1 % N, y + N - 1 % N)(x + N - 1 % N, y) (x + N - 1 % N, y + 1 % N)
+			// (x, y + N - 1 % N)                               (x, y + 1 % N)
+			// (x + 1 % N, y + N - 1 % N)(x + 1, y)             (x + 1 % N, y + 1 % N)
+
+			//T neighbor = default(T);
+
+			// 0-index
+			int n = (int)MathF.Sqrt(neighbors.Length);
+			int neighborRow = 0, neighborCol = 0;
+
+			if (wrap)
+			{
+				switch (direction)
+				{
+					case CardinalDirection.NorthWest:
+						neighborRow = (row - 1 + n) % n;
+						neighborCol = (col - 1 + n) % n;
+						//neighbor = neighbors[r - 1 % n - 1, c - 1 % n - 1];
+						break;
+					case CardinalDirection.NorthEast:
+						neighborRow = (row - 1 + n) % n;
+						neighborCol = (col + 1) % n;
+						//neighbor = neighbors[r - 1 % n - 1, c + 1 % n - 1];
+						break;
+					case CardinalDirection.North:
+						neighborRow = (row - 1 + n) % n;
+						neighborCol = col;
+						//neighbor = neighbors[r - 1 % n - 1, c];
+						break;
+					case CardinalDirection.West:
+						neighborRow = row;
+						neighborCol = (col - 1 + n) % n;
+						//neighbor = neighbors[r, c - 1 % n - 1];
+						break;
+					case CardinalDirection.East:
+						neighborRow = row;
+						neighborCol = (col + 1) % n;
+						//neighbor = neighbors[r, c + 1 % n - 1];
+						break;
+					case CardinalDirection.South:
+						neighborRow = (row + 1) % n;
+						neighborCol = col;
+						//neighbor = neighbors[r + 1 % n - 1, c];
+						break;
+					case CardinalDirection.SouthWest:
+						neighborRow = (row + 1) % n;
+						neighborCol = (col - 1 + n) % n;
+						//neighbor = neighbors[r + 1 % n - 1, c - 1 % n - 1];
+						break;
+					case CardinalDirection.SouthEast:
+						neighborRow = (row + 1) % n;
+						neighborCol = (col + 1) % n;
+						//neighbor = neighbors[r + 1 % n - 1, c + 1 % n - 1];
+						break;
+				}
+			}
+			else
+			{
+				switch (direction)
+				{
+					case CardinalDirection.NorthWest:
+						neighborRow = (row - 1) % n;
+						if (neighborRow < 0) neighborRow = 0;
+						neighborCol = (col - 1) % n;
+						if (neighborCol < 0) neighborCol = 0;
+						//neighbor = neighbors[r - 1 % n - 1, c - 1 % n - 1];
+						break;
+					case CardinalDirection.NorthEast:
+						neighborRow = (row - 1) % n;
+						if (neighborRow < 0) neighborRow = 0;
+						neighborCol = (col + 1) % n;
+						//neighbor = neighbors[r - 1 % n - 1, c + 1 % n - 1];
+						break;
+					case CardinalDirection.North:
+						neighborRow = (row - 1) % n;
+						if (neighborRow < 0) neighborRow = 0;
+						neighborCol = col;
+						//neighbor = neighbors[r - 1 % n - 1, c];
+						break;
+					case CardinalDirection.West:
+						neighborRow = row;
+						neighborCol = (col - 1) % n;
+						if (neighborCol < 0) neighborCol = 0;
+						//neighbor = neighbors[r, c - 1 % n - 1];
+						break;
+					case CardinalDirection.East:
+						neighborRow = row;
+						neighborCol = (col + 1) % n;
+						//neighbor = neighbors[r, c + 1 % n - 1];
+						break;
+					case CardinalDirection.South:
+						neighborRow = (row + 1) % n;
+						neighborCol = col;
+						//neighbor = neighbors[r + 1 % n - 1, c];
+						break;
+					case CardinalDirection.SouthWest:
+						neighborRow = (row + 1) % n;
+						neighborCol = (col - 1) % n;
+						if (neighborCol < 0) neighborCol = 0;
+						//neighbor = neighbors[r + 1 % n - 1, c - 1 % n - 1];
+						break;
+					case CardinalDirection.SouthEast:
+						neighborRow = (row + 1) % n;
+						neighborCol = (col + 1) % n;
+						break;
+				}
+			}
+
+			return neighbors[neighborRow, neighborCol];
 		}
+
+		/// <summary>
+		/// Returns a random cardinal direction
+		/// </summary>
+		/// <returns></returns>
+		public static CardinalDirection randomCardinalDirection => (CardinalDirection)RandomUtility.Range(0, 7);
+
+		/// <summary>
+		/// 2D arrays use the row/column scheme, where rows are descending.
+		/// </summary>
+		/// <param name="row"></param>
+		/// <param name="col"></param>
+		/// <returns></returns>
+		public static Vector2 RowColumnToCartesian(int row, int col) => new Vector2(col, -row);
 		#endregion
 
 		#region Ranges
 		/// <summary>
 		/// Returns the cell range given an origin
 		/// </summary>
-		public static StratusGridRange GetRange(StratusVector3Int origin,
-			StratusGridSearchRangeArguments range,
+		public static GridRange GetRange(StratusVector3Int origin,
+			GridSearchRangeArguments range,
 			CellLayout layout)
 		{
-			StratusGridRange result = null;
+			GridRange result = null;
 			switch (layout)
 			{
 				case CellLayout.Rectangle:
@@ -247,7 +376,7 @@ namespace Stratus.Models.Maps
 		/// <param name="n">The search range from the origin</param>
 		/// <param name="predicate">A predicate that validates whether a given cell is traversible</param>
 		/// <returns>A dictionary of all the elements in range along with the cost to traverse to them </returns>
-		public static StratusGridRange GetRangeRectangle(StratusVector3Int origin, StratusGridSearchRangeArguments args)
+		public static GridRange GetRangeRectangle(StratusVector3Int origin, GridSearchRangeArguments args)
 		{
 			GridSearch.RangeSearch search
 				= new GridSearch.RangeSearch()
@@ -261,7 +390,7 @@ namespace Stratus.Models.Maps
 					startElement = origin
 				};
 
-			return new StratusGridRange(search.SearchWithCosts());
+			return new GridRange(search.SearchWithCosts());
 		}
 
 		/// <summary>
@@ -271,7 +400,7 @@ namespace Stratus.Models.Maps
 		/// <param name="n"></param>
 		/// <param name="predicate"></param>
 		/// <returns></returns>
-		public static StratusGridRange GetRangeHexOffset(StratusVector3Int origin, StratusGridSearchRangeArguments args,
+		public static GridRange GetRangeHexOffset(StratusVector3Int origin, GridSearchRangeArguments args,
 			StratusTraversalPredicate<StratusVector3Int> predicate = null)
 		{
 			GridSearch.RangeSearch search
@@ -284,7 +413,7 @@ namespace Stratus.Models.Maps
 				range = args.maximum,
 				startElement = origin
 			};
-			return new StratusGridRange(search.SearchWithCosts());
+			return new GridRange(search.SearchWithCosts());
 		}
 		#endregion
 

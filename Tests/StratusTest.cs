@@ -1,6 +1,7 @@
 using NUnit.Framework;
 
 using Stratus.Extensions;
+using Stratus.Reflection;
 
 using System.Collections.Generic;
 
