@@ -1,4 +1,5 @@
 ﻿using Stratus.IO;
+using Stratus.Models.Saves;
 
 using System.Collections.Generic;
 using System.IO;

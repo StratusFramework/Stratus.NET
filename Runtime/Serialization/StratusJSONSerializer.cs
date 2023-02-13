@@ -1,9 +1,6 @@
-﻿//using Stratus.OdinSerializer;
-
-using System;
+﻿using System;
 using System.IO;
 
-//using UnityEngine;
 using Newtonsoft.Json;
 
 namespace Stratus.Serialization
@@ -21,18 +18,12 @@ namespace Stratus.Serialization
 		{
 			var serialization = File.ReadAllText(filePath);
 			return JsonConvert.DeserializeObject<T>(serialization, settings);
-			//byte[] serialization = File.ReadAllBytes(filePath);			
-			//return SerializationUtility.DeserializeValue<T>(serialization, DataFormat.JSON);
 		}
 
 		protected override void OnSerialize(T value, string filePath)
 		{
 			var serialization = JsonConvert.SerializeObject(value, settings);
-			File.WriteAllText(filePath, serialization);	
-
-			//var serialization = serializer.Serialize(value);
-			//byte[] serialization = SerializationUtility.SerializeValue(value, DataFormat.JSON);
-			//File.WriteAllBytes(filePath, serialization);
+			File.WriteAllText(filePath, serialization);
 		}
 	}
 
@@ -48,18 +39,12 @@ namespace Stratus.Serialization
 		{
 			var serialization = File.ReadAllText(filePath);
 			return JsonConvert.DeserializeObject(serialization, settings);
-
-			//byte[] serialization = File.ReadAllBytes(filePath);
-			//return SerializationUtility.DeserializeValueWeak(serialization, DataFormat.JSON);
 		}
 
 		protected override void OnSerialize(object value, string filePath)
 		{
 			var serialization = JsonConvert.SerializeObject(value, settings);
 			File.WriteAllText(filePath, serialization);
-
-			//byte[] serialization = SerializationUtility.SerializeValue(value, DataFormat.JSON);
-			//File.WriteAllBytes(filePath, serialization);
 		}
 	}
 
@@ -81,9 +66,4 @@ namespace Stratus.Serialization
 		}
 
 	}
-
-	public class SerializeField : Attribute 
-	{
-	}
-
 }

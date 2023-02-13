@@ -11,7 +11,7 @@ namespace Stratus
 	[Serializable]
 	public class StratusAssetReference : StratusAsset
 	{
-		[SerializeField]
+		[SerializeFieldAttribute]
 		//[StratusDropdown(nameof(availableAssetNames))]
 		private string[] _aliases;
 		public string alias => GetAlias(_aliases);
@@ -45,7 +45,7 @@ namespace Stratus
 	public class StratusAssetCollection<TAsset> : IStratusAssetSource<TAsset>, IStratusAssetResolver<TAsset>
 		where TAsset : class
 	{
-		[SerializeField]
+		[SerializeFieldAttribute]
 		private List<TAsset> _assets = new List<TAsset>();
 
 		#region Properties

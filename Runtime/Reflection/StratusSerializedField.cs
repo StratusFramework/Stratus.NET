@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Reflection;
-//using UnityEngine;
 using System.Collections.Generic;
 using System.Text;
 using Stratus.Collections;
 using Stratus.Extensions;
-using Stratus.Reflection;
 
-namespace Stratus
+namespace Stratus.Reflection
 {
 	/// <summary>
 	/// Manages a property serialized in a custom way
@@ -75,7 +73,8 @@ namespace Stratus
 		/// The value of this field
 		/// </summary>
 		public object value
-		{		get { return field.GetValueOrSetDefault(target); }
+		{
+			get { return field.GetValueOrSetDefault(target); }
 			set
 			{
 				field.SetValue(target, value);
@@ -156,7 +155,7 @@ namespace Stratus
 				if (!isPrimitive && this.fieldType != StratusSerializedFieldType.Enum)
 				{
 					this.children = GetChildFields(this);
-					this.childrenByName = this.children.ToDictionary<string, StratusSerializedField>((sf) => sf.name);
+					this.childrenByName = this.children.ToDictionary((sf) => sf.name);
 
 				}
 			}

@@ -22,7 +22,7 @@ namespace Stratus.Collections
 	/// <typeparam name="TValue">The value type</typeparam>
 	public abstract class StratusMap<TKey, TValue> : IEnumerable<TValue>, IReadOnlyStratusMap<TKey, TValue>
 	{
-		[SerializeField]
+		[SerializeFieldAttribute]
 		private List<TValue> _list = new List<TValue>();
 		[NonSerialized]
 		private Dictionary<TKey, TValue> _dictionary;

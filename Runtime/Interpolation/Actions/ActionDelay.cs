@@ -1,12 +1,12 @@
-namespace Stratus
+namespace Stratus.Interpolation
 {
 	/// <summary>
 	/// An ActionDelay is a type of action that blocks all actions behind it
 	/// for a specified amount of time.
 	/// </summary>
-	public class StratusActionDelay : StratusAction
+	public class ActionDelay : ActionBase
 	{
-		public StratusActionDelay(float duration)
+		public ActionDelay(float duration)
 		{
 			this.duration = duration;
 		}

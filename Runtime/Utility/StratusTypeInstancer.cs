@@ -43,4 +43,9 @@ namespace Stratus
 			return _instancesByName.Value.GetValueOrDefault(name);
 		}
 	}
+
+	public class ImplementationTypeInstancer<T> where T : class
+	{
+
+	}
 }

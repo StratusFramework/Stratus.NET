@@ -1,4 +1,4 @@
-namespace Stratus
+namespace Stratus.Models.Validation
 {
 	/// <summary>
 	/// Interface for validating the settings of a behaviour

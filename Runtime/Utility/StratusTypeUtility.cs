@@ -1,6 +1,5 @@
 using Stratus.Extensions;
 using Stratus.Reflection;
-//using Stratus.OdinSerializer.Utilities;
 
 using System;
 using System.Collections;
@@ -340,7 +339,7 @@ namespace Stratus.Utilities
 			return Type.GetType(fqName);
 		}
 
-		public static StratusTypeInfo TypeInfo<T>() => new StratusTypeInfo(typeof(T));
+		public static TypeInformation TypeInfo<T>() => new TypeInformation(typeof(T));
 	}
 
 }

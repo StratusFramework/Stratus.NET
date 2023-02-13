@@ -4,10 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Stratus.Models
+namespace Stratus.Models.Graph
 {
 	/// <summary>
-	/// Utlity class for working on a list of serializable TreeElements where the order
+	/// Utlity class for working on a list of serializable <see cref="TreeElement"/> where the order
 	/// and depth of each tree element define the tree structure. 
 	/// The TreeModel itself is not serializable but the input list is.
 	/// The tree representation (parent and children references) are built internally using 
@@ -15,20 +15,20 @@ namespace Stratus.Models
 	/// The first element of the input list is required to have a depth of -1 (the hidden root),
 	/// and the rest a depth of >= 0.
 	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	public class StratusTreeModel<T> where T : StratusTreeElement
+	/// <typeparam name="TElement"></typeparam>
+	public class TreeModel<TElement> where TElement : TreeElement
 	{
 		//------------------------------------------------------------------------/
 		// Fields
 		//------------------------------------------------------------------------/ 
-		private StratusProvider<IList<T>> provider;
-		private IList<T> elements => provider.value;
+		private StratusProvider<IList<TElement>> provider;
+		private IList<TElement> elements => provider.value;
 		private int maxID;
 
 		//------------------------------------------------------------------------/
 		// Properties
 		//------------------------------------------------------------------------/     
-		public T root
+		public TElement root
 		{
 			get
 			{
@@ -39,7 +39,7 @@ namespace Stratus.Models
 				return _root;
 			}
 		}
-		private T _root;
+		private TElement _root;
 
 		#region Events
 		public event Action onModelChanged;
@@ -48,7 +48,7 @@ namespace Stratus.Models
 		//------------------------------------------------------------------------/
 		// CTOR
 		//------------------------------------------------------------------------/ 
-		public StratusTreeModel(StratusProvider<IList<T>> data)
+		public TreeModel(StratusProvider<IList<TElement>> data)
 		{
 			this.SetData(data);
 		}
@@ -60,7 +60,7 @@ namespace Stratus.Models
 		/// Sets the data for this tree model
 		/// </summary>
 		/// <param name="provider"></param>
-		public void SetData(StratusProvider<IList<T>> provider)
+		public void SetData(StratusProvider<IList<TElement>> provider)
 		{
 			if (provider == null)
 			{
@@ -76,7 +76,7 @@ namespace Stratus.Models
 		{
 			if (this.elements.Count > 0)
 			{
-				this._root = StratusTreeElement.ListToTree(this.elements);
+				this._root = TreeElement.ListToTree(this.elements);
 				this.maxID = this.elements.Max(d => d.id);
 			}
 		}
@@ -86,7 +86,7 @@ namespace Stratus.Models
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		public T Find(int id) => this.elements.FirstOrDefault(element => element.id == id);
+		public TElement Find(int id) => this.elements.FirstOrDefault(element => element.id == id);
 
 		/// <summary>
 		/// Generates an unique id for a tree element
@@ -102,7 +102,7 @@ namespace Stratus.Models
 		public IList<int> GetAncestors(int id)
 		{
 			var parents = new List<int>();
-			StratusTreeElement T = Find(id);
+			TreeElement T = Find(id);
 			if (T != null)
 			{
 				while (T.parent != null)
@@ -121,7 +121,7 @@ namespace Stratus.Models
 		/// <returns></returns>
 		public IList<int> GetDescendantsThatHaveChildren(int id)
 		{
-			T searchFromThis = Find(id);
+			TElement searchFromThis = Find(id);
 			if (searchFromThis != null)
 			{
 				return GetParentsBelowStackBased(searchFromThis);
@@ -135,7 +135,7 @@ namespace Stratus.Models
 		/// <param name="elements"></param>
 		/// <param name="parent"></param>
 		/// <param name="insertPosition"></param>
-		public void AddElements(IList<T> elements, StratusTreeElement parent, int insertPosition)
+		public void AddElements(IList<TElement> elements, TreeElement parent, int insertPosition)
 		{
 			if (elements == null)
 				throw new ArgumentNullException("elements", "elements is null");
@@ -145,17 +145,17 @@ namespace Stratus.Models
 				throw new ArgumentNullException("parent", "parent is null");
 
 			if (parent.children == null)
-				parent.children = new List<StratusTreeElement>();
+				parent.children = new List<TreeElement>();
 
-			parent.children.InsertRange(insertPosition, elements.Cast<StratusTreeElement>());
+			parent.children.InsertRange(insertPosition, elements.Cast<TreeElement>());
 			foreach (var element in elements)
 			{
 				element.parent = parent;
 				element.depth = parent.depth + 1;
-				StratusTreeElement.UpdateDepthValues(element);
+				TreeElement.UpdateDepthValues(element);
 			}
 
-			StratusTreeElement.TreeToList(this.root, this.elements);
+			TreeElement.TreeToList(this.root, this.elements);
 
 			OnChanged();
 		}
@@ -166,7 +166,7 @@ namespace Stratus.Models
 		/// <param name="element"></param>
 		/// <param name="parent"></param>
 		/// <param name="insertPosition"></param>
-		public T AddElement(T element, StratusTreeElement parent, int insertPosition)
+		public TElement AddElement(TElement element, TreeElement parent, int insertPosition)
 		{
 			if (element == null)
 			{
@@ -179,14 +179,14 @@ namespace Stratus.Models
 
 			if (parent.children == null)
 			{
-				parent.children = new List<StratusTreeElement>();
+				parent.children = new List<TreeElement>();
 			}
 
 			parent.children.Insert(insertPosition, element);
 			element.parent = parent;
 
-			StratusTreeElement.UpdateDepthValues(parent);
-			int parentIndex = elements.IndexOf((T)parent);
+			TreeElement.UpdateDepthValues(parent);
+			int parentIndex = elements.IndexOf((TElement)parent);
 			elements.Insert(parentIndex + 1 + insertPosition, element);
 			//StratusTreeElement.TreeToList(this.root, this.elements);
 
@@ -198,7 +198,7 @@ namespace Stratus.Models
 		/// Adds the root element to this model
 		/// </summary>
 		/// <param name="root"></param>
-		public void AddRoot(T root)
+		public void AddRoot(TElement root)
 		{
 			if (root == null)
 				throw new ArgumentNullException("root", "root is null");
@@ -220,7 +220,7 @@ namespace Stratus.Models
 		/// <param name="elementIDs"></param>
 		public void RemoveElements(IList<int> elementIDs)
 		{
-			IList<T> elements = this.elements.Where(element => elementIDs.Contains(element.id)).ToArray();
+			IList<TElement> elements = this.elements.Where(element => elementIDs.Contains(element.id)).ToArray();
 			RemoveElements(elements);
 		}
 
@@ -228,13 +228,13 @@ namespace Stratus.Models
 		/// Removes the given elements 
 		/// </summary>
 		/// <param name="elements"></param>
-		public void RemoveElements(IList<T> elements)
+		public void RemoveElements(IList<TElement> elements)
 		{
 			foreach (var element in elements)
 				if (element == this.root)
 					throw new ArgumentException("It is not allowed to remove the root element");
 
-			var commonAncestors = StratusTreeElement.FindCommonAncestorsWithinList(elements);
+			var commonAncestors = TreeElement.FindCommonAncestorsWithinList(elements);
 
 			foreach (var element in commonAncestors)
 			{
@@ -242,7 +242,7 @@ namespace Stratus.Models
 				element.parent = null;
 			}
 
-			StratusTreeElement.TreeToList(this.root, this.elements);
+			TreeElement.TreeToList(this.root, this.elements);
 
 			OnChanged();
 		}
@@ -253,7 +253,7 @@ namespace Stratus.Models
 		/// <param name="parentElement"></param>
 		/// <param name="insertionIndex"></param>
 		/// <param name="elements"></param>
-		public void MoveElements(StratusTreeElement parentElement, int insertionIndex, List<StratusTreeElement> elements)
+		public void MoveElements(TreeElement parentElement, int insertionIndex, List<TreeElement> elements)
 		{
 			MoveElements(parentElement, insertionIndex, elements.ToArray());
 		}
@@ -264,7 +264,7 @@ namespace Stratus.Models
 		/// <param name="parentElement"></param>
 		/// <param name="insertionIndex"></param>
 		/// <param name="elements"></param>
-		public void MoveElements(StratusTreeElement parentElement, int insertionIndex, params StratusTreeElement[] elements)
+		public void MoveElements(TreeElement parentElement, int insertionIndex, params TreeElement[] elements)
 		{
 			if (insertionIndex < 0)
 				throw new ArgumentException("Invalid input: insertionIndex is -1, client needs to decide what index elements should be reparented at");
@@ -285,13 +285,13 @@ namespace Stratus.Models
 			}
 
 			if (parentElement.children == null)
-				parentElement.children = new List<StratusTreeElement>();
+				parentElement.children = new List<TreeElement>();
 
 			// Insert dragged items under new parent
 			parentElement.children.InsertRange(insertionIndex, elements);
 
-			StratusTreeElement.UpdateDepthValues(root);
-			StratusTreeElement.TreeToList(this.root, this.elements);
+			TreeElement.UpdateDepthValues(root);
+			TreeElement.TreeToList(this.root, this.elements);
 
 			OnChanged();
 		}
@@ -308,15 +308,15 @@ namespace Stratus.Models
 		//------------------------------------------------------------------------/
 		// Methods: Private
 		//------------------------------------------------------------------------/ 
-		private IList<int> GetParentsBelowStackBased(StratusTreeElement searchFromThis)
+		private IList<int> GetParentsBelowStackBased(TreeElement searchFromThis)
 		{
-			Stack<StratusTreeElement> stack = new Stack<StratusTreeElement>();
+			Stack<TreeElement> stack = new Stack<TreeElement>();
 			stack.Push(searchFromThis);
 
 			var parentsBelow = new List<int>();
 			while (stack.Count > 0)
 			{
-				StratusTreeElement current = stack.Pop();
+				TreeElement current = stack.Pop();
 				if (current.hasChildren)
 				{
 					parentsBelow.Add(current.id);

@@ -5,16 +5,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Stratus
+namespace Stratus.Search
 {
-	public enum StratusSearchNodeStatus
+	public enum SearchNodeStatus
 	{
 		Open,
 		Closed,
 		Unexplored
 	}
 
-	public enum StratusTraversableStatus
+	public enum TraversableStatus
 	{
 		/// <summary>
 		/// Freely traversible
@@ -34,13 +34,13 @@ namespace Stratus
 		Invalid
 	}
 
-	public delegate StratusTraversableStatus StratusTraversalPredicate<TElement>(TElement element);
+	public delegate TraversableStatus StratusTraversalPredicate<TElement>(TElement element);
 
 	/// <summary>
 	/// This planner uses A* to do a search for a valid path of actions that will lead
 	/// to the desired state.
 	/// </summary>
-	public class StratusSearch<ElementType> : IStratusLogger
+	public class StratusSearch<TElement> : IStratusLogger
 	{
 		/// <summary>
 		/// Represents a node in the graph of actions.
@@ -54,11 +54,11 @@ namespace Stratus
 			/// <summary>
 			/// Whether this node is on the open or closed list
 			/// </summary>
-			public StratusSearchNodeStatus status = StratusSearchNodeStatus.Unexplored;
+			public SearchNodeStatus status = SearchNodeStatus.Unexplored;
 			/// <summary>
 			/// The element this node represents
 			/// </summary>
-			public ElementType element;
+			public TElement element;
 			/// <summary>
 			/// g(x): How much it costs to get back to the starting node
 			/// </summary>
@@ -76,7 +76,7 @@ namespace Stratus
 			/// </summary>
 			public string description => element.ToString();
 
-			public Node(Node parent, ElementType element, float givenCost)
+			public Node(Node parent, TElement element, float givenCost)
 			{
 				this.parent = parent;
 				this.element = element;
@@ -114,19 +114,19 @@ namespace Stratus
 			public override void Insert(Node node, float priority)
 			{
 				base.Insert(node, priority);
-				node.status = StratusSearchNodeStatus.Open;
+				node.status = SearchNodeStatus.Open;
 			}
 
 			public void Insert(Node node)
 			{
 				base.Insert(node, node.cost);
-				node.status = StratusSearchNodeStatus.Open;
+				node.status = SearchNodeStatus.Open;
 			}
 
 			public override Node Pop()
 			{
 				var node = base.Pop();
-				node.status = StratusSearchNodeStatus.Closed;
+				node.status = SearchNodeStatus.Closed;
 				return node;
 			}
 		}
@@ -137,7 +137,7 @@ namespace Stratus
 		/// </summary>
 		public class PathResult
 		{
-			public PathResult(ElementType element, float cost, ElementType[] path)
+			public PathResult(TElement element, float cost, TElement[] path)
 			{
 				this.element = element;
 				this.cost = cost;
@@ -147,7 +147,7 @@ namespace Stratus
 			/// <summary>
 			/// The element within range of the search
 			/// </summary>
-			public ElementType element { get; private set; }
+			public TElement element { get; private set; }
 			/// <summary>
 			/// The cost from the starting element to this one
 			/// </summary>
@@ -155,7 +155,7 @@ namespace Stratus
 			/// <summary>
 			/// The path from the starting element to this one
 			/// </summary>
-			public ElementType[] path { get; private set; }
+			public TElement[] path { get; private set; }
 
 			public override string ToString()
 			{
@@ -177,27 +177,27 @@ namespace Stratus
 			/// <summary>
 			/// The starting element for the algorithm to use
 			/// </summary>
-			public ElementType startElement { get; set; }
+			public TElement startElement { get; set; }
 			/// <summary>
 			/// A function to calculate the distance between two elements
 			/// </summary>
-			public Func<ElementType, ElementType, float> distanceFunction { get; set; }
+			public Func<TElement, TElement, float> distanceFunction { get; set; }
 			/// <summary>
 			/// A function to calculate the cost of traversing the given element
 			/// </summary>
-			public Func<ElementType, float> traversalCostFunction { get; set; }
+			public Func<TElement, float> traversalCostFunction { get; set; }
 			/// <summary>
 			/// If provided, a function that checks whether the given element is traversable
 			/// </summary>
-			public StratusTraversalPredicate<ElementType> traversableFunction { get; set; }
+			public StratusTraversalPredicate<TElement> traversableFunction { get; set; }
 			/// <summary>
 			/// A function to gather the neighbors of a cell
 			/// </summary>
-			public Func<ElementType, ElementType[]> neighborFunction { get; set; }
+			public Func<TElement, TElement[]> neighborFunction { get; set; }
 
-			protected ElementType[] BuildPath(Node node)
+			protected TElement[] BuildPath(Node node)
 			{
-				List<ElementType> path = new List<ElementType>();
+				List<TElement> path = new List<TElement>();
 
 				Node currentNode = node;
 				while (currentNode != null)
@@ -221,7 +221,7 @@ namespace Stratus
 			/// <summary>
 			/// The element to traverse to
 			/// </summary>
-			public ElementType targetElement { get; set; }
+			public TElement targetElement { get; set; }
 			/// <summary>
 			/// Returns true if the search should be exited
 			/// </summary>
@@ -229,12 +229,10 @@ namespace Stratus
 			protected float CalculateHeuristicCost(Node node, Node target) => distanceFunction(node.element, target.element);
 
 		}
-
-
-
+		
 		public class PathSearch : GoalSearch
 		{
-			public ElementType[] Search()
+			public TElement[] Search()
 			{
 				PriorityQueue openList = new PriorityQueue(0);
 				int currentIteration = 0;
@@ -263,7 +261,7 @@ namespace Stratus
 					foreach (Node child in neighbors)
 					{
 						// If the node is unexplored
-						if (child.status == StratusSearchNodeStatus.Unexplored)
+						if (child.status == SearchNodeStatus.Unexplored)
 						{
 							child.cost = child.givenCost + CalculateHeuristicCost(child, destinationNode);
 							child.parent = parent;
@@ -306,10 +304,10 @@ namespace Stratus
 			/// </summary>
 			public float range { get; set; }
 
-			public ElementType[] Search()
+			public TElement[] Search()
 			{
 				Node[] nodes = GetNodes();
-				List<ElementType> result = new List<ElementType>();
+				List<TElement> result = new List<TElement>();
 				for (int i = 0; i < nodes.Length; i++)
 				{
 					Node node = nodes[i];
@@ -319,11 +317,11 @@ namespace Stratus
 			}
 
 			/// <returns>A dictionary of all the elements in range along with the cost to traverse to them </returns>
-			public Dictionary<ElementType, float> SearchWithCosts()
+			public Dictionary<TElement, float> SearchWithCosts()
 			{
 				Node[] nodes = GetNodes();
 
-				Dictionary<ElementType, float> costs = new Dictionary<ElementType, float>();
+				Dictionary<TElement, float> costs = new Dictionary<TElement, float>();
 
 				for (int i = 0; i < nodes.Length; i++)
 				{
@@ -334,9 +332,9 @@ namespace Stratus
 				return costs;
 			}
 
-			public Dictionary<ElementType, PathResult> SearchPaths()
+			public Dictionary<TElement, PathResult> SearchPaths()
 			{
-				Dictionary<ElementType, PathResult> results = new Dictionary<ElementType, PathResult>();
+				Dictionary<TElement, PathResult> results = new Dictionary<TElement, PathResult>();
 
 				Dictionary<Node, Node> map = GetMap();
 				Node[] nodes = map.Keys.ToArray();
@@ -405,8 +403,8 @@ namespace Stratus
 			//}
 
 			// Check for actions that satisfy the preconditions of this node
-			ElementType[] neighborElements = arguments.neighborFunction(node.element);
-			foreach (ElementType element in neighborElements)
+			TElement[] neighborElements = arguments.neighborFunction(node.element);
+			foreach (TElement element in neighborElements)
 			{
 				// Don't add the parent
 				if (node.parent != null && node.parent.element.Equals(element))
@@ -422,18 +420,18 @@ namespace Stratus
 				// TODO Change predicate result?
 				if (arguments.traversableFunction != null)
 				{
-					StratusTraversableStatus status = StratusTraversableStatus.Valid;
-					foreach (StratusTraversalPredicate<ElementType> func in arguments.traversableFunction.GetInvocationList())
+					TraversableStatus status = TraversableStatus.Valid;
+					foreach (StratusTraversalPredicate<TElement> func in arguments.traversableFunction.GetInvocationList())
 					{
 						status = func(element);
-						if (status != StratusTraversableStatus.Valid)
+						if (status != TraversableStatus.Valid)
 						{
 							break;
 						}
 					}
 
 					//var status = arguments.traversableFunction(element);
-					if (status != StratusTraversableStatus.Valid)
+					if (status != TraversableStatus.Valid)
 					{
 						continue;
 					}
@@ -572,8 +570,5 @@ namespace Stratus
 
 			return map;
 		}
-
-
-
 	}
 }

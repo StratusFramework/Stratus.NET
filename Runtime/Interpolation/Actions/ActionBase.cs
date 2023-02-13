@@ -1,9 +1,9 @@
-namespace Stratus
+namespace Stratus.Interpolation
 {
 	/// <summary>
 	/// Action is the base class from which all other actions derive from.
 	/// </summary>
-	public abstract class StratusAction
+	public abstract class ActionBase
 	{
 		//------------------------------------------------------------------------/
 		// Properties
@@ -55,12 +55,12 @@ namespace Stratus
 		//------------------------------------------------------------------------/
 		// CTOR
 		//------------------------------------------------------------------------/
-		public StratusAction()
+		public ActionBase()
 		{
 			this.id = created++;
 		}
 
-		~StratusAction()
+		~ActionBase()
 		{
 			destroyed++;
 		}

@@ -11,7 +11,7 @@ namespace Stratus.Reflection
 	/// <summary>
 	/// Stores reflection information about a given type
 	/// </summary>
-	public class StratusTypeInfo
+	public class TypeInformation
 	{
 		public Type type { get; }
 		public Lazy<string[]> subclassNames { get; }
@@ -27,7 +27,7 @@ namespace Stratus.Reflection
 
 		public const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
 
-		public StratusTypeInfo(Type type)
+		public TypeInformation(Type type)
 		{
 			this.type = type;
 			this._fields = new Lazy<FieldInfo[]>(() => type.GetFields(flags));
@@ -41,7 +41,7 @@ namespace Stratus.Reflection
 
 		}
 
-		public static StratusTypeInfo From(object obj) => new StratusTypeInfo(obj.GetType());
+		public static TypeInformation From(object obj) => new TypeInformation(obj.GetType());
 	}
 
 }

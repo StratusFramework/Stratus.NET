@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Stratus.Models.Validation;
+
+using System;
 using System.Collections.Generic;
 
 namespace Stratus

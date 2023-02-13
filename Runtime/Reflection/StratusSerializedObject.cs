@@ -1,15 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-//using UnityEngine;
 using System;
 using System.Reflection;
 using System.Text;
 using Stratus.Extensions;
-using Stratus.Reflection;
 using Stratus.Utilities;
 using Stratus.Serialization;
 
-namespace Stratus
+namespace Stratus.Reflection
 {
 	/// <summary>
 	/// Edits System.Object types in a completely generic way
@@ -53,7 +51,7 @@ namespace Stratus
 		public string PrintHierarchy()
 		{
 			StringBuilder sb = new StringBuilder();
-			sb.AppendLine(ToString());			foreach (var field in fields)
+			sb.AppendLine(ToString()); foreach (var field in fields)
 			{
 				sb.Append(field.PrintHierarchy(1));
 			}

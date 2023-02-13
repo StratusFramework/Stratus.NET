@@ -1,4 +1,5 @@
 using Stratus.Collections;
+using Stratus.Search;
 
 using System;
 using System.Collections.Generic;
@@ -326,14 +327,14 @@ namespace Stratus.Models.Maps
 		}
 		#endregion
 
-		public virtual StratusTraversableStatus IsTraversible(StratusVector3Int position)
+		public virtual TraversableStatus IsTraversible(StratusVector3Int position)
 		{
 			if (!ContainsCell(position))
 			{
-				return StratusTraversableStatus.Blocked;
+				return TraversableStatus.Blocked;
 			}
 
-			return StratusTraversableStatus.Valid;
+			return TraversableStatus.Valid;
 		}
 
 		public TObject[] GetObjectsInRange<UObject>(StratusVector3Int position, GridSearchRangeArguments args, TLayer layer)
@@ -374,10 +375,10 @@ namespace Stratus.Models.Maps
 			{
 				if (!ContainsCell(pos))
 				{
-					return StratusTraversableStatus.Blocked;
+					return TraversableStatus.Blocked;
 				}
 
-				return StratusTraversableStatus.Valid;
+				return TraversableStatus.Valid;
 			};
 
 			values = GridUtility.GetRange(center, args, cellLayout);
@@ -416,10 +417,10 @@ namespace Stratus.Models.Maps
 				var objAtPos = Get(layer, pos);
 				if (objAtPos != null)
 				{
-					return StratusTraversableStatus.Occupied;
+					return TraversableStatus.Occupied;
 				}
 
-				return StratusTraversableStatus.Valid;
+				return TraversableStatus.Valid;
 			};
 
 			return GetRange(position.Value, args);

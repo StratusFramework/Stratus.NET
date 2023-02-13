@@ -1,20 +1,17 @@
-namespace Stratus
+namespace Stratus.Interpolation
 {
 	/// <summary>
 	/// An ActionSequence is a type of set that updates all its actions
 	/// and children in sequence, depleting its time slice as it updates
 	/// each.
 	/// </summary>
-	public class StratusActionGroup : StratusActionSet
+	public class ActionGroup : ActionSet
 	{
-		//------------------------------------------------------------------------/
-		// CTOR
-		//------------------------------------------------------------------------/
-		public StratusActionGroup(StratusTimeScale mode = StratusTimeScale.Delta) : base(mode) { }
+		public ActionGroup(StratusTimeScale mode = StratusTimeScale.Delta) 
+			: base(mode) 
+		{
+		}
 
-		//------------------------------------------------------------------------/
-		// Messages
-		//------------------------------------------------------------------------/
 		/// <summary>
 		/// Updates an ActionGroup, by updating the actions in the group in
 		/// parallel.
@@ -29,7 +26,7 @@ namespace Stratus
 
 			// In an ActionGroup, every action is updated in parallel, given the same 
 			// time slice.
-			foreach (StratusAction action in this.activeActions)
+			foreach (ActionBase action in this.activeActions)
 			{
 				// If an action is inactive, continue to the next one
 				//if (!action.isActive)
@@ -50,5 +47,15 @@ namespace Stratus
 			return mostTimeElapsed;
 		}
 	}
+
+	///// <summary>
+	///// A container of all actions a particular GameObject has.
+	///// They propagate updates to all actions attached to it.
+	///// </summary>
+	//public class ActionContainer : ActionGroup 
+	//{
+	//	public 
+	//}
+
 
 }

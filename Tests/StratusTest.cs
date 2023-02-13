@@ -55,7 +55,7 @@ namespace Stratus.Editor.Tests
 
 		public static void AssertEqualFields<T>(T a, T b)
 		{
-			StratusTypeInfo info = StratusTypeInfo.From(a);
+			TypeInformation info = TypeInformation.From(a);
 			foreach(var field in info.fields)
 			{
 				object aValue = field.GetValue(a);

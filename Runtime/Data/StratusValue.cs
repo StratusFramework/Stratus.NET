@@ -29,14 +29,14 @@ namespace Stratus.Data
 		//------------------------------------------------------------------------/
 		// Fields
 		//------------------------------------------------------------------------/
-		[SerializeField]
+		[SerializeFieldAttribute]
 		private float _increment;
-		[SerializeField]
+		[SerializeFieldAttribute]
 		private float _bonusValue;
 
-		[SerializeField]
+		[SerializeFieldAttribute]
 		private float floor;
-		[SerializeField]
+		[SerializeFieldAttribute]
 		private float ceiling;
 
 		//------------------------------------------------------------------------/

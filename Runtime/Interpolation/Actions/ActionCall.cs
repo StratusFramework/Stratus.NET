@@ -1,9 +1,9 @@
-namespace Stratus
+namespace Stratus.Interpolation
 {
 	/// <summary>
 	/// Invokes a function immediately
 	/// </summary>
-	public class StratusActionCall : StratusAction
+	public class ActionCall : ActionBase
 	{
 		//------------------------------------------------------------------------/
 		// Declarations
@@ -22,7 +22,7 @@ namespace Stratus
 		/// Constructor
 		/// </summary>
 		/// <param name="action">A provided function which to invoke.</param>
-		public StratusActionCall(Delegate action)
+		public ActionCall(Delegate action)
 		{
 			this.action = action;
 		}
@@ -55,7 +55,7 @@ namespace Stratus
 	/// <summary>
 	/// Invokes a function immediately
 	/// </summary>
-	public class StratusActionCall<T> : StratusAction
+	public class ActionCall<T> : ActionBase
 	{
 		//------------------------------------------------------------------------/
 		// Declarations
@@ -74,7 +74,7 @@ namespace Stratus
 		/// Constructor
 		/// </summary>
 		/// <param name="action">A provided function which to invoke.</param>
-		public StratusActionCall(Delegate<T> action)
+		public ActionCall(Delegate<T> action)
 		{
 			this.action = action;
 		}

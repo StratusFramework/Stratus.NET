@@ -3,10 +3,68 @@
 using System;
 using System.Collections.Generic;
 
-namespace Stratus.Models
+namespace Stratus.Models.Graph
 {
-	public partial class StratusTreeElement
+	/// <summary>
+	/// A serialized element of a Tree Model
+	/// </summary>
+	[Serializable]
+	public class TreeElement
 	{
+		#region Fields
+		public int id;
+		public string name;
+		public int depth;
+
+		[NonSerialized] public TreeElement parent;
+		[NonSerialized] public List<TreeElement> children = new List<TreeElement>();
+		#endregion
+
+		#region Properties
+		/// <summary>
+		/// Whether this tree element has children
+		/// </summary>
+		public bool hasChildren => children != null && children.Count > 0;
+		/// <summary>
+		/// The root node must have a depth of -1
+		/// </summary>
+		public bool isRoot => depth == -1;
+		/// <summary>
+		/// Howw many children this element has
+		/// </summary>
+		public int childrenCount => children != null ? children.Count : 0;
+		/// <summary>
+		/// How many children in total this element has (including subchildren)
+		/// </summary>
+		public int totalChildrenCount => GetTotalChildrenCount(this);
+		/// <summary>
+		/// How many children in total this element has (including subchildren)
+		/// </summary>
+		public TreeElement[] allChildren => GetAllChildren(this);
+		#endregion
+
+		#region Constructors
+		public TreeElement()
+		{
+		}
+
+		public TreeElement(string name, int depth, int id)
+		{
+			this.name = name;
+			this.depth = depth;
+			this.id = id;
+		}
+		#endregion
+
+		#region Messages
+		public override string ToString()
+		{
+			return $"{name} id({id}) depth({depth})";
+		}
+
+		#endregion
+
+		#region Utility
 		//------------------------------------------------------------------------/
 		// Methods: Static
 		//------------------------------------------------------------------------/ 
@@ -16,7 +74,7 @@ namespace Stratus.Models
 		/// <typeparam name="T"></typeparam>
 		/// <param name="root"></param>
 		/// <param name="list"></param>
-		public static void TreeToList<T>(T root, IList<T> list) where T : StratusTreeElement
+		public static void TreeToList<T>(T root, IList<T> list) where T : TreeElement
 		{
 			// Clear the current list
 			list.Clear();
@@ -48,10 +106,10 @@ namespace Stratus.Models
 		/// <typeparam name="T"></typeparam>
 		/// <param name="list"></param>
 		/// <returns></returns>
-		public static T ListToTree<T>(IList<T> list) where T : StratusTreeElement
+		public static T ListToTree<T>(IList<T> list) where T : TreeElement
 		{
 			// Validate input
-			StratusTreeElement.Assert(list);
+			Assert(list);
 
 			// Clear old state
 			foreach (var element in list)
@@ -84,10 +142,10 @@ namespace Stratus.Models
 				}
 
 				// Fill the child array for this element
-				List<StratusTreeElement> children = null;
+				List<TreeElement> children = null;
 				if (childCount != 0)
 				{
-					children = new List<StratusTreeElement>(childCount);
+					children = new List<TreeElement>(childCount);
 					childCount = 0;
 
 					for (int i = parentIndex + 1; i < list.Count; i++)
@@ -118,7 +176,7 @@ namespace Stratus.Models
 		/// <param name="parent"></param>
 		/// <param name="insertionIndex"></param>
 		/// <param name="children"></param>
-		public static void Parent(StratusTreeElement parent, params StratusTreeElement[] children)
+		public static void Parent(TreeElement parent, params TreeElement[] children)
 		{
 			// Invalid reparenting input
 			if (parent == null)
@@ -132,7 +190,7 @@ namespace Stratus.Models
 			}
 
 			if (parent.children == null)
-				parent.children = new List<StratusTreeElement>();
+				parent.children = new List<TreeElement>();
 
 			// Insert dragged items under new parent
 			parent.children.AddRange(children);
@@ -144,10 +202,10 @@ namespace Stratus.Models
 		/// <param name="parent"></param>
 		/// <param name="insertionIndex"></param>
 		/// <param name="children"></param>
-		public static void Reparent(StratusTreeElement oldParent, StratusTreeElement newParent)
+		public static void Reparent(TreeElement oldParent, TreeElement newParent)
 		{
 			int depthDifference = oldParent.depth - newParent.depth;
-			StratusTreeElement[] children = oldParent.allChildren;
+			TreeElement[] children = oldParent.allChildren;
 
 			// Remove draggedItems from their parents
 			foreach (var child in children)
@@ -157,7 +215,7 @@ namespace Stratus.Models
 			}
 
 			if (newParent.children == null)
-				newParent.children = new List<StratusTreeElement>();
+				newParent.children = new List<TreeElement>();
 
 			// Insert dragged items under new parent
 			newParent.children.AddRange(children);
@@ -169,7 +227,7 @@ namespace Stratus.Models
 		/// <param name="parent"></param>
 		/// <param name="insertionIndex"></param>
 		/// <param name="children"></param>
-		public static void Parent(StratusTreeElement parent, StratusTreeElement child)
+		public static void Parent(TreeElement parent, TreeElement child)
 		{
 			// Invalid reparenting input
 			if (parent == null)
@@ -183,7 +241,7 @@ namespace Stratus.Models
 			child.depth = parent.depth + 1;
 			// Insert the child
 			if (parent.children == null)
-				parent.children = new List<StratusTreeElement>();
+				parent.children = new List<TreeElement>();
 			parent.children.Add(child);
 		}
 
@@ -192,7 +250,7 @@ namespace Stratus.Models
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="list"></param>
-		public static void Assert<T>(IList<T> list) where T : StratusTreeElement
+		public static void Assert<T>(IList<T> list) where T : TreeElement
 		{
 			// Verify count
 			if (list.Count == 0)
@@ -228,7 +286,7 @@ namespace Stratus.Models
 		/// <param name="list"></param>
 		/// <returns></returns>
 
-		public static bool ValidateDepthValues<T>(IList<T> list) where T : StratusTreeElement
+		public static bool ValidateDepthValues<T>(IList<T> list) where T : TreeElement
 		{
 			// Validate depth of first
 			if (list[0].depth != -1)
@@ -250,7 +308,7 @@ namespace Stratus.Models
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="list"></param>
-		public static Exception Validate<T>(IList<T> list) where T : StratusTreeElement
+		public static Exception Validate<T>(IList<T> list) where T : TreeElement
 		{
 			// Verify count
 			if (list.Count == 0)
@@ -286,7 +344,7 @@ namespace Stratus.Models
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="root"></param>
-		public static void UpdateDepthValues<T>(T root) where T : StratusTreeElement
+		public static void UpdateDepthValues<T>(T root) where T : TreeElement
 		{
 			if (root == null)
 			{
@@ -298,11 +356,11 @@ namespace Stratus.Models
 				return;
 			}
 
-			Stack<StratusTreeElement> stack = new Stack<StratusTreeElement>();
+			Stack<TreeElement> stack = new Stack<TreeElement>();
 			stack.Push(root);
 			while (stack.IsValid())
 			{
-				StratusTreeElement current = stack.Pop();
+				TreeElement current = stack.Pop();
 				if (current.hasChildren)
 				{
 					foreach (var child in current.children)
@@ -321,7 +379,7 @@ namespace Stratus.Models
 		/// <param name="child"></param>
 		/// <param name="elements"></param>
 		/// <returns></returns>
-		public static bool IsChildOf<T>(T child, IList<T> elements) where T : StratusTreeElement
+		public static bool IsChildOf<T>(T child, IList<T> elements) where T : TreeElement
 		{
 			while (child != null)
 			{
@@ -338,7 +396,7 @@ namespace Stratus.Models
 		/// <typeparam name="T"></typeparam>
 		/// <param name="elements"></param>
 		/// <returns></returns>
-		public static IList<T> FindCommonAncestorsWithinList<T>(IList<T> elements) where T : StratusTreeElement
+		public static IList<T> FindCommonAncestorsWithinList<T>(IList<T> elements) where T : TreeElement
 		{
 			// IF there's only one elment...
 			if (elements.Count == 1)
@@ -355,7 +413,7 @@ namespace Stratus.Models
 		/// <typeparam name="T"></typeparam>
 		/// <param name="elements"></param>
 		/// <returns></returns>
-		public static IList<T> FindChildrenWithinList<T>(IList<T> elements) where T : StratusTreeElement
+		public static IList<T> FindChildrenWithinList<T>(IList<T> elements) where T : TreeElement
 		{
 			// IF there's only one elment...
 			if (elements.Count == 1)
@@ -368,7 +426,7 @@ namespace Stratus.Models
 
 
 		public static List<TreeElementType> GenerateFlatTree<TreeElementType, DataType>(params DataType[] elements)
-		  where TreeElementType : StratusTreeElement<DataType>, new()
+		  where TreeElementType : TreeElement<DataType>, new()
 		  where DataType : class, IStratusNamed
 		{
 			List<TreeElementType> treeList = new List<TreeElementType>();
@@ -395,14 +453,14 @@ namespace Stratus.Models
 			return treeList;
 		}
 
-		public static StratusTreeElement[] GetAllChildren(StratusTreeElement element)
+		public static TreeElement[] GetAllChildren(TreeElement element)
 		{
-			List<StratusTreeElement> children = new List<StratusTreeElement>();
+			List<TreeElement> children = new List<TreeElement>();
 			GetChildrenRecursive(element, children);
 			return children.ToArray();
 		}
 
-		private static void GetChildrenRecursive(StratusTreeElement element, List<StratusTreeElement> children)
+		private static void GetChildrenRecursive(TreeElement element, List<TreeElement> children)
 		{
 			foreach (var child in element.children)
 			{
@@ -412,7 +470,7 @@ namespace Stratus.Models
 		}
 
 		public static TreeElementType[] GetChildren<TreeElementType, DataType>(TreeElementType element)
-		  where TreeElementType : StratusTreeElement<DataType>, new()
+		  where TreeElementType : TreeElement<DataType>, new()
 		  where DataType : class, IStratusNamed
 		{
 			List<TreeElementType> children = new List<TreeElementType>();
@@ -421,7 +479,7 @@ namespace Stratus.Models
 		}
 
 		private static void GetChildrenRecursive<TreeElementType, DataType>(TreeElementType element, List<TreeElementType> children)
-		  where TreeElementType : StratusTreeElement<DataType>, new()
+		  where TreeElementType : TreeElement<DataType>, new()
 		  where DataType : class, IStratusNamed
 		{
 			foreach (var child in element.children)
@@ -432,14 +490,14 @@ namespace Stratus.Models
 			}
 		}
 
-		public static int GetTotalChildrenCount(StratusTreeElement element)
+		public static int GetTotalChildrenCount(TreeElement element)
 		{
 			int count = 0;
 			GetTotalChildrenCount(element, ref count);
 			return count;
 		}
 
-		private static void GetTotalChildrenCount(StratusTreeElement element, ref int count)
+		private static void GetTotalChildrenCount(TreeElement element, ref int count)
 		{
 			if (!element.hasChildren)
 				return;
@@ -450,6 +508,79 @@ namespace Stratus.Models
 				GetTotalChildrenCount(child, ref count);
 			}
 		}
+		#endregion
+
 	}
 
+	/// <summary>
+	/// Generic class for a tree element with one primary data member
+	/// </summary>
+	/// <typeparam name="DataType"></typeparam>
+	public abstract class TreeElement<DataType> : TreeElement
+	  where DataType : class, IStratusNamed
+	{
+		#region Fields
+		public DataType data;
+		public string dataTypeName;
+		#endregion
+
+		#region Properties
+		public bool hasData => data != null;
+		public Type dataType => data.GetType();
+		public DataType[] childrenData { get; protected set; }
+		#endregion
+
+		#region Constructors
+		public TreeElement(DataType data)
+		{
+			name = data.name;
+			Set(data);
+		}
+
+		public TreeElement()
+		{
+		}
+
+		public TreeElement(string name, int depth, int id) : base(name, depth, id)
+		{
+		}
+		#endregion
+
+
+
+		#region Methods
+		public void Set(DataType data)
+		{
+			this.data = data;
+			this.dataTypeName = data.GetType().Name;
+			this.UpdateName();
+		}
+
+		public void UpdateName()
+		{
+			this.name = this.GetName();
+		}
+
+		protected virtual string GetName()
+		{
+			return data.name;
+		}
+
+		public DataType[] GetChildrenData()
+		{
+			if (!this.hasChildren)
+				return null;
+
+			List<DataType> children = new List<DataType>();
+			foreach (var child in this.children)
+			{
+				children.Add(((TreeElement<DataType>)child).data);
+			}
+			return children.ToArray();
+		}
+
+		public TreeElement<DataType> GetChild(int index) => (TreeElement<DataType>)children[index];
+		public T GetParent<T>() where T : TreeElement => (T)parent;
+		#endregion
+	}
 }

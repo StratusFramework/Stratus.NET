@@ -86,7 +86,7 @@ namespace Stratus.Editor.Tests
 		{
 			FieldInfo valueField = testType.GetFieldIncludePrivate(nameof(MockDataObject.value));
 			Dictionary<Type, Attribute> map = valueField.MapAttributes();
-			Assert.True(map.ContainsKey(typeof(SerializeField)));
+			Assert.True(map.ContainsKey(typeof(SerializeFieldAttribute)));
 		}
 
 		[Test]

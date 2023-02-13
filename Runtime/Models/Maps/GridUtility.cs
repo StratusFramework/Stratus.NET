@@ -1,4 +1,5 @@
 using Stratus.Models.Math;
+using Stratus.Search;
 
 using System;
 using System.Collections.Generic;

@@ -1,25 +1,25 @@
 using System.Collections.Generic;
 using System;
 
-namespace Stratus
+namespace Stratus.Interpolation
 {
 	/// <summary>
 	/// The ActionSet is the base class from which all other sets derive.
 	/// Sets such as Sequence, Group and the unique set used by entities.
 	/// </summary>
-	public abstract class StratusActionSet : StratusAction
+	public abstract class ActionSet : ActionBase
 	{
 		//---------------------------------------------------------------------/
 		// Fields
 		//---------------------------------------------------------------------/
 		public StratusTimeScale timescale = StratusTimeScale.Delta;
-		protected List<StratusAction> activeActions = new List<StratusAction>();
-		protected List<StratusAction> recentlyAddedActions = new List<StratusAction>();
+		protected List<ActionBase> activeActions = new List<ActionBase>();
+		protected List<ActionBase> recentlyAddedActions = new List<ActionBase>();
 
 		//---------------------------------------------------------------------/
 		// Messages
 		//---------------------------------------------------------------------/
-		public StratusActionSet(StratusTimeScale mode)
+		public ActionSet(StratusTimeScale mode)
 		{
 			this.timescale = mode;
 		}
@@ -32,7 +32,7 @@ namespace Stratus
 		/// Add an action to this set
 		/// </summary>
 		/// <param name="action">The specified action.</param>
-		public virtual void Add(StratusAction action)
+		public virtual void Add(ActionBase action)
 		{
 			this.recentlyAddedActions.Add(action);
 		}
@@ -43,7 +43,7 @@ namespace Stratus
 		protected void Migrate()
 		{
 			// Add the new actions (to prevent desync)
-			foreach (StratusAction action in this.recentlyAddedActions)
+			foreach (ActionBase action in this.recentlyAddedActions)
 			{
 				this.activeActions.Add(action);
 			}

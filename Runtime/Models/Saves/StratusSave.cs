@@ -4,7 +4,7 @@ using System;
 using Stratus.Extensions;
 using Stratus.IO;
 
-namespace Stratus
+namespace Stratus.Models.Saves
 {
 	public interface IStratusSave
 	{
@@ -165,7 +165,7 @@ namespace Stratus
 		/// </summary>
 		public virtual void Unload()
 		{
-		} 
+		}
 		#endregion
 
 		#region IDisposable Support

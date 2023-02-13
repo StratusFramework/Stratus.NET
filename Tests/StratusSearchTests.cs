@@ -1,5 +1,7 @@
 ﻿using NUnit.Framework;
 
+using Stratus.Search;
+
 using System.Collections.Generic;
 
 using UnityEngine;

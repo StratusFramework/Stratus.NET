@@ -2,7 +2,7 @@
 
 using System;
 
-namespace Stratus
+namespace Stratus.Models.Saves
 {
 	public interface IStratusSaveSystem
 	{

@@ -2,12 +2,12 @@ using System;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Stratus
+namespace Stratus.Reflection
 {
 	/// <summary>
 	/// Holds a reference to a given variable
 	/// </summary>
-	public class StratusMemberReference
+	public class MemberReference
 	{
 		public enum MemberType
 		{
@@ -48,7 +48,7 @@ namespace Stratus
 			set => Set(value);
 		}
 
-		public StratusMemberReference(FieldInfo field, object target)
+		public MemberReference(FieldInfo field, object target)
 		{
 			this.field = field;
 			this.type = field.FieldType;
@@ -56,7 +56,7 @@ namespace Stratus
 			this.name = field.Name;
 		}
 
-		public StratusMemberReference(PropertyInfo property, object target)
+		public MemberReference(PropertyInfo property, object target)
 		{
 			this.property = property;
 			this.type = property.PropertyType;
@@ -64,7 +64,7 @@ namespace Stratus
 			this.name = property.Name;
 		}
 
-		private StratusMemberReference()
+		private MemberReference()
 		{
 		}
 
@@ -74,7 +74,7 @@ namespace Stratus
 		/// <typeparam name="T"></typeparam>
 		/// <param name="expression"></param>
 		/// <returns></returns>
-		public static StratusMemberReference Construct<T>(Expression<Func<T>> expression)
+		public static MemberReference Construct<T>(Expression<Func<T>> expression)
 		{
 			// Use expressions to find the underlying owner object
 			var memberExpr = expression.Body as MemberExpression;
@@ -83,7 +83,7 @@ namespace Stratus
 			var variableName = memberExpr.Member.Name;
 
 			// Construct the member reference object
-			StratusMemberReference memberReference = new StratusMemberReference();
+			MemberReference memberReference = new MemberReference();
 			memberReference.name = variableName;
 			memberReference.target = targetObj;
 

@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-using Stratus.Models;
+using Stratus.Models.Graph;
 
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ namespace Stratus.Editor.Tests
 {
 	class StratusTreeElementTests
 	{
-		class TestElement : StratusTreeElement
+		class TestElement : TreeElement
 		{
 			public TestElement(string name, int depth)
 			{
@@ -24,20 +24,20 @@ namespace Stratus.Editor.Tests
 		{
 			// Arrange
 			TestElement root = new TestElement("root", -1);
-			root.children = new List<StratusTreeElement>();
+			root.children = new List<TreeElement>();
 			root.children.Add(new TestElement("A", 0));
 			root.children.Add(new TestElement("B", 0));
 			root.children.Add(new TestElement("C", 0));
 
-			root.children[1].children = new List<StratusTreeElement>();
+			root.children[1].children = new List<TreeElement>();
 			root.children[1].children.Add(new TestElement("Bchild", 1));
 
-			root.children[1].children[0].children = new List<StratusTreeElement>();
+			root.children[1].children[0].children = new List<TreeElement>();
 			root.children[1].children[0].children.Add(new TestElement("Bchildchild", 2));
 
 			// Test
 			List<TestElement> result = new List<TestElement>();
-			StratusTreeElement.TreeToList(root, result);
+			TreeElement.TreeToList(root, result);
 
 			// Assert
 			string[] namesInCorrectOrder = { "root", "A", "B", "Bchild", "Bchildchild", "C" };
@@ -46,7 +46,7 @@ namespace Stratus.Editor.Tests
 			{
 				Assert.AreEqual(namesInCorrectOrder[i], result[i].name);
 			}
-			StratusTreeElement.Assert(result);
+			TreeElement.Assert(result);
 		}
 
 
@@ -63,7 +63,7 @@ namespace Stratus.Editor.Tests
 			list.Add(new TestElement("C", 0));
 
 			// Test
-			TestElement root = StratusTreeElement.ListToTree(list);
+			TestElement root = TreeElement.ListToTree(list);
 
 			// Assert
 			Assert.AreEqual("root", root.name);
@@ -86,7 +86,7 @@ namespace Stratus.Editor.Tests
 			bool catchedException = false;
 			try
 			{
-				StratusTreeElement.ListToTree(list);
+				TreeElement.ListToTree(list);
 			}
 			catch (Exception)
 			{
@@ -123,24 +123,24 @@ namespace Stratus.Editor.Tests
 			list.Add(f2);
 
 			// Init tree structure: set children and parent properties
-			StratusTreeElement.ListToTree(list);
+			TreeElement.ListToTree(list);
 
 			// Single element
 			TestElement[] input = { b1 };
 			TestElement[] expectedResult = { b1 };
-			var result = StratusTreeElement.FindCommonAncestorsWithinList(input).ToArray();
+			var result = TreeElement.FindCommonAncestorsWithinList(input).ToArray();
 			Assert.IsTrue(UnityEditor.ArrayUtility.ArrayEquals(expectedResult, result), "Single input should return single output");
 
 			// Single sub tree
 			input = new[] { b1, b2 };
 			expectedResult = new[] { b1 };
-			result = StratusTreeElement.FindCommonAncestorsWithinList(input).ToArray();
+			result = TreeElement.FindCommonAncestorsWithinList(input).ToArray();
 			Assert.IsTrue(UnityEditor.ArrayUtility.ArrayEquals(expectedResult, result), "Common ancestor should only be b1 ");
 
 			// Multiple sub trees
 			input = new[] { b0, b2, f0, f2, c0 };
 			expectedResult = new[] { b0, f0, c0 };
-			result = StratusTreeElement.FindCommonAncestorsWithinList(input).ToArray();
+			result = TreeElement.FindCommonAncestorsWithinList(input).ToArray();
 			Assert.IsTrue(UnityEditor.ArrayUtility.ArrayEquals(expectedResult, result), "Common ancestor should only be b0, f0, c0");
 		}
 	}

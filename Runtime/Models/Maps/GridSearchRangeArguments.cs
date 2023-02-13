@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Stratus.Search;
 
-namespace Stratus.Models
+using System;
+
+namespace Stratus.Models.Maps
 {
 	/// <summary>
 	/// Arguments to perform a range search

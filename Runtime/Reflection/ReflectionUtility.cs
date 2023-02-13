@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.Serialization;
+
 using Stratus.Extensions;
 
 namespace Stratus.Reflection
@@ -56,10 +57,10 @@ namespace Stratus.Reflection
 		/// </summary>
 		/// <param name="varExpr">A lambda expression capturing a reference to a field or property</param>
 		/// <returns></returns>
-		public static StratusMemberReference GetReference<T>(Expression<Func<T>> varExpr)
+		public static MemberReference GetReference<T>(Expression<Func<T>> varExpr)
 		{
 			// Slow, probs
-			return StratusMemberReference.Construct(varExpr);
+			return MemberReference.Construct(varExpr);
 		}
 
 		/// <summary>
@@ -384,7 +385,7 @@ namespace Stratus.Reflection
 		/// <param name="obj">Object to find the fields/properties in.</param>
 		/// <param name="bindingFlags">Filters for the types of fields/properties that can be found.</param>
 		/// <returns>The fields/properties found.</returns>
-		public static IEnumerable<StratusMemberReference> GetAllFieldsOrProperties(this object obj, BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+		public static IEnumerable<MemberReference> GetAllFieldsOrProperties(this object obj, BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
 		{
 			return obj.GetAllFields(bindingFlags).Concat(obj.GetAllProperties(bindingFlags));
 		}
@@ -395,11 +396,11 @@ namespace Stratus.Reflection
 		/// <param name="obj">Object to find the fields in.</param>
 		/// <param name="bindingFlags">Filters of the fields allowed.</param>
 		/// <returns>The fields found.</returns>
-		public static IEnumerable<StratusMemberReference> GetAllFields(this object obj, BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+		public static IEnumerable<MemberReference> GetAllFields(this object obj, BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
 		{
 			return obj.GetType()
 				.GetFields(bindingFlags)
-				.Select(f => new StratusMemberReference(f, obj));
+				.Select(f => new MemberReference(f, obj));
 		}
 
 		/// <summary>
@@ -408,11 +409,11 @@ namespace Stratus.Reflection
 		/// <param name="obj">Object to find the properties in.</param>
 		/// <param name="bindingFlags">Filters of the properties allowed.</param>
 		/// <returns>The properties found.</returns>
-		public static IEnumerable<StratusMemberReference> GetAllProperties(this object obj, BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+		public static IEnumerable<MemberReference> GetAllProperties(this object obj, BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
 		{
 			return obj.GetType()
 				.GetProperties(bindingFlags)
-				.Select(p => new StratusMemberReference(p, obj));
+				.Select(p => new MemberReference(p, obj));
 		}
 
 		/// <summary>

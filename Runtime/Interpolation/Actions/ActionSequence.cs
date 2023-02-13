@@ -1,3 +1,5 @@
+using Stratus.Interpolation;
+
 namespace Stratus
 {
 	/// <summary>
@@ -5,9 +7,9 @@ namespace Stratus
 	/// and children in sequence, depleting its time slice as it updates
 	/// each.
 	/// </summary>
-	public class StratusActionSequence : StratusActionSet
+	public class ActionSequence : ActionSet
 	{
-		public StratusActionSequence(StratusTimeScale mode = StratusTimeScale.Delta) : base(mode) { }
+		public ActionSequence(StratusTimeScale mode = StratusTimeScale.Delta) : base(mode) { }
 
 		/// <summary>
 		/// Updates an ActionSequence, by updating the actions in the sequence
