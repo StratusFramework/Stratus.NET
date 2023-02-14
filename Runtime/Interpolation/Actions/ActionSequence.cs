@@ -9,8 +9,6 @@ namespace Stratus
 	/// </summary>
 	public class ActionSequence : ActionSet
 	{
-		public ActionSequence(StratusTimeScale mode = StratusTimeScale.Delta) : base(mode) { }
-
 		/// <summary>
 		/// Updates an ActionSequence, by updating the actions in the sequence
 		/// sequentially.
@@ -22,18 +20,22 @@ namespace Stratus
 			Migrate();
 
 			var timeLeft = dt;
-			foreach (var action in this.activeActions)
+			foreach (var action in activeActions)
 			{
 				// If an action is inactive, stop the sequence (since its blocking)
 				if (action.isActive)
+				{
 					break;
+				}
 
 				// Every action consumes time from the time slice given (dt)
 				timeLeft -= action.Update(dt);
 				// If the action was completed (Meaning there is time remaining
 				// after it was updated, then it will be cleared on the next frame!
 				if (timeLeft <= 0)
+				{
 					break;
+				}
 			}
 
 			// Sweep all inactive actions

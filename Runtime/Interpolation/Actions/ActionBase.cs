@@ -5,9 +5,7 @@ namespace Stratus.Interpolation
 	/// </summary>
 	public abstract class ActionBase
 	{
-		//------------------------------------------------------------------------/
-		// Properties
-		//------------------------------------------------------------------------/    
+		#region Properties
 		/// <summary>
 		/// A private identifier for this action.
 		/// </summary>
@@ -33,10 +31,9 @@ namespace Stratus.Interpolation
 		/// Whether we are logging actions
 		/// </summary>
 		protected static bool logging = false;
+		#endregion
 
-		//------------------------------------------------------------------------/
-		// Fields
-		//------------------------------------------------------------------------/
+		#region Static
 		/// <summary>
 		/// How many actions have been created so far
 		/// </summary>
@@ -46,15 +43,13 @@ namespace Stratus.Interpolation
 		/// How many actions have been destroyed so far
 		/// </summary>
 		private static int destroyed = 0;
+		#endregion
 
-		//------------------------------------------------------------------------/
-		// Interface
-		//------------------------------------------------------------------------/
+		#region Virtual
 		public abstract float Update(float dt);
+		#endregion
 
-		//------------------------------------------------------------------------/
-		// CTOR
-		//------------------------------------------------------------------------/
+		#region Constructors
 		public ActionBase()
 		{
 			this.id = created++;
@@ -64,12 +59,11 @@ namespace Stratus.Interpolation
 		{
 			destroyed++;
 		}
+		#endregion
 
-		//------------------------------------------------------------------------/
-		// Methods
-		//------------------------------------------------------------------------/
+		#region Interface
 		/// <summary>
-		/// Resumes running the actionn. It will no longer block any actions beyond it in a sequence.
+		/// Resumes running the action. It will no longer block any actions beyond it in a sequence.
 		/// </summary>
 		public void Resume()
 		{
@@ -92,6 +86,7 @@ namespace Stratus.Interpolation
 		{
 			this.isActive = false;
 			this.isFinished = true;
-		}
+		} 
+		#endregion
 	}
 }

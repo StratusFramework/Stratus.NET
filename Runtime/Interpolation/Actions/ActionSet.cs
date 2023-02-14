@@ -9,45 +9,35 @@ namespace Stratus.Interpolation
 	/// </summary>
 	public abstract class ActionSet : ActionBase
 	{
-		//---------------------------------------------------------------------/
-		// Fields
-		//---------------------------------------------------------------------/
-		public StratusTimeScale timescale = StratusTimeScale.Delta;
 		protected List<ActionBase> activeActions = new List<ActionBase>();
 		protected List<ActionBase> recentlyAddedActions = new List<ActionBase>();
 
-		//---------------------------------------------------------------------/
-		// Messages
-		//---------------------------------------------------------------------/
-		public ActionSet(StratusTimeScale mode)
-		{
-			this.timescale = mode;
-		}
 		public abstract override float Update(float dt);
 
-		//---------------------------------------------------------------------/
-		// Methods
-		//---------------------------------------------------------------------/
-		/// <summary>
-		/// Add an action to this set
-		/// </summary>
-		/// <param name="action">The specified action.</param>
-		public virtual void Add(ActionBase action)
+		#region Interface
+		public virtual T Add<T>(T action)
+			where T : ActionBase
 		{
-			this.recentlyAddedActions.Add(action);
+			recentlyAddedActions.Add(action);
+			return action;
+		}
+
+		public void AddRange(params ActionBase[] actions)
+		{
+			recentlyAddedActions.AddRange(actions);
 		}
 
 		/// <summary>
-		/// Migrates new actions over.
+		/// Migrates recently added actions
 		/// </summary>
 		protected void Migrate()
 		{
 			// Add the new actions (to prevent desync)
-			foreach (ActionBase action in this.recentlyAddedActions)
+			foreach (ActionBase action in recentlyAddedActions)
 			{
-				this.activeActions.Add(action);
+				activeActions.Add(action);
 			}
-			this.recentlyAddedActions.Clear();
+			recentlyAddedActions.Clear();
 		}
 
 		/// <summary>
@@ -72,6 +62,7 @@ namespace Stratus.Interpolation
 		{
 			this.activeActions.Clear();
 			this.recentlyAddedActions.Clear();
-		}
+		} 
+		#endregion
 	}
 }

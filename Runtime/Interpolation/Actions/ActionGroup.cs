@@ -7,11 +7,6 @@ namespace Stratus.Interpolation
 	/// </summary>
 	public class ActionGroup : ActionSet
 	{
-		public ActionGroup(StratusTimeScale mode = StratusTimeScale.Delta) 
-			: base(mode) 
-		{
-		}
-
 		/// <summary>
 		/// Updates an ActionGroup, by updating the actions in the group in
 		/// parallel.
@@ -47,15 +42,4 @@ namespace Stratus.Interpolation
 			return mostTimeElapsed;
 		}
 	}
-
-	///// <summary>
-	///// A container of all actions a particular GameObject has.
-	///// They propagate updates to all actions attached to it.
-	///// </summary>
-	//public class ActionContainer : ActionGroup 
-	//{
-	//	public 
-	//}
-
-
 }
