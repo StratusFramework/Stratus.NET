@@ -76,7 +76,7 @@ namespace Stratus.Tests
 		[TestCase(typeof(Vector3), typeof(ActionPropertyVector3))]
 		public void HasPropertyImplementationForType(Type propertyType, Type implType)
 		{
-			Assert.AreEqual(implType, ActionProperty.GetImplementation(propertyType));
+			Assert.AreEqual(implType, ActionProperty.implementations.Resolve(propertyType));
 		}
 
 		[Test]

@@ -14,9 +14,7 @@ namespace Stratus.Interpolation
 	/// </summary>
 	public abstract class ActionProperty : ActionBase
 	{
-		private static Lazy<Dictionary<Type, Type[]>> implementations
-			= new Lazy<Dictionary<Type, Type[]>>(() =>
-			TypeUtility.TypeDefinitionParameterMap(typeof(ActionProperty<>)));
+		public static ImplementationTypeInstancer<ActionProperty> implementations = new ImplementationTypeInstancer<ActionProperty>(typeof(ActionProperty<>));
 
 		protected Ease easeType { get; set; }
 		public abstract float Interpolate(float dt);
@@ -30,12 +28,6 @@ namespace Stratus.Interpolation
 		public override float Update(float dt)
 		{
 			return this.Interpolate(dt);
-		}
-
-		public static Type GetImplementation(Type valueType)
-		{
-			var actionType = implementations.Value.GetValueOrDefault(valueType).First();
-			return actionType;
 		}
 
 		/// <summary>
@@ -64,17 +56,17 @@ namespace Stratus.Interpolation
 			if (property != null)
 			{
 				Type propertyType = property.PropertyType;
-				actionType = GetImplementation(propertyType);
+				actionType = implementations.Resolve(propertyType);
 			}
 			// Field
 			else
 			{
 				FieldInfo field = targetObj.GetType().GetField(variableName, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
 				Type fieldType = field.FieldType;
-				actionType = GetImplementation(fieldType);
+				actionType = implementations.Resolve(fieldType);
 			}
 
-			action = (ActionProperty)ObjectUtility.Instantiate(actionType, targetObj, property, value, duration, ease);
+			action = implementations.Instantiate(actionType, targetObj, property, value, duration, ease);
 			return action;
 		}
 	}

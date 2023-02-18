@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System;
 using Stratus.Extensions;
+using Stratus.Interpolation;
+using System.Linq;
+using System.Reflection;
 
 namespace Stratus.Types
 {
@@ -44,8 +47,34 @@ namespace Stratus.Types
 		}
 	}
 
-	public class ImplementationTypeInstancer<T> where T : class
+	/// <summary>
+	/// Utility for instantiating the implementation type T for a given generic type.
+	/// So for an abstract resolver with a single type paramter, this will allow you to instantiate each of the found implementations.
+	/// </summary>
+	/// <typeparam name="TGeneric"></typeparam>
+	public class ImplementationTypeInstancer<T>
 	{
+		private Lazy<Dictionary<Type, Type[]>> implementations;
 
+		public ImplementationTypeInstancer(Type genericType)
+		{
+			implementations = new Lazy<Dictionary<Type, Type[]>>(() => TypeUtility.TypeDefinitionParameterMap(genericType));
+		}
+
+		/// <summary>
+		/// Given a parameter type, returns the implementation class for it
+		/// </summary>
+		/// <param name="parameterType">A type parameter, such as <see cref="int"/> or <see cref="string"/></param>
+		/// <returns></returns>
+		public Type Resolve(Type parameterType)
+		{
+			var actionType = implementations.Value.GetValueOrDefault(parameterType).First();
+			return actionType;
+		}
+
+		public T Instantiate(Type implType, params object[] ctor)
+		{
+			return (T)ObjectUtility.Instantiate(implType, ctor);
+		}
 	}
 }

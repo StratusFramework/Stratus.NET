@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Stratus
+namespace Stratus.Systems
 {
-	public interface IStratusConsoleCommand
+	public interface IConsoleCommand
 	{
 		string name { get; set; }
 		string description { get; set; }
@@ -17,7 +17,7 @@ namespace Stratus
 		StratusConsoleCommandParameterInformation[] parameters { get; set; }
 	}
 
-	public abstract class StratusConsoleCommand : IStratusConsoleCommand
+	public abstract class ConsoleCommand : IConsoleCommand
 	{
 		//------------------------------------------------------------------------/
 		// Declarations
@@ -58,7 +58,7 @@ namespace Stratus
 
 			public List<string> commands = new List<string>();
 			public List<string> results = new List<string>();
-			public List<History.Entry> entries = new List<History.Entry>();
+			public List<Entry> entries = new List<Entry>();
 
 			/// <summary>
 			/// Clears the history
@@ -86,19 +86,19 @@ namespace Stratus
 		//------------------------------------------------------------------------/
 		// Properties: Interface
 		//------------------------------------------------------------------------/
-		string IStratusConsoleCommand.name { get; set; }
-		string IStratusConsoleCommand.description { get; set; }
-		string IStratusConsoleCommand.usage { get; set; }
-		bool IStratusConsoleCommand.hidden { get; }
-		StratusConsoleCommandParameterInformation[] IStratusConsoleCommand.parameters { get; set; }
+		string IConsoleCommand.name { get; set; }
+		string IConsoleCommand.description { get; set; }
+		string IConsoleCommand.usage { get; set; }
+		bool IConsoleCommand.hidden { get; }
+		StratusConsoleCommandParameterInformation[] IConsoleCommand.parameters { get; set; }
 
 		//------------------------------------------------------------------------/
 		// Properties: Static
 		//------------------------------------------------------------------------/
 		public static Type[] handlerTypes { get; private set; }
 		public static Dictionary<string, Type> handlerTypesByName { get; private set; }
-		public static IStratusConsoleCommand[] commands { get; private set; }
-		public static Dictionary<string, IStratusConsoleCommand> commandsByName { get; private set; }
+		public static IConsoleCommand[] commands { get; private set; }
+		public static Dictionary<string, IConsoleCommand> commandsByName { get; private set; }
 		public static History history { get; private set; }
 		public static string[] commandLabels { get; private set; }
 		public static string[] variableNames { get; private set; }
@@ -114,10 +114,10 @@ namespace Stratus
 		//------------------------------------------------------------------------/
 		// Messages
 		//------------------------------------------------------------------------/
-		static StratusConsoleCommand()
+		static ConsoleCommand()
 		{
 			RegisterCommands();
-			history = new History(); 
+			history = new History();
 		}
 
 		//------------------------------------------------------------------------/
@@ -130,7 +130,7 @@ namespace Stratus
 		/// <returns></returns>
 		public static bool Submit(string command)
 		{
-			RecordCommand(command);			
+			RecordCommand(command);
 
 			string[] commandSplit = command.Split(delimiter);
 			int length = command.Length;
@@ -145,7 +145,7 @@ namespace Stratus
 			string args = null;
 
 			// Compose the command by working backwards
-			for(int i = length; i >= 0; i--)
+			for (int i = length; i >= 0; i--)
 			{
 				commandName = commandSplit.Take(i).Join(delimiterStr);
 				commandAction = commandActions.GetValueOrDefault(commandName);
@@ -180,7 +180,7 @@ namespace Stratus
 			return false;
 		}
 
-		[StratusConsoleCommand("clear")]
+		[ConsoleCommand("clear")]
 		public static void ClearHistory()
 		{
 			history.Clear();
@@ -229,13 +229,13 @@ namespace Stratus
 		//------------------------------------------------------------------------/
 		private static void RegisterCommands()
 		{
-			commandsByName = new Dictionary<string, IStratusConsoleCommand>();
+			commandsByName = new Dictionary<string, IConsoleCommand>();
 			commandActions = new Dictionary<string, Action<string>>();
 
-			List<IStratusConsoleCommand> commands = new List<IStratusConsoleCommand>();
+			List<IConsoleCommand> commands = new List<IConsoleCommand>();
 			List<string> variableNames = new List<string>();
 
-			handlerTypes = TypeUtility.GetInterfaces(typeof(IStratusConsoleCommandProvider));
+			handlerTypes = TypeUtility.GetInterfaces(typeof(IConsoleCommandProvider));
 			handlerTypesByName = new Dictionary<string, Type>();
 			handlerTypesByName.AddRange(x => x.Name, handlerTypes);
 
@@ -246,11 +246,11 @@ namespace Stratus
 				{
 					TryAddCommand(method, (command) =>
 					{
-						command.parameters = StratusConsoleCommandParameterExtensions.DeduceMethodParameters(method);
+						command.parameters = ConsoleCommandParameterExtensions.DeduceMethodParameters(method);
 						if (command.usage.IsNullOrEmpty())
 							command.usage = $"({method.GetParameterNames()})";
 
-						commandActions.Add(command.name, (string args) =>
+						commandActions.Add(command.name, (args) =>
 						{
 							object[] parsedArgs = Parse(command, args);
 							object returnValue = method.Invoke(null, parsedArgs);
@@ -267,12 +267,12 @@ namespace Stratus
 				{
 					TryAddCommand(field, (command) =>
 					{
-						command.parameters = StratusConsoleCommandParameterExtensions.DeduceParameters(field);
+						command.parameters = ConsoleCommandParameterExtensions.DeduceParameters(field);
 						StratusConsoleCommandParameterInformation parameter = command.parameters[0];
 						if (command.usage.IsNullOrEmpty())
 							command.usage = $"{parameter.deducedType}";
 
-						commandActions.Add(command.name, (string args) =>
+						commandActions.Add(command.name, (args) =>
 						{
 							bool hasValue = args.IsValid();
 							if (hasValue)
@@ -294,7 +294,7 @@ namespace Stratus
 				{
 					TryAddCommand(property, (command) =>
 					{
-						command.parameters = StratusConsoleCommandParameterExtensions.DeduceParameters(property);
+						command.parameters = ConsoleCommandParameterExtensions.DeduceParameters(property);
 						StratusConsoleCommandParameterInformation parameter = command.parameters[0];
 
 						if (command.usage.IsNullOrEmpty())
@@ -303,7 +303,7 @@ namespace Stratus
 						bool hasSetter = property.GetSetMethod(true) != null;
 						if (hasSetter)
 						{
-							commandActions.Add(command.name, (string args) =>
+							commandActions.Add(command.name, (args) =>
 							{
 								bool hasValue = args.IsValid();
 								if (hasValue)
@@ -338,9 +338,9 @@ namespace Stratus
 				}
 			}
 
-			IStratusConsoleCommand TryAddCommand(MemberInfo member, Action<IStratusConsoleCommand> onCommandAdded)
+			IConsoleCommand TryAddCommand(MemberInfo member, Action<IConsoleCommand> onCommandAdded)
 			{
-				IStratusConsoleCommand command = member.GetAttribute<StratusConsoleCommandAttribute>();
+				IConsoleCommand command = member.GetAttribute<ConsoleCommandAttribute>();
 				if (command != null)
 				{
 					if (command.name.IsNullOrEmpty())
@@ -352,23 +352,23 @@ namespace Stratus
 				return command;
 			}
 
-			StratusConsoleCommand.variableNames = variableNames.ToArray();
-			StratusConsoleCommand.commands = commands.ToArray();
+			ConsoleCommand.variableNames = variableNames.ToArray();
+			ConsoleCommand.commands = commands.ToArray();
 		}
 
 		public static object Parse(StratusConsoleCommandParameterInformation parameter, string arg)
 		{
-			return StratusConsoleCommandParameterExtensions.Parse(arg, parameter);
+			return ConsoleCommandParameterExtensions.Parse(arg, parameter);
 		}
 
-		public static object[] Parse(IStratusConsoleCommand command, string args)
+		public static object[] Parse(IConsoleCommand command, string args)
 		{
-			return StratusConsoleCommandParameterExtensions.Parse(command, args);
+			return ConsoleCommandParameterExtensions.Parse(command, args);
 		}
 
-		public static object[] Parse(IStratusConsoleCommand command, string[] args)
+		public static object[] Parse(IConsoleCommand command, string[] args)
 		{
-			return StratusConsoleCommandParameterExtensions.Parse(command, args);
+			return ConsoleCommandParameterExtensions.Parse(command, args);
 		}
 	}
 }
