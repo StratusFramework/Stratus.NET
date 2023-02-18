@@ -13,7 +13,7 @@ namespace Stratus.Utilities
 	/// <summary>
 	/// Utility methods for instantiating and managing <see cref="object"/>
 	/// </summary>
-	public static class StratusObjectUtility
+	public static class ObjectUtility
 	{
 		public static object Instantiate(Type t)
 		{

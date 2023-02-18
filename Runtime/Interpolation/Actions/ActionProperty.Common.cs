@@ -5,15 +5,34 @@ using System.Reflection;
 namespace Stratus
 {
 	/// <summary>
+	/// Used for interpolating an integer value
+	/// </summary>
+	public class ActionPropertyInteger : ActionProperty<int>
+	{
+		float CurrentValue;
+
+		public ActionPropertyInteger(object target, MemberInfo member, int endValue, float duration, StratusEase ease) : base(target, member, endValue, duration, ease)
+		{
+		}
+
+		public override void ComputeDifference() { this.difference = this.endValue - this.initialValue; }
+
+		public override int ComputeCurrentValue(float easeVal)
+		{
+			this.CurrentValue = this.initialValue + this.difference * easeVal;
+			int result = (int)MathF.Ceiling(this.CurrentValue);
+			return result;
+		}
+	}
+
+	/// <summary>
 	/// Used for interpolating a float value
 	/// </summary>
 	public class ActionPropertyFloat : ActionProperty<float>
 	{
-		public ActionPropertyFloat(object target, PropertyInfo property, float endValue, float duration, StratusEase ease)
-		  : base(target, property, endValue, duration, ease) { }
-
-		public ActionPropertyFloat(object target, FieldInfo field, float endValue, float duration, StratusEase ease)
-		  : base(target, field, endValue, duration, ease) { }
+		public ActionPropertyFloat(object target, MemberInfo member, float endValue, float duration, StratusEase ease) : base(target, member, endValue, duration, ease)
+		{
+		}
 
 		public override void ComputeDifference() { this.difference = this.endValue - this.initialValue; }
 		public override float ComputeCurrentValue(float easeVal)
@@ -28,11 +47,9 @@ namespace Stratus
 	/// </summary>
 	public class ActionPropertyVector2 : ActionProperty<Vector2>
 	{
-		public ActionPropertyVector2(object target, PropertyInfo property, Vector2 endValue, float duration, StratusEase ease)
-		  : base(target, property, endValue, duration, ease) { }
-
-		public ActionPropertyVector2(object target, FieldInfo field, Vector2 endValue, float duration, StratusEase ease)
-		  : base(target, field, endValue, duration, ease) { }
+		public ActionPropertyVector2(object target, MemberInfo member, Vector2 endValue, float duration, StratusEase ease) : base(target, member, endValue, duration, ease)
+		{
+		}
 
 		public override void ComputeDifference() { this.difference = this.endValue - this.initialValue; }
 
@@ -48,11 +65,9 @@ namespace Stratus
 	/// </summary>
 	public class ActionPropertyVector3 : ActionProperty<Vector3>
 	{
-		public ActionPropertyVector3(object target, PropertyInfo property, Vector3 endValue, float duration, StratusEase ease)
-		  : base(target, property, endValue, duration, ease) { }
-
-		public ActionPropertyVector3(object target, FieldInfo field, Vector3 endValue, float duration, StratusEase ease)
-		  : base(target, field, endValue, duration, ease) { }
+		public ActionPropertyVector3(object target, MemberInfo member, Vector3 endValue, float duration, StratusEase ease) : base(target, member, endValue, duration, ease)
+		{
+		}
 
 		public override void ComputeDifference() { this.difference = this.endValue - this.initialValue; }
 
@@ -67,13 +82,15 @@ namespace Stratus
 	/// </summary>
 	public class ActionPropertyVector4 : ActionProperty<Vector4>
 	{
-		public ActionPropertyVector4(object target, PropertyInfo property, Vector4 endValue, float duration, StratusEase ease)
-		  : base(target, property, endValue, duration, ease) { }
+		public ActionPropertyVector4(object target, MemberInfo member, Vector4 endValue, float duration, StratusEase ease) 
+			: base(target, member, endValue, duration, ease)
+		{
+		}
 
-		public ActionPropertyVector4(object target, FieldInfo field, Vector4 endValue, float duration, StratusEase ease)
-		  : base(target, field, endValue, duration, ease) { }
-
-		public override void ComputeDifference() { this.difference = this.endValue - this.initialValue; }
+		public override void ComputeDifference() 
+		{
+			this.difference = this.endValue - this.initialValue; 
+		}
 
 		public override Vector4 ComputeCurrentValue(float easeVal)
 		{
@@ -86,37 +103,12 @@ namespace Stratus
 	/// </summary>
 	public class ActionPropertyBoolean : ActionProperty<bool>
 	{
-		public ActionPropertyBoolean(object target, PropertyInfo property, bool endValue, float duration, StratusEase ease)
-		  : base(target, property, endValue, duration, ease) { }
-
-		public ActionPropertyBoolean(object target, FieldInfo field, bool endValue, float duration, StratusEase ease)
-		  : base(target, field, endValue, duration, ease) { }
+		public ActionPropertyBoolean(object target, MemberInfo member, bool endValue, float duration, StratusEase ease) : base(target, member, endValue, duration, ease)
+		{
+		}
 
 		public override void ComputeDifference() { }
 		public override void SetCurrent() { }
 		public override bool ComputeCurrentValue(float easeVal) { return false; }
-	}
-
-	/// <summary>
-	/// Used for interpolating an integer value
-	/// </summary>
-	public class ActionPropertyInteger : ActionProperty<int>
-	{
-		float CurrentValue;
-
-		public ActionPropertyInteger(object target, PropertyInfo property, int endValue, float duration, StratusEase ease)
-		  : base(target, property, endValue, duration, ease) { }
-
-		public ActionPropertyInteger(object target, FieldInfo field, int endValue, float duration, StratusEase ease)
-		  : base(target, field, endValue, duration, ease) { }
-
-		public override void ComputeDifference() { this.difference = this.endValue - this.initialValue; }
-
-		public override int ComputeCurrentValue(float easeVal)
-		{
-			this.CurrentValue = this.initialValue + this.difference * easeVal;
-			return (int)MathF.Ceiling(this.CurrentValue);
-		}
-
 	}
 }

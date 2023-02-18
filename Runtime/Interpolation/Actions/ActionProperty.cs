@@ -1,12 +1,11 @@
 using Stratus.Interpolation;
-using Stratus.Models.Math;
-using Stratus.Reflection;
+using Stratus.Utilities;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
-
-//using UnityEngine;
 
 namespace Stratus
 {
@@ -16,6 +15,10 @@ namespace Stratus
 	/// </summary>
 	public abstract class ActionProperty : ActionBase
 	{
+		private static Lazy<Dictionary<Type, Type[]>> implementations
+			= new Lazy<Dictionary<Type, Type[]>>(() =>
+			StratusTypeUtility.TypeDefinitionParameterMap(typeof(ActionProperty<>)));
+
 		protected StratusEase easeType { get; set; }
 		public abstract float Interpolate(float dt);
 
@@ -28,6 +31,52 @@ namespace Stratus
 		public override float Update(float dt)
 		{
 			return this.Interpolate(dt);
+		}
+
+		public static Type GetImplementation(Type valueType)
+		{
+			var actionType = implementations.Value.GetValueOrDefault(valueType).First();
+			return actionType;
+		}
+
+		/// <summary>
+		/// Instantiates a property of the given type
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="varExpr">An expression that provides a reference to an object. (Example: () => target.value)</param>
+		/// <param name="value">The value to be set</param>
+		/// <param name="duration">How long to set the value</param>
+		/// <param name="ease">The interpolation algorithm to use</param>
+		/// <returns></returns>
+		public static ActionProperty Instantiate<T>(Expression<Func<T>> varExpr, T value, float duration, StratusEase ease)
+		{
+			MemberExpression memberExpr = varExpr.Body as MemberExpression;
+			Expression inst = memberExpr.Expression;
+			string variableName = memberExpr.Member.Name;
+			object targetObj = Expression.Lambda<Func<object>>(inst).Compile()();
+
+			// Construct an action then branch depending on whether the member to be
+			// interpolated is a property or a field
+			ActionProperty action = null;
+			Type actionType;
+
+			// Property
+			PropertyInfo property = targetObj.GetType().GetProperty(variableName, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
+			if (property != null)
+			{
+				Type propertyType = property.PropertyType;
+				actionType = GetImplementation(propertyType);
+			}
+			// Field
+			else
+			{
+				FieldInfo field = targetObj.GetType().GetField(variableName, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
+				Type fieldType = field.FieldType;
+				actionType = GetImplementation(fieldType);
+			}
+
+			action = (ActionProperty)ObjectUtility.Instantiate(actionType, targetObj, property, value, duration, ease);
+			return action;
 		}
 	}
 
@@ -48,21 +97,18 @@ namespace Stratus
 		//----------------------------------------------------------------------/
 		// CTOR
 		//----------------------------------------------------------------------/
-		public ActionProperty(object target, PropertyInfo property, T endValue, float duration, StratusEase ease)
-	  : base(duration, ease)
+		public ActionProperty(object target, MemberInfo member, T endValue, float duration, StratusEase ease)
+			: base(duration, ease)
 		{
 			this.target = target;
-			this.property = property;
-			this.endValue = endValue;
-			base.duration = duration;
-			this.easeType = ease;
-		}
-
-		public ActionProperty(object target, FieldInfo field, T endValue, float duration, StratusEase ease)
-	  : base(duration, ease)
-		{
-			this.target = target;
-			this.field = field;
+			if (member is FieldInfo field)
+			{
+				this.field = field;
+			}
+			else if (member is PropertyInfo property)
+			{
+				this.property = property;
+			}
 			this.endValue = endValue;
 			base.duration = duration;
 			this.easeType = ease;
@@ -84,7 +130,7 @@ namespace Stratus
 			float timeLeft = this.duration - this.elapsed;
 
 			// If done updating
-			if (timeLeft <= dt)
+			if ((timeLeft + float.Epsilon) < dt)
 			{
 				this.isFinished = true;
 				this.SetLast();

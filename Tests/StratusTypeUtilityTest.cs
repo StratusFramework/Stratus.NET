@@ -96,7 +96,7 @@ namespace Stratus.Editor.Tests
 		[TestCase(typeof(List<int>), typeof(int))]
 		public void FindsCollectionElementType(Type collectionType, Type expected)
 		{
-			var collection = (ICollection)StratusObjectUtility.Instantiate(collectionType);
+			var collection = (ICollection)ObjectUtility.Instantiate(collectionType);
 			var actual = StratusTypeUtility.GetElementType(collection);
 			Assert.AreEqual(expected, actual);
 		}

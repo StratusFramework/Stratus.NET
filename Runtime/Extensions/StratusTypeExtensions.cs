@@ -341,7 +341,7 @@ namespace Stratus.Extensions
 		/// <returns></returns>
 		public static object Instantiate(this Type type, params object[] parameters)
 		{
-			return StratusObjectUtility.Instantiate(type, parameters);
+			return ObjectUtility.Instantiate(type, parameters);
 		}
 
 		/// <summary>

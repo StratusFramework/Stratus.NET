@@ -79,7 +79,7 @@ namespace Stratus
 			return eventObject;
 		}
 
-		public static StratusEvent Instantiate(Type type) => (StratusEvent)StratusObjectUtility.Instantiate(type);
+		public static StratusEvent Instantiate(Type type) => (StratusEvent)ObjectUtility.Instantiate(type);
 
 		public static StratusEvent Instantiate(Type type, string data)
 		{
@@ -87,8 +87,8 @@ namespace Stratus
 		}
 
 
-		private static void Cache<T>(Type type) where T : StratusEvent, new() => eventCache.Add(type, (T)StratusObjectUtility.Instantiate(type));
+		private static void Cache<T>(Type type) where T : StratusEvent, new() => eventCache.Add(type, (T)ObjectUtility.Instantiate(type));
 		private static bool HasCached<T>(Type type) where T : StratusEvent, new() => eventCache.ContainsKey(type);
-		private static void ResetCache<T>(Type type) where T : StratusEvent, new() => eventCache[type] = (T)StratusObjectUtility.Instantiate(type);
+		private static void ResetCache<T>(Type type) where T : StratusEvent, new() => eventCache[type] = (T)ObjectUtility.Instantiate(type);
 	}
 }

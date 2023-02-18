@@ -61,7 +61,7 @@ namespace Stratus
 				if (StratusLogger.types.Value.Length > 0)
 				{
 					var implementations = StratusLogger.types.Value;
-					return (StratusLogger) StratusObjectUtility.Instantiate(implementations.First());
+					return (StratusLogger) ObjectUtility.Instantiate(implementations.First());
 				}
 				return null;
 			});

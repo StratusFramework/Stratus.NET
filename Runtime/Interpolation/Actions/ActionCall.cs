@@ -5,23 +5,10 @@ namespace Stratus.Interpolation
 	/// </summary>
 	public class ActionCall : ActionBase
 	{
-		//------------------------------------------------------------------------/
-		// Declarations
-		//------------------------------------------------------------------------/
 		public delegate void Delegate();
 
-		//------------------------------------------------------------------------/
-		// Fields
-		//------------------------------------------------------------------------/
 		private Delegate action;
 
-		//------------------------------------------------------------------------/
-		// Messages
-		//------------------------------------------------------------------------/
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="action">A provided function which to invoke.</param>
 		public ActionCall(Delegate action)
 		{
 			this.action = action;
@@ -57,31 +44,15 @@ namespace Stratus.Interpolation
 	/// </summary>
 	public class ActionCall<T> : ActionBase
 	{
-		//------------------------------------------------------------------------/
-		// Declarations
-		//------------------------------------------------------------------------/
 		public delegate void Delegate<T>();
 
-		//------------------------------------------------------------------------/
-		// Fields
-		//------------------------------------------------------------------------/
 		private Delegate<T> action;
 
-		//------------------------------------------------------------------------/
-		// CTOR
-		//------------------------------------------------------------------------/
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="action">A provided function which to invoke.</param>
 		public ActionCall(Delegate<T> action)
 		{
 			this.action = action;
 		}
 
-		//------------------------------------------------------------------------/
-		// Messages
-		//------------------------------------------------------------------------/
 		/// <summary>
 		/// Updates the action
 		/// </summary>
@@ -111,5 +82,4 @@ namespace Stratus.Interpolation
 			return 0.0f;
 		}
 	}
-
 }

@@ -73,7 +73,7 @@ namespace Stratus
 
 		public static StratusOperationResult<object> Create(Type type, string filePath, StratusSerializer serializer)
 		{
-			var instance = StratusObjectUtility.Instantiate(type);
+			var instance = ObjectUtility.Instantiate(type);
 			serializer.Serialize(instance, filePath);
 			return instance;
 		}

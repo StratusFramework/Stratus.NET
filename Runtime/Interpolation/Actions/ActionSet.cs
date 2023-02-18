@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System;
+using Stratus.Utilities;
 
 namespace Stratus.Interpolation
 {
@@ -21,6 +22,8 @@ namespace Stratus.Interpolation
 			recentlyAddedActions.Add(action);
 			return action;
 		}
+
+		public virtual T Add<T>() where T : ActionBase, new()  => Add(ObjectUtility.Instantiate<T>());			
 
 		public void AddRange(params ActionBase[] actions)
 		{
