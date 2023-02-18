@@ -2,7 +2,7 @@ using System;
 using System.Numerics;
 using System.Reflection;
 
-namespace Stratus
+namespace Stratus.Interpolation
 {
 	/// <summary>
 	/// Used for interpolating an integer value
@@ -11,7 +11,7 @@ namespace Stratus
 	{
 		float CurrentValue;
 
-		public ActionPropertyInteger(object target, MemberInfo member, int endValue, float duration, StratusEase ease) : base(target, member, endValue, duration, ease)
+		public ActionPropertyInteger(object target, MemberInfo member, int endValue, float duration, Ease ease) : base(target, member, endValue, duration, ease)
 		{
 		}
 
@@ -30,7 +30,7 @@ namespace Stratus
 	/// </summary>
 	public class ActionPropertyFloat : ActionProperty<float>
 	{
-		public ActionPropertyFloat(object target, MemberInfo member, float endValue, float duration, StratusEase ease) : base(target, member, endValue, duration, ease)
+		public ActionPropertyFloat(object target, MemberInfo member, float endValue, float duration, Ease ease) : base(target, member, endValue, duration, ease)
 		{
 		}
 
@@ -47,7 +47,7 @@ namespace Stratus
 	/// </summary>
 	public class ActionPropertyVector2 : ActionProperty<Vector2>
 	{
-		public ActionPropertyVector2(object target, MemberInfo member, Vector2 endValue, float duration, StratusEase ease) : base(target, member, endValue, duration, ease)
+		public ActionPropertyVector2(object target, MemberInfo member, Vector2 endValue, float duration, Ease ease) : base(target, member, endValue, duration, ease)
 		{
 		}
 
@@ -65,7 +65,7 @@ namespace Stratus
 	/// </summary>
 	public class ActionPropertyVector3 : ActionProperty<Vector3>
 	{
-		public ActionPropertyVector3(object target, MemberInfo member, Vector3 endValue, float duration, StratusEase ease) : base(target, member, endValue, duration, ease)
+		public ActionPropertyVector3(object target, MemberInfo member, Vector3 endValue, float duration, Ease ease) : base(target, member, endValue, duration, ease)
 		{
 		}
 
@@ -82,14 +82,14 @@ namespace Stratus
 	/// </summary>
 	public class ActionPropertyVector4 : ActionProperty<Vector4>
 	{
-		public ActionPropertyVector4(object target, MemberInfo member, Vector4 endValue, float duration, StratusEase ease) 
+		public ActionPropertyVector4(object target, MemberInfo member, Vector4 endValue, float duration, Ease ease)
 			: base(target, member, endValue, duration, ease)
 		{
 		}
 
-		public override void ComputeDifference() 
+		public override void ComputeDifference()
 		{
-			this.difference = this.endValue - this.initialValue; 
+			this.difference = this.endValue - this.initialValue;
 		}
 
 		public override Vector4 ComputeCurrentValue(float easeVal)
@@ -103,7 +103,7 @@ namespace Stratus
 	/// </summary>
 	public class ActionPropertyBoolean : ActionProperty<bool>
 	{
-		public ActionPropertyBoolean(object target, MemberInfo member, bool endValue, float duration, StratusEase ease) : base(target, member, endValue, duration, ease)
+		public ActionPropertyBoolean(object target, MemberInfo member, bool endValue, float duration, Ease ease) : base(target, member, endValue, duration, ease)
 		{
 		}
 

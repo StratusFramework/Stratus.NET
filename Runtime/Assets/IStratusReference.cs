@@ -1,5 +1,6 @@
 ﻿using Stratus.Extensions;
 using Stratus.Models;
+using Stratus.Types;
 
 using System;
 
@@ -20,8 +21,8 @@ namespace Stratus
 	public class StratusInstanceReference<T> : IStratusNamed, IStratusReference<T>
 		where T : class
 	{
-		private static readonly StratusTypeInstancer<T> instancer
-			= new StratusTypeInstancer<T>();
+		private static readonly TypeInstancer<T> instancer
+			= new TypeInstancer<T>();
 
 		//[SerializeField]
 		private string _name;

@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Stratus
+namespace Stratus.Utilities
 {
-	public static class StratusEnum
+	public static class EnumUtility
 	{
 		private static Dictionary<Type, string[]> enumDisplayNames { get; set; } = new Dictionary<Type, string[]>();
 		private static Dictionary<Type, Array> enumValues { get; set; } = new Dictionary<Type, Array>();
@@ -149,13 +149,13 @@ namespace Stratus
 		public static bool GreaterOrEqualThan<TEnum>(TEnum first, TEnum second)
 			where TEnum : Enum
 		{
-			return ((int)(object)first) >= ((int)(object)second);
+			return (int)(object)first >= (int)(object)second;
 		}
 
 		public static TEnum Increase<TEnum>(TEnum value)
 			where TEnum : Enum
 		{
-			int count  = StratusEnum.Values<TEnum>().Length;
+			int count = Values<TEnum>().Length;
 			return FromInteger<TEnum>(Math.Min(count - 1, ToInteger(value) + 1));
 		}
 

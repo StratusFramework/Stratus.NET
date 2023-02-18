@@ -1,5 +1,4 @@
-using Stratus.Interpolation;
-using Stratus.Utilities;
+using Stratus.Types;
 
 using System;
 using System.Collections.Generic;
@@ -7,7 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Stratus
+namespace Stratus.Interpolation
 {
 	/// <summary>
 	/// A type of action that modifies the value of a given property over a specified amount of time, 
@@ -17,12 +16,12 @@ namespace Stratus
 	{
 		private static Lazy<Dictionary<Type, Type[]>> implementations
 			= new Lazy<Dictionary<Type, Type[]>>(() =>
-			StratusTypeUtility.TypeDefinitionParameterMap(typeof(ActionProperty<>)));
+			TypeUtility.TypeDefinitionParameterMap(typeof(ActionProperty<>)));
 
-		protected StratusEase easeType { get; set; }
+		protected Ease easeType { get; set; }
 		public abstract float Interpolate(float dt);
 
-		public ActionProperty(float duration, StratusEase ease)
+		public ActionProperty(float duration, Ease ease)
 		{
 			this.duration = duration;
 			this.easeType = ease;
@@ -48,7 +47,7 @@ namespace Stratus
 		/// <param name="duration">How long to set the value</param>
 		/// <param name="ease">The interpolation algorithm to use</param>
 		/// <returns></returns>
-		public static ActionProperty Instantiate<T>(Expression<Func<T>> varExpr, T value, float duration, StratusEase ease)
+		public static ActionProperty Instantiate<T>(Expression<Func<T>> varExpr, T value, float duration, Ease ease)
 		{
 			MemberExpression memberExpr = varExpr.Body as MemberExpression;
 			Expression inst = memberExpr.Expression;
@@ -97,7 +96,7 @@ namespace Stratus
 		//----------------------------------------------------------------------/
 		// CTOR
 		//----------------------------------------------------------------------/
-		public ActionProperty(object target, MemberInfo member, T endValue, float duration, StratusEase ease)
+		public ActionProperty(object target, MemberInfo member, T endValue, float duration, Ease ease)
 			: base(duration, ease)
 		{
 			this.target = target;
@@ -130,7 +129,7 @@ namespace Stratus
 			float timeLeft = this.duration - this.elapsed;
 
 			// If done updating
-			if ((timeLeft + float.Epsilon) < dt)
+			if (timeLeft + float.Epsilon < dt)
 			{
 				this.isFinished = true;
 				this.SetLast();
@@ -158,7 +157,7 @@ namespace Stratus
 			}
 			else
 			{
-				throw new System.Exception("Couldn't set initial value!");
+				throw new Exception("Couldn't set initial value!");
 			}
 
 			// Now we can compute the difference
@@ -180,7 +179,7 @@ namespace Stratus
 		public virtual void SetCurrent()
 		{
 			float easeVal = this.easeType.Evaluate(this.elapsed / this.duration);
-			T currentValue = this.ComputeCurrentValue((easeVal));
+			T currentValue = this.ComputeCurrentValue(easeVal);
 			if (logging)
 			{
 				StratusLog.Info("CurrentValue = '" + currentValue + "'");

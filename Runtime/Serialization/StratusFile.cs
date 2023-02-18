@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 using Stratus.Extensions;
 using Stratus.Serialization;
-using Stratus.Utilities;
+using Stratus.Types;
 
 namespace Stratus
 {
@@ -62,7 +62,7 @@ namespace Stratus
 	public class StratusSerializedAsset
 	{
 		public static readonly Lazy<Type[]> types = new Lazy<Type[]>(() =>
-			StratusTypeUtility.TypesWithAttribute<StratusSerializedAssetAttribute>().ToArray());				
+			TypeUtility.TypesWithAttribute<StratusSerializedAssetAttribute>().ToArray());				
 
 		
 		public static string ComposeFileName(Type type)

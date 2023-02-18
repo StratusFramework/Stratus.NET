@@ -1,4 +1,4 @@
-﻿using Stratus.Utilities;
+﻿using Stratus.Types;
 
 using System;
 using System.Linq;
@@ -44,7 +44,7 @@ namespace Stratus
 
 	public abstract class StratusLogger
 	{
-		public static Lazy<Type[]> types = new Lazy<Type[]>(() => StratusTypeUtility.SubclassesOf<StratusLogger>());
+		public static Lazy<Type[]> types = new Lazy<Type[]>(() => TypeUtility.SubclassesOf<StratusLogger>());
 
 		public abstract void LogInfo(string message);
 		public abstract void LogWarning(string message);

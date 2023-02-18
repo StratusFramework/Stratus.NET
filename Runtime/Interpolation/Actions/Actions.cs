@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace Stratus.Interpolation
 {
-    public static class Actions
+	public static class Actions
     {
 		/// <summary>
 		/// Adds a property change to the action set.
@@ -18,7 +18,7 @@ namespace Stratus.Interpolation
 		/// <param name="value">The new value for the property</param>
 		/// <param name="duration">Over how long should the property be changed</param>
 		/// <param name="ease">What interpolation algorithm to use</param>
-		public static void Property<T>(ActionSet set, Expression<Func<T>> varExpr, T value, float duration, StratusEase ease)
+		public static void Property<T>(ActionSet set, Expression<Func<T>> varExpr, T value, float duration, Ease ease)
 		{
 			MemberExpression memberExpr = varExpr.Body as MemberExpression;
 			Expression inst = memberExpr.Expression;

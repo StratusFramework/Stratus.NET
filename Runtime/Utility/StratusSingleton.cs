@@ -25,7 +25,7 @@ namespace Stratus.Utilities
 						return null;
 					}
 
-					if (isPlayerOnly && StratusEngineBridge.isPlaying())
+					if (isPlayerOnly && EngineBridge.isPlaying())
 					{
 						StratusLog.Warning($"Will not instantiate singleton of type {typeof(T).Name} outside of playmode");
 						return null;

@@ -83,7 +83,7 @@ namespace Stratus.Tests
 		public void InstantiatesIntegerProperty()
 		{
 			const float duration = 1f;
-			const StratusEase ease = StratusEase.Linear;
+			const Ease ease = Ease.Linear;
 			ActionProperty property = ActionProperty.Instantiate(() => target.intValue, 7, duration, ease);
 			Assert.NotNull(property);
 			Assert.AreEqual(typeof(ActionPropertyInteger), property.GetType());
@@ -93,7 +93,7 @@ namespace Stratus.Tests
 		public void InstantiatesFloatProperty()
 		{
 			const float duration = 1f;
-			const StratusEase ease = StratusEase.Linear;
+			const Ease ease = Ease.Linear;
 			ActionProperty property = ActionProperty.Instantiate(() => target.floatValue, 7f, duration, ease);
 			Assert.NotNull(property);
 			Assert.AreEqual(typeof(ActionPropertyFloat), property.GetType());
@@ -110,7 +110,7 @@ namespace Stratus.Tests
 			float dt = duration / ticks;
 
 			var seq = scheduler.Sequence(target);
-			Actions.Property(seq, () => target.intValue, finalValue, 1f, StratusEase.Linear);
+			Actions.Property(seq, () => target.intValue, finalValue, 1f, Ease.Linear);
 
 			List<int> values = new List<int>();
 

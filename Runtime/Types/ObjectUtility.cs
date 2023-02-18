@@ -8,10 +8,10 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.Serialization;
 
-namespace Stratus.Utilities
+namespace Stratus.Types
 {
 	/// <summary>
-	/// Utility methods for instantiating and managing <see cref="object"/>
+	/// Utility methods for instantiating and managing <see cref="object"/>s from their <see cref="Type"/>
 	/// </summary>
 	public static class ObjectUtility
 	{
@@ -35,7 +35,7 @@ namespace Stratus.Utilities
 			Type t = typeof(T);
 			if (t == typeof(string))
 			{
-				return (T)(object)(Expression.Lambda<Func<string>>(Expression.Constant(string.Empty)).Compile());
+				return (T)(object)Expression.Lambda<Func<string>>(Expression.Constant(string.Empty)).Compile();
 			}
 
 			if (t.HasDefaultConstructor())

@@ -1,18 +1,17 @@
 ﻿using Stratus.Extensions;
-using Stratus.Utilities;
 
 using System;
 using System.Collections.Generic;
 
-namespace Stratus.Models
+namespace Stratus.Utilities
 {
-	public interface IStratusUndoAction
+	public interface IUndoAction
 	{
 		void Undo(Action onFinished = null);
 		void Execute(Action onFinished = null);
 	}
 
-	public abstract class StratusUndoAction : IStratusUndoAction
+	public abstract class UndoAction : IUndoAction
 	{
 		public Action onAny { get; set; }
 		public string description { get; set; }
@@ -38,23 +37,23 @@ namespace Stratus.Models
 		protected abstract void OnExecute(Action onFinished = null);
 	}
 
-	public abstract class StratusUndoAction<T> : StratusUndoAction
+	public abstract class UndoAction<T> : UndoAction
 		where T : class
 	{
 		public T target { get; private set; }
 
-		public StratusUndoAction(T target)
+		public UndoAction(T target)
 		{
 			this.target = target;
 		}
 	}
 
-	public class StratusUndoTargetAction<T> : StratusUndoAction<T>
+	public class UndoTargetAction<T> : UndoAction<T>
 		where T : class
 	{
 		private Action<T> undo, redo;
 
-		public StratusUndoTargetAction(T target, Action<T> undo, Action<T> redo)
+		public UndoTargetAction(T target, Action<T> undo, Action<T> redo)
 			: base(target)
 		{
 			this.undo = undo;
@@ -73,8 +72,8 @@ namespace Stratus.Models
 	}
 
 
-	public class StratusUndoStack<ActionType> : IStratusLogger
-		where ActionType : IStratusUndoAction
+	public class UndoStack<ActionType> : IStratusLogger
+		where ActionType : IUndoAction
 	{
 		private Stack<ActionType> undoStack = new Stack<ActionType>();
 		private Stack<ActionType> redoStack = new Stack<ActionType>();
@@ -138,29 +137,29 @@ namespace Stratus.Models
 
 	}
 
-	public class StratusUndoStack : StratusUndoStack<StratusUndoAction>
+	public class UndoStack : UndoStack<UndoAction>
 	{
 	}
 
-	public abstract class StratusUndoActionManager<T> : StratusSingleton<T>
-		where T : StratusUndoActionManager<T>
+	public abstract class UndoActionManager<T> : StratusSingleton<T>
+		where T : UndoActionManager<T>
 	{
-		public StratusUndoStack actions { get; private set; }
+		public UndoStack actions { get; private set; }
 		public abstract bool debug { get; }
 
 		protected override void OnInitialize()
 		{
-			actions = new StratusUndoStack();
+			actions = new UndoStack();
 			actions.debug = this.debug;
 		}
 
-		public static void Execute(StratusUndoAction action, Action onFinished)
+		public static void Execute(UndoAction action, Action onFinished)
 		{
 			action.Execute(onFinished);
 			Record(action);
 		}
 
-		public static void Record(StratusUndoAction action) => instance.actions.Record(action);
+		public static void Record(UndoAction action) => instance.actions.Record(action);
 
 		public static bool Undo() => instance.actions.Undo();
 		public static bool Redo() => instance.actions.Redo();

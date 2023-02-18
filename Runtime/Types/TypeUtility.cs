@@ -7,12 +7,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Stratus.Utilities
+namespace Stratus.Types
 {
 	/// <summary>
 	/// Utility methods for <see cref="Type"/>
 	/// </summary>
-	public static class StratusTypeUtility
+	public static class TypeUtility
 	{
 		#region Properties
 		private static Dictionary<Type, Type[]> genericTypeDefinitions { get; set; } = new Dictionary<Type, Type[]>();
@@ -266,7 +266,7 @@ namespace Stratus.Utilities
 			{
 				Type[] implementedTypes = (from Type t
 										   in SubclassesOf(baseType)
-										   where t.IsSubclassOf(baseType) && t.GetInterfaces().Contains((interfaceType))
+										   where t.IsSubclassOf(baseType) && t.GetInterfaces().Contains(interfaceType)
 										   select t).ToArray();
 				interfacesImplementationsByBaseType[interfaceType].Add(baseType, implementedTypes);
 			}
@@ -285,7 +285,7 @@ namespace Stratus.Utilities
 			{
 				var _types = typesByAssembly.Value
 					.SelectMany(t => t.Value)
-					.Where(t => t.GetInterfaces().Contains((interfaceType)) && (t.IsAbstract == includeAbstract))
+					.Where(t => t.GetInterfaces().Contains(interfaceType) && t.IsAbstract == includeAbstract)
 					.ToArray();
 
 				interfaceImplementations.Add(interfaceType, _types.ToArray());

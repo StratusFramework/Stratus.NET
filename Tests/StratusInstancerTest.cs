@@ -1,5 +1,7 @@
 ﻿using NUnit.Framework;
 
+using Stratus.Types;
+
 using System;
 
 
@@ -23,7 +25,7 @@ namespace Stratus.Editor.Tests
 		[TestCase(typeof(C), true)]
 		public void GetsInstanceByType(Type type, bool instanced)
 		{
-			var instancer = new StratusTypeInstancer<A>();
+			var instancer = new TypeInstancer<A>();
 			Assert.That((instancer.Get(type) != null) == instanced);
 		}
 
@@ -32,7 +34,7 @@ namespace Stratus.Editor.Tests
 		[TestCase(nameof(C))]
 		public void GetsInstanceByName(string name)
 		{
-			var instancer = new StratusTypeInstancer<A>();
+			var instancer = new TypeInstancer<A>();
 			Assert.NotNull(instancer.Get(name));
 		}
 	}

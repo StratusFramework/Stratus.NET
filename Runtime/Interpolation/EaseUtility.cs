@@ -3,12 +3,12 @@ using Stratus.Utilities;
 using System;
 using System.Collections.Generic;
 
-namespace Stratus
+namespace Stratus.Interpolation
 {
 	/// <summary>
 	/// Common interpolation algorithms
 	/// </summary>
-	public enum StratusEase
+	public enum Ease
 	{
 		/// <summary>
 		/// Linear interpolation
@@ -36,7 +36,7 @@ namespace Stratus
 	/// Provides methods for common interpolation algorithms,
 	/// and common interpolation functions
 	/// </summary>
-	public static class StratusEasing
+	public static class EaseUtility
 	{
 		//--------------------------------------------------------------------------------------------/
 		// Declarations
@@ -54,7 +54,7 @@ namespace Stratus
 		/// <typeparam name="T"></typeparam>
 		public abstract class Interpolator<T>
 		{
-			public System.Action<T> setter;
+			public Action<T> setter;
 			public EaseFunction function;
 			public T difference { get; private set; }
 			public T initialValue;
@@ -74,7 +74,7 @@ namespace Stratus
 		//--------------------------------------------------------------------------------------------/
 		// Properties
 		//--------------------------------------------------------------------------------------------/
-		private static Dictionary<StratusEase, EaseFunction> easingFunctions { get; set; } = new Dictionary<StratusEase, EaseFunction>();
+		private static Dictionary<Ease, EaseFunction> easingFunctions { get; set; } = new Dictionary<Ease, EaseFunction>();
 		public static float tMinimum { get; } = 0f;
 		public static float tMax { get; } = 1f;
 		private static Dictionary<float, Dictionary<float, float>> exponentCache { get; set; } = new Dictionary<float, Dictionary<float, float>>();
@@ -82,25 +82,25 @@ namespace Stratus
 		//--------------------------------------------------------------------------------------------/
 		// CTOR
 		//--------------------------------------------------------------------------------------------/
-		static StratusEasing()
+		static EaseUtility()
 		{
-			easingFunctions.Add(StratusEase.Linear, Linear);
-			easingFunctions.Add(StratusEase.CubicIn, CubicIn);
-			easingFunctions.Add(StratusEase.CubicInOut, CubicInOut);
-			easingFunctions.Add(StratusEase.CubicOut, CubicOut);
-			easingFunctions.Add(StratusEase.QuadraticIn, QuadIn);
-			easingFunctions.Add(StratusEase.QuadraticOut, QuadOut);
-			easingFunctions.Add(StratusEase.QuadraticInOut, QuadInOut);
-			easingFunctions.Add(StratusEase.ExponentialIn, ExponentialIn);
-			easingFunctions.Add(StratusEase.ExponentialOut, ExponentialOut);
-			easingFunctions.Add(StratusEase.ExponentialInOut, ExponentialInOut);
-			easingFunctions.Add(StratusEase.ElasticIn, ElasticIn);
-			easingFunctions.Add(StratusEase.ElasticOut, ElasticOut);
-			easingFunctions.Add(StratusEase.ElasticInOut, ElasticInOut);
-			easingFunctions.Add(StratusEase.SineIn, SineIn);
-			easingFunctions.Add(StratusEase.SineOut, SineOut);
-			easingFunctions.Add(StratusEase.SineInOut, SineInOut);
-			easingFunctions.Add(StratusEase.Smoothstep, Smoothstep);
+			easingFunctions.Add(Ease.Linear, Linear);
+			easingFunctions.Add(Ease.CubicIn, CubicIn);
+			easingFunctions.Add(Ease.CubicInOut, CubicInOut);
+			easingFunctions.Add(Ease.CubicOut, CubicOut);
+			easingFunctions.Add(Ease.QuadraticIn, QuadIn);
+			easingFunctions.Add(Ease.QuadraticOut, QuadOut);
+			easingFunctions.Add(Ease.QuadraticInOut, QuadInOut);
+			easingFunctions.Add(Ease.ExponentialIn, ExponentialIn);
+			easingFunctions.Add(Ease.ExponentialOut, ExponentialOut);
+			easingFunctions.Add(Ease.ExponentialInOut, ExponentialInOut);
+			easingFunctions.Add(Ease.ElasticIn, ElasticIn);
+			easingFunctions.Add(Ease.ElasticOut, ElasticOut);
+			easingFunctions.Add(Ease.ElasticInOut, ElasticInOut);
+			easingFunctions.Add(Ease.SineIn, SineIn);
+			easingFunctions.Add(Ease.SineOut, SineOut);
+			easingFunctions.Add(Ease.SineInOut, SineInOut);
+			easingFunctions.Add(Ease.Smoothstep, Smoothstep);
 		}
 
 		//--------------------------------------------------------------------------------------------/
@@ -162,7 +162,7 @@ namespace Stratus
 
 		public static float CubicOut(float t)
 		{
-			return 1f + ((t -= 1f) * t * t);
+			return 1f + (t -= 1f) * t * t;
 		}
 
 		public static float CubicInOut(float t)
@@ -243,63 +243,63 @@ namespace Stratus
 		/// <param name="t"></param>
 		/// <param name="ease"></param>
 		/// <returns></returns>
-		public static float Calculate(StratusEase ease, float t) => easingFunctions[ease](t);
+		public static float Calculate(Ease ease, float t) => easingFunctions[ease](t);
 
 		/// <summary>
 		/// Returns the function used for this ease
 		/// </summary>
 		/// <param name="ease"></param>
 		/// <returns></returns>
-		public static EaseFunction ToFunction(this StratusEase ease)
+		public static EaseFunction ToFunction(this Ease ease)
 		{
 			switch (ease)
 			{
-				case StratusEase.Linear:
+				case Ease.Linear:
 					return Linear;
 
-				case StratusEase.QuadraticIn:
+				case Ease.QuadraticIn:
 					return QuadIn;
-				case StratusEase.QuadraticInOut:
+				case Ease.QuadraticInOut:
 					return QuadInOut;
-				case StratusEase.QuadraticOut:
+				case Ease.QuadraticOut:
 					return QuadOut;
 
-				case StratusEase.CubicIn:
+				case Ease.CubicIn:
 					return CubicIn;
-				case StratusEase.CubicOut:
+				case Ease.CubicOut:
 					return CubicOut;
-				case StratusEase.CubicInOut:
+				case Ease.CubicInOut:
 					return CubicInOut;
 
-				case StratusEase.ElasticIn:
+				case Ease.ElasticIn:
 					return ElasticIn;
-				case StratusEase.ElasticOut:
+				case Ease.ElasticOut:
 					return ElasticOut;
-				case StratusEase.ElasticInOut:
+				case Ease.ElasticInOut:
 					return ElasticInOut;
 
-				case StratusEase.ExponentialIn:
+				case Ease.ExponentialIn:
 					return ExponentialIn;
-				case StratusEase.ExponentialOut:
+				case Ease.ExponentialOut:
 					return ExponentialOut;
-				case StratusEase.ExponentialInOut:
+				case Ease.ExponentialInOut:
 					return ExponentialInOut;
 
-				case StratusEase.SineIn:
+				case Ease.SineIn:
 					return SineIn;
-				case StratusEase.SineOut:
+				case Ease.SineOut:
 					return SineOut;
-				case StratusEase.SineInOut:
+				case Ease.SineInOut:
 					return SineInOut;
 
-				case StratusEase.Smoothstep:
+				case Ease.Smoothstep:
 					return Smoothstep;
 			}
 
-			throw new System.Exception($"No function found for the ease {ease}");
+			throw new Exception($"No function found for the ease {ease}");
 		}
 
-		public static float Evaluate(this StratusEase ease, float t) => easingFunctions[ease](t);
+		public static float Evaluate(this Ease ease, float t) => easingFunctions[ease](t);
 
 		/// <summary>
 		/// Returns the specified number raised to a specified power

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Stratus.Utilities;
 using System.Text;
 using System.Linq;
 using Stratus.Extensions;
+using Stratus.Types;
 
 namespace Stratus.Extensions
 {

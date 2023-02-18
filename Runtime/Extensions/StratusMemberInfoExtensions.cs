@@ -7,6 +7,7 @@ using System.Text;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Stratus;
+using Stratus.Reflection;
 
 namespace Stratus.Extensions
 {
@@ -83,7 +84,7 @@ namespace Stratus.Extensions
 		/// <returns></returns>
 		public static Dictionary<Type, Attribute> MapAttributes(this MemberInfo memberInfo)
 		{
-			return StratusAttributeUtility.MapAttributes(memberInfo);
+			return ReflectionUtility.MapAttributes(memberInfo);
 		}
 
 		/// <summary>

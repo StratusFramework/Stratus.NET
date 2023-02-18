@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Stratus.Utilities;
+
+using System;
 using System.Collections.Generic;
 
 namespace Stratus.Collections
@@ -38,7 +40,7 @@ namespace Stratus.Collections
 		public StratusEnumRelationshipMatrix()
 		{
 			enumType = typeof(RelationType);
-			relations = StratusEnum.Values<RelationType>();
+			relations = EnumUtility.Values<RelationType>();
 			relationCount = relations.Length;
 
 			enumValueDict = new Dictionary<string, RelationType>();

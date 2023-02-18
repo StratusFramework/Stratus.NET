@@ -1,5 +1,6 @@
 using Stratus.Collections;
 using Stratus.Search;
+using Stratus.Utilities;
 
 using System;
 using System.Collections.Generic;
@@ -93,7 +94,7 @@ namespace Stratus.Models.Maps
 		/// <summary>
 		/// All the available layers for this map
 		/// </summary>
-		public readonly TLayer[] layers = StratusEnum.Values<TLayer>();
+		public readonly TLayer[] layers = EnumUtility.Values<TLayer>();
 		/// <summary>
 		/// By default, the base layer is the first enumerated value.
 		/// </summary>

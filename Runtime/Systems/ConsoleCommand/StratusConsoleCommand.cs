@@ -1,4 +1,5 @@
 ﻿using Stratus.Extensions;
+using Stratus.Types;
 
 using System;
 using System.Collections.Generic;
@@ -234,7 +235,7 @@ namespace Stratus
 			List<IStratusConsoleCommand> commands = new List<IStratusConsoleCommand>();
 			List<string> variableNames = new List<string>();
 
-			handlerTypes = Utilities.StratusTypeUtility.GetInterfaces(typeof(IStratusConsoleCommandProvider));
+			handlerTypes = TypeUtility.GetInterfaces(typeof(IStratusConsoleCommandProvider));
 			handlerTypesByName = new Dictionary<string, Type>();
 			handlerTypesByName.AddRange(x => x.Name, handlerTypes);
 

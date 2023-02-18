@@ -1,5 +1,7 @@
 ﻿using NUnit.Framework;
 
+using Stratus.Utilities;
+
 using System.Linq;
 
 namespace Stratus.Editor.Tests
@@ -16,7 +18,7 @@ namespace Stratus.Editor.Tests
 		[Test]
 		public void GetsValues()
 		{
-			MockEnum[] values = StratusEnum.Values<MockEnum>();
+			MockEnum[] values = EnumUtility.Values<MockEnum>();
 			Assert.True(values.Length == 3);
 			Assert.AreEqual(values[0], MockEnum.A);
 			Assert.AreEqual(values[1], MockEnum.B);
@@ -26,18 +28,18 @@ namespace Stratus.Editor.Tests
 		[Test]
 		public void GetsValueByIndex()
 		{
-			MockEnum[] values = StratusEnum.Values<MockEnum>();
+			MockEnum[] values = EnumUtility.Values<MockEnum>();
 			for (int i = 0; i < values.Length; ++i)
 			{
-				Assert.AreEqual(StratusEnum.Value<MockEnum>(i), values[i]);
+				Assert.AreEqual(EnumUtility.Value<MockEnum>(i), values[i]);
 			}
 		}
 
 		[Test]
 		public void GetsNames()
 		{
-			MockEnum[] values = StratusEnum.Values<MockEnum>();
-			string[] names = StratusEnum.Names<MockEnum>();
+			MockEnum[] values = EnumUtility.Values<MockEnum>();
+			string[] names = EnumUtility.Names<MockEnum>();
 			for (int i = 0; i < values.Length; ++i)
 			{
 				Assert.AreEqual(names[i], values[i].ToString());
@@ -63,7 +65,7 @@ namespace Stratus.Editor.Tests
 		[TestCase(MockFlags.All, MockFlags.A, MockFlags.B, MockFlags.C)]
 		public void GetsFlags(MockFlags value, params MockFlags[] flags)
 		{
-			MockFlags[] expected = StratusEnum.Flags(value).ToArray();
+			MockFlags[] expected = EnumUtility.Flags(value).ToArray();
 			Assert.AreEqual(expected.Length, flags.Length);
 			Assert.AreEqual(expected, flags);
 		}
@@ -82,7 +84,7 @@ namespace Stratus.Editor.Tests
 		[TestCase(MockDegree.ReallyGood, MockDegree.ReallyGood)]
 		public void IncreasesDegree(MockDegree value, MockDegree expected)
 		{
-			Assert.AreEqual(expected, StratusEnum.Increase(value));
+			Assert.AreEqual(expected, EnumUtility.Increase(value));
 		}
 
 		[TestCase(MockDegree.ReallyGood, MockDegree.Good)]
@@ -91,7 +93,7 @@ namespace Stratus.Editor.Tests
 		[TestCase(MockDegree.ReallyBad, MockDegree.ReallyBad)]
 		public void DecreasesDegree(MockDegree value, MockDegree expected)
 		{
-			Assert.AreEqual(expected, StratusEnum.Decrease(value));
+			Assert.AreEqual(expected, EnumUtility.Decrease(value));
 		}
 	}
 

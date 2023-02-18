@@ -1,6 +1,4 @@
-using Stratus.Interpolation;
-
-namespace Stratus
+namespace Stratus.Interpolation
 {
 	/// <summary>
 	/// An ActionSequence is a type of set that updates all its actions

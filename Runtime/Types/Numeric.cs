@@ -1,21 +1,12 @@
 using System;
 
-namespace Stratus
-{
-	public enum StratusNumericType
-	{
-		Integer,
-		Float
-	}
-}
-
-namespace Stratus.Utilities
+namespace Stratus.Types
 {
 	/// <summary>
 	/// @note   Credit to Or Aviram: 
 	/// https://forum.unity3d.com/threads/draw-a-field-only-if-a-condition-is-met.448855/
 	/// </summary>
-	public static partial class StratusTypes
+	public static class NumericTypeUtility
 	{
 		/// <summary>
 		/// Whether this object is a numeric type
@@ -74,20 +65,20 @@ namespace Stratus.Utilities
 	/// An exception that is thrown whenever a numeric type is expected as an input somewhere but the input wasn't numeric.
 	/// </summary>
 	[Serializable]
-	public class StratusNumericTypeExpectedException : Exception
+	public class NumericTypeExpectedException : Exception
 	{
-		public StratusNumericTypeExpectedException() { }
+		public NumericTypeExpectedException() { }
 
-		public StratusNumericTypeExpectedException(string message) : base(message) { }
+		public NumericTypeExpectedException(string message) : base(message) { }
 
-		public StratusNumericTypeExpectedException(string message, Exception inner) : base(message, inner) { }
+		public NumericTypeExpectedException(string message, Exception inner) : base(message, inner) { }
 
-		protected StratusNumericTypeExpectedException(
+		protected NumericTypeExpectedException(
 		  System.Runtime.Serialization.SerializationInfo info,
 		  System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
 	}
 
-	public class StratusNumeric : IEquatable<StratusNumeric>
+	public class Numeric : IEquatable<Numeric>
 	{
 		object Value;
 		Type Type;
@@ -96,21 +87,21 @@ namespace Stratus.Utilities
 		/// Constructor
 		/// </summary>
 		/// <param name="obj"></param>
-		public StratusNumeric(object obj)
+		public Numeric(object obj)
 		{
 			if (!obj.IsNumeric())
-				throw new StratusNumericTypeExpectedException("The type of the object passed in the constructor must be numeric!");
+				throw new NumericTypeExpectedException("The type of the object passed in the constructor must be numeric!");
 			Value = obj;
 			Type = obj.GetType();
 		}
 
 		public object GetValue() { return Value; }
 		public void SetValue(object newValue) { Value = newValue; }
-		public bool Equals(StratusNumeric other) { return this == other; }
+		public bool Equals(Numeric other) { return this == other; }
 		public override bool Equals(object obj)
 		{
 			if (obj == null) return false;
-			if (!(obj is StratusNumeric)) return GetValue() == obj;
+			if (!(obj is Numeric)) return GetValue() == obj;
 			return Equals(obj);
 		}
 		public override int GetHashCode() { return GetValue().GetHashCode(); }
@@ -122,7 +113,7 @@ namespace Stratus.Utilities
 		/// <param name="lhs"></param>
 		/// <param name="rhs"></param>
 		/// <returns></returns>
-		public static bool operator <(StratusNumeric lhs, StratusNumeric rhs)
+		public static bool operator <(Numeric lhs, Numeric rhs)
 		{
 			object leftValue = lhs.GetValue();
 			object rightValue = rhs.GetValue();
@@ -152,13 +143,13 @@ namespace Stratus.Utilities
 				case TypeCode.Single:
 					return (float)leftValue < (float)rightValue;
 			}
-			throw new StratusNumericTypeExpectedException("Please compare valid numeric types.");
+			throw new NumericTypeExpectedException("Please compare valid numeric types.");
 		}
 
 		/// <summary>
 		/// Checks if the value of left is greater than the value of right.
 		/// </summary>
-		public static bool operator >(StratusNumeric left, StratusNumeric right)
+		public static bool operator >(Numeric left, Numeric right)
 		{
 			object leftValue = left.GetValue();
 			object rightValue = right.GetValue();
@@ -198,13 +189,13 @@ namespace Stratus.Utilities
 				case TypeCode.Single:
 					return (float)leftValue > (float)rightValue;
 			}
-			throw new StratusNumericTypeExpectedException("Please compare valid numeric types.");
+			throw new NumericTypeExpectedException("Please compare valid numeric types.");
 		}
 
 		/// <summary>
 		/// Checks if the value of left is the same as the value of right.
 		/// </summary>
-		public static bool operator ==(StratusNumeric left, StratusNumeric right)
+		public static bool operator ==(Numeric left, Numeric right)
 		{
 			return !(left > right) && !(left < right);
 		}
@@ -212,7 +203,7 @@ namespace Stratus.Utilities
 		/// <summary>
 		/// Checks if the value of left is not the same as the value of right.
 		/// </summary>
-		public static bool operator !=(StratusNumeric left, StratusNumeric right)
+		public static bool operator !=(Numeric left, Numeric right)
 		{
 			return !(left > right) || !(left < right);
 		}
@@ -220,7 +211,7 @@ namespace Stratus.Utilities
 		/// <summary>
 		/// Checks if left is either equal or smaller than right.
 		/// </summary>
-		public static bool operator <=(StratusNumeric left, StratusNumeric right)
+		public static bool operator <=(Numeric left, Numeric right)
 		{
 			return left == right || left < right;
 		}
@@ -228,7 +219,7 @@ namespace Stratus.Utilities
 		/// <summary>
 		/// Checks if left is either equal or greater than right.
 		/// </summary>
-		public static bool operator >=(StratusNumeric left, StratusNumeric right)
+		public static bool operator >=(Numeric left, Numeric right)
 		{
 			return left == right || left > right;
 		}
@@ -248,7 +239,7 @@ namespace Stratus.Utilities
 			if (!typeof(T).IsNumeric())
 			{
 				// Something bad happened.
-				throw new StratusNumericTypeExpectedException("The type inputted into the NumericType generic must be a numeric type.");
+				throw new NumericTypeExpectedException("The type inputted into the NumericType generic must be a numeric type.");
 			}
 			type = typeof(T);
 			value = obj;
@@ -335,7 +326,7 @@ namespace Stratus.Utilities
 				case TypeCode.Single:
 					return (float)leftValue < (float)rightValue;
 			}
-			throw new StratusNumericTypeExpectedException("Please compare valid numeric types with numeric generics.");
+			throw new NumericTypeExpectedException("Please compare valid numeric types with numeric generics.");
 		}
 
 		/// <summary>
@@ -381,7 +372,7 @@ namespace Stratus.Utilities
 				case TypeCode.Single:
 					return (float)leftValue > (float)rightValue;
 			}
-			throw new StratusNumericTypeExpectedException("Please compare valid numeric types.");
+			throw new NumericTypeExpectedException("Please compare valid numeric types.");
 		}
 
 		/// <summary>

@@ -1,5 +1,5 @@
 ﻿using Stratus.Extensions;
-using Stratus.Utilities;
+using Stratus.Types;
 
 using System;
 using System.Collections.Generic;
@@ -36,7 +36,7 @@ namespace Stratus.Reflection
 			this.methodsByName = new Lazy<Dictionary<string, MethodInfo>>(() => methods.Value.ToDictionary((x) => x.Name, false));
 			this.properties = new Lazy<PropertyInfo[]>(() => type.GetProperties(flags));
 			this.propertiesByName = new Lazy<Dictionary<string, PropertyInfo>>(() => properties.Value.ToDictionary((x) => x.Name, false));
-			this.subclasses = new Lazy<Type[]>(() => StratusTypeUtility.SubclassesOf(type, true));
+			this.subclasses = new Lazy<Type[]>(() => TypeUtility.SubclassesOf(type, true));
 			this.subclassNames = new Lazy<string[]>(() => subclasses.Value.Select(t => t.Name).ToArray());
 
 		}

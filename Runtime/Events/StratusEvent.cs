@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 
 using Stratus.Serialization;
-using Stratus.Utilities;
+using Stratus.Types;
 
 namespace Stratus
 {
@@ -43,8 +43,8 @@ namespace Stratus
 		// Properties
 		//--------------------------------------------------------------------------------------------/
 		public bool handled { get; set; }
-		public static Type[] eventTypes { get; private set; } = StratusTypeUtility.SubclassesOf<StratusEvent>(false);
-		public static string[] eventTypeNames { get; private set; } = StratusTypeUtility.SubclassNames<StratusEvent>(false);
+		public static Type[] eventTypes { get; private set; } = TypeUtility.SubclassesOf<StratusEvent>(false);
+		public static string[] eventTypeNames { get; private set; } = TypeUtility.SubclassNames<StratusEvent>(false);
 
 		//--------------------------------------------------------------------------------------------/
 		// Methods

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System;
-using Stratus.Utilities;
+using Stratus.Types;
 
 namespace Stratus.Interpolation
 {

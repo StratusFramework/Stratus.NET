@@ -1,6 +1,6 @@
 ﻿using Stratus.Collections;
 using Stratus.Extensions;
-using Stratus.Utilities;
+using Stratus.Types;
 
 using System;
 using System.Collections.Generic;
@@ -103,7 +103,7 @@ namespace Stratus
 		where TAsset : class
 	{
 		private static readonly Lazy<Dictionary<Type, Type[]>> sourceTypesByAsset
-			= new Lazy<Dictionary<Type, Type[]>>(() => StratusTypeUtility.TypeDefinitionParameterMap(typeof(StratusAssetSource<>)));
+			= new Lazy<Dictionary<Type, Type[]>>(() => TypeUtility.TypeDefinitionParameterMap(typeof(StratusAssetSource<>)));
 
 		public override StratusAssetSource<TAsset>[] sources
 		{
@@ -112,7 +112,7 @@ namespace Stratus
 				if (_sources == null)
 				{
 					Type assetType = typeof(TAsset);
-					var impl = StratusTypeUtility.ImplementationsOf(typeof(StratusAssetSource<>), assetType);
+					var impl = TypeUtility.ImplementationsOf(typeof(StratusAssetSource<>), assetType);
 					if (impl.IsValid())
 					{
 						_sources = impl.Select(t => t.Instantiate<StratusAssetSource<TAsset>>()).ToArray();

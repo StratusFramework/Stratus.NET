@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 
 using Stratus.Extensions;
-using Stratus.Utilities;
+using Stratus.Types;
 
 using System;
 using System.Collections;
@@ -23,21 +23,21 @@ namespace Stratus.Editor.Tests
 		[Test]
 		public void GetsSubclassNameByTypeParameter()
 		{
-			var actual = StratusTypeUtility.SubclassNames<MockA>().ToHashSet();
+			var actual = TypeUtility.SubclassNames<MockA>().ToHashSet();
 			Assert.True(actual.Contains(nameof(MockB)));
 		}
 
 		[Test]
 		public void GetsSubclassNameByType()
 		{
-			var actual = StratusTypeUtility.SubclassNames(typeof(MockA)).ToHashSet();
+			var actual = TypeUtility.SubclassNames(typeof(MockA)).ToHashSet();
 			Assert.True(actual.Contains(nameof(MockB)));
 		}
 
 		[TestCase(typeof(MockA), typeof(MockB))]
 		public void SubclassesOf(Type baseType, params Type[] expected)
 		{
-			var actual = StratusTypeUtility.SubclassesOf(baseType);
+			var actual = TypeUtility.SubclassesOf(baseType);
 			AssertEquality(expected, actual);
 		}
 
@@ -77,7 +77,7 @@ namespace Stratus.Editor.Tests
 				typeof(StringMockObject),
 				typeof(IntCustomMockObject)
 			};
-			Type[] actual = StratusTypeUtility.TypesDefinedFromGeneric(baseType);
+			Type[] actual = TypeUtility.TypesDefinedFromGeneric(baseType);
 			AssertEquality(expected, actual);
 		}
 
@@ -85,7 +85,7 @@ namespace Stratus.Editor.Tests
 		public void GetsTypeDefinitionParameterMap()
 		{
 			Type baseType = typeof(MockObject<>);
-			Dictionary<Type, Type[]> map = StratusTypeUtility.TypeDefinitionParameterMap(baseType);
+			Dictionary<Type, Type[]> map = TypeUtility.TypeDefinitionParameterMap(baseType);
 			Assert.True(map.ContainsKey(typeof(int)));
 			Assert.True(map[typeof(int)].Contains(typeof(IntMockObject)));
 			Assert.True(map[typeof(string)].Length == 1 &&
@@ -97,7 +97,7 @@ namespace Stratus.Editor.Tests
 		public void FindsCollectionElementType(Type collectionType, Type expected)
 		{
 			var collection = (ICollection)ObjectUtility.Instantiate(collectionType);
-			var actual = StratusTypeUtility.GetElementType(collection);
+			var actual = TypeUtility.GetElementType(collection);
 			Assert.AreEqual(expected, actual);
 		}
 
@@ -105,7 +105,7 @@ namespace Stratus.Editor.Tests
 		public void GetsTypesWithAttributes()
 		{
 			Type attrType = typeof(MockAttribute);
-			var types = StratusTypeUtility.TypesWithAttribute(attrType).ToArray();
+			var types = TypeUtility.TypesWithAttribute(attrType).ToArray();
 			Assert.AreEqual(1, types.Length);
 			Assert.AreEqual(typeof(StringMockObject), types[0]);
 		}
@@ -113,7 +113,7 @@ namespace Stratus.Editor.Tests
 		[TestCase("System.Int32", typeof(int))]
 		public void ResolvesTypeFromString(string typeName, Type expected)
 		{
-			Assert.AreEqual(expected, StratusTypeUtility.ResolveType(typeName));
+			Assert.AreEqual(expected, TypeUtility.ResolveType(typeName));
 		}
 
 		[Test]
@@ -121,7 +121,7 @@ namespace Stratus.Editor.Tests
 		{
 			Type baseType = typeof(MockObject);
 			Type interfaceType = typeof(MockInterface);
-			var implementationTypes = StratusTypeUtility.InterfaceImplementations(baseType, interfaceType);
+			var implementationTypes = TypeUtility.InterfaceImplementations(baseType, interfaceType);
 			var expected = new Type[] { typeof(IntMockObject), typeof(StringMockObject) };
 			Assert.AreEqual(expected.Length, implementationTypes.Length);
 			AssertEquality(expected, implementationTypes);
@@ -130,7 +130,7 @@ namespace Stratus.Editor.Tests
 		[TestCase(typeof(int), typeof(IntMockObject), typeof(IntCustomMockObject))]
 		public void ImplementationssOfType(Type argument, params Type[] expected)
 		{
-			var actual = StratusTypeUtility.ImplementationsOf(typeof(MockObject<>), argument);
+			var actual = TypeUtility.ImplementationsOf(typeof(MockObject<>), argument);
 			Assert.AreEqual(expected.Length, actual.Length);
 			AssertEquality(expected, actual);
 		}
@@ -147,7 +147,7 @@ namespace Stratus.Editor.Tests
 		[TestCase(typeof(MockObject<>), typeof(IntCustomMockObject))]
 		public void GetsSubclassesOfGenericType(Type genericType, params Type[] expected)
 		{
-			var actual = StratusTypeUtility.SubclassesOf(genericType);
+			var actual = TypeUtility.SubclassesOf(genericType);
 			Assert.That(actual.Length > 0);
 			var actualSet = actual.ToHashSet();
 			Assert.That(expected.All(e => actualSet.Contains(e)));
