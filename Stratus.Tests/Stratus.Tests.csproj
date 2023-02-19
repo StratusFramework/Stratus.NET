@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Runtime\Runtime.csproj" />
+    <ProjectReference Include="..\Stratus\Stratus.csproj" />
   </ItemGroup>
 
 </Project>

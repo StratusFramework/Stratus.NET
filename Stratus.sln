@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Runtime", "Runtime\Runtime.csproj", "{34C5119E-BF47-4584-8D76-C0F07B14A9C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stratus", "Stratus\Stratus.csproj", "{34C5119E-BF47-4584-8D76-C0F07B14A9C7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{EF6A5257-0310-4851-9BD1-1C634E5BBBB0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stratus.Tests", "Stratus.Tests\Stratus.Tests.csproj", "{EF6A5257-0310-4851-9BD1-1C634E5BBBB0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
