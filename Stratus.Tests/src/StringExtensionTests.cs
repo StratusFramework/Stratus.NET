@@ -2,6 +2,8 @@ using NUnit.Framework;
 
 using Stratus.Extensions;
 
+using System;
+
 namespace Stratus.Tests
 {
 	public class StringExtensionTests 
