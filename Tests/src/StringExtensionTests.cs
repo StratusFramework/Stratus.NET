@@ -1,14 +1,10 @@
 using NUnit.Framework;
-using Stratus.Extensions;
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using Stratus.Extensions;
 
 namespace Stratus.Tests
 {
-    public class StringExtensionTests 
+	public class StringExtensionTests 
     {
 		[Test]
 		public void EnclosesLine()
