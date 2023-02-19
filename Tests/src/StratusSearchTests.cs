@@ -1,47 +1,41 @@
 ﻿using NUnit.Framework;
 
+using Stratus.Models;
 using Stratus.Search;
 
 using System.Collections.Generic;
-
-using UnityEngine;
 
 namespace Stratus.Editor.Tests
 {
     public class StratusSearchTests
     {
         [Test]
-        public void TestSearchRange()
+        public void GetsNeighbors()
         {
-            Vector3Int[] squareNeighbors(Vector3Int element)
+			StratusVector3Int[] squareNeighbors(StratusVector3Int element)
             {
-                List<Vector3Int> result = new List<Vector3Int>();
-                result.Add(new Vector3Int(element.x + 1, element.y, element.z));
-                result.Add(new Vector3Int(element.x - 1, element.y, element.z));
-                result.Add(new Vector3Int(element.x, element.y + 1, element.z));
-                result.Add(new Vector3Int(element.x, element.y - 1, element.z));
+                List<StratusVector3Int> result = new List<StratusVector3Int>();
+                result.Add(new StratusVector3Int(element.x + 1, element.y, element.z));
+                result.Add(new StratusVector3Int(element.x - 1, element.y, element.z));
+                result.Add(new StratusVector3Int(element.x, element.y + 1, element.z));
+                result.Add(new StratusVector3Int(element.x, element.y - 1, element.z));
                 return result.ToArray();
             }
 
-            Vector3Int startElement = new Vector3Int(0, 0, 0);
+			StratusVector3Int startElement = new StratusVector3Int(0, 0, 0);
 
-            StratusSearch<Vector3Int>.RangeSearch search
-                = new StratusSearch<Vector3Int>.RangeSearch()
+            StratusSearch<StratusVector3Int>.RangeSearch search
+                = new StratusSearch<StratusVector3Int>.RangeSearch()
                 {
                     debug = true,
-                    distanceFunction = Vector3Int.Distance,
+                    distanceFunction = StratusVector3Int.Distance,
                     neighborFunction = squareNeighbors,
                     range = 1,
                     startElement = startElement
                 };
 
-            Vector3Int[] range = search.Search();
-            Debug.Log($"Range : {range.Length}");
-            foreach(var element in range)
-            {
-                Debug.Log(element);
-            }
+			StratusVector3Int[] actual = search.Search();
+            Assert.AreEqual(4, actual.Length);
         }
     }
-
 }

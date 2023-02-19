@@ -34,6 +34,15 @@ namespace Stratus
 			return message != null ? $"{valid} ({message})" : $"{valid}";
 		}
 
+		public StratusOperationResult WithMessage(string message)
+		{
+			if (message.IsValid())
+			{
+				this.message = message;
+			}
+			return this;
+		}
+
 		public static implicit operator bool(StratusOperationResult result) => result.valid;
 		public static implicit operator StratusOperationResult(bool valid) => new StratusOperationResult(valid, null);
 	}

@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Stratus.Editor.Tests
 {
-	class StratusTreeElementTests
+	public class StratusTreeElementTests : StratusTest
 	{
 		class TestElement : TreeElement
 		{
@@ -20,7 +20,7 @@ namespace Stratus.Editor.Tests
 		}
 
 		[Test]
-		public static void TestTreeToListWorks()
+		public static void ConvertsTreeToList()
 		{
 			// Arrange
 			TestElement root = new TestElement("root", -1);
@@ -51,7 +51,7 @@ namespace Stratus.Editor.Tests
 
 
 		[Test]
-		public static void TestListToTreeWorks()
+		public static void ConvertsListToTree()
 		{
 			// Arrange
 			var list = new List<TestElement>();
@@ -73,7 +73,7 @@ namespace Stratus.Editor.Tests
 		}
 
 		[Test]
-		public static void TestListToTreeThrowsExceptionIfRootIsInvalidDepth()
+		public static void ListToTreeThrowsExceptionIfRootIsInvalidDepth()
 		{
 			// Arrange
 			var list = new List<TestElement>();
@@ -129,19 +129,19 @@ namespace Stratus.Editor.Tests
 			TestElement[] input = { b1 };
 			TestElement[] expectedResult = { b1 };
 			var result = TreeElement.FindCommonAncestorsWithinList(input).ToArray();
-			Assert.IsTrue(UnityEditor.ArrayUtility.ArrayEquals(expectedResult, result), "Single input should return single output");
+			AssertEquality(expectedResult, result, "Single input should return single output");
 
 			// Single sub tree
 			input = new[] { b1, b2 };
 			expectedResult = new[] { b1 };
 			result = TreeElement.FindCommonAncestorsWithinList(input).ToArray();
-			Assert.IsTrue(UnityEditor.ArrayUtility.ArrayEquals(expectedResult, result), "Common ancestor should only be b1 ");
+			AssertEquality(expectedResult, result, "Common ancestor should only be b1 ");
 
 			// Multiple sub trees
 			input = new[] { b0, b2, f0, f2, c0 };
 			expectedResult = new[] { b0, f0, c0 };
 			result = TreeElement.FindCommonAncestorsWithinList(input).ToArray();
-			Assert.IsTrue(UnityEditor.ArrayUtility.ArrayEquals(expectedResult, result), "Common ancestor should only be b0, f0, c0");
+			AssertEquality(expectedResult, result, "Common ancestor should only be b0, f0, c0");
 		}
 	}
 }

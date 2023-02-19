@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
+﻿using NUnit.Framework;
 
-using NUnit.Framework;
-using System.Linq;
-using System.Linq.Expressions;
-
-using UnityEngine;
 using Stratus.Extensions;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Stratus.Editor.Tests
 {
@@ -230,11 +227,10 @@ namespace Stratus.Editor.Tests
 		public void TestConvertNotNull()
 		{
 			string[] values = new string[] { "foo", null, "bar", null };
-			TestDataObject[] result = values.ConvertNotNull(x => new TestDataObject(x, UnityEngine.Random.Range(1, 5))).ToArray();
+			TestDataObject[] result = values.ConvertNotNull(x => new TestDataObject(x, Stratus.Models.Math.RandomUtility.Range(1, 5))).ToArray();
 			Assert.True(result.Length == 2);
 			Assert.AreEqual(result[0].name, "foo");
 			Assert.AreEqual(result[1].name, "bar");
 		}
 	}
-
 }

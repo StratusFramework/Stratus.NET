@@ -40,11 +40,11 @@ namespace Stratus.Models
 		{
 			return new Vector3(value.x, value.y, value.z);
 		}
-	}
-}
 
-namespace Stratus.Models
-{
+		public static float Distance(StratusVector3Int a, StratusVector3Int b)
+			=> Vector3.Distance(a, b);
+	}
+
 	public struct StratusVector3
 	{
 		public float x { get; set; }
