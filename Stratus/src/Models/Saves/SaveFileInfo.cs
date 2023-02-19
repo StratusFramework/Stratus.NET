@@ -1,14 +1,15 @@
 ﻿using Stratus.Extensions;
 using Stratus.IO;
 
-//using UnityEngine;
+using System.Collections.Generic;
+using System;
 
-namespace Stratus
+namespace Stratus.Models.Saves
 {
 	/// <summary>
 	/// File information about a save
 	/// </summary>
-	public class StratusSaveFileInfo
+	public class SaveFileInfo
 	{
 		public string path { get; private set; }
 		public string name { get; private set; }
@@ -16,7 +17,7 @@ namespace Stratus
 
 		public bool valid => path.IsValid();
 
-		public StratusSaveFileInfo(string filePath)
+		public SaveFileInfo(string filePath)
 		{
 			this.path = filePath;
 			this.name = FileUtility.GetFileName(filePath);
@@ -37,4 +38,10 @@ namespace Stratus
 		}
 	}
 
+	public class StratusSaveFileQuery : StratusAssetQuery<SaveFileInfo>
+	{
+		public StratusSaveFileQuery(Func<IList<SaveFileInfo>> getAssetsFunction, Func<SaveFileInfo, string> keyFunction) : base(getAssetsFunction, keyFunction)
+		{
+		}
+	}
 }

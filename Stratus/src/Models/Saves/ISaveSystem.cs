@@ -4,45 +4,28 @@ using System;
 
 namespace Stratus.Models.Saves
 {
-	public interface IStratusSaveSystem
+	public interface ISaveSystem
 	{
 		void RefreshSaveFiles();
 		void ClearSaveFiles();
 		void LoadAllSaves(bool force = false);
 	}
 
-	public interface IStratusSaveSystem<SaveType> : IStratusSaveSystem
-		where SaveType : IStratusSave, new()
+	public interface ISaveSystem<SaveType> : ISaveSystem
+		where SaveType : ISave, new()
 	{
 		SaveType[] saves { get; }
 		SaveType CreateSave(Action<SaveType> onCreated = null);
 		StratusOperationResult SaveAs(SaveType save, string fileName);
 		StratusOperationResult Save(SaveType save);
-		StratusOperationResult SaveAsync(SaveType save, Action onFinished);
-		SaveType Load(StratusSaveFileInfo file);
+		SaveType Load(SaveFileInfo file);
 		SaveType GetSaveAtIndex(int index);
-	}
-
-	public enum StratusSaveType
-	{
-		/// <summary>
-		/// Manual saves triggered by the player
-		/// </summary>
-		Manual,
-		/// <summary>
-		/// Automatic saves triggered by the game
-		/// </summary>
-		Auto,
-		/// <summary>
-		/// Saves usually triggered by a hotkey
-		/// </summary>
-		Quick
 	}
 
 	/// <summary>
 	/// Configurable attributes for a save system
 	/// </summary>
-	public class StratusSaveSystemConfiguration
+	public class SaveSystemConfiguration
 	{
 		/// <summary>
 		/// Whether the save data system is being debugged
@@ -51,14 +34,14 @@ namespace Stratus.Models.Saves
 
 		/// <summary>
 		/// If assigned, will store saves within this folder rather than the root
-		/// of <see cref="StratusSaveSystem.rootSaveDirectoryPath"/>
+		/// of <see cref="SaveSystem.rootSaveDirectoryPath"/>
 		/// </summary>
 		public string folder { get; set; }
 
 		/// <summary>
 		/// The save format
 		/// </summary>
-		public StratusSaveFormat format
+		public SaveFormat format
 		{
 			get => _format;
 			set
@@ -67,11 +50,11 @@ namespace Stratus.Models.Saves
 				onChanged?.Invoke();
 			}
 		}
-		private StratusSaveFormat _format;
+		private SaveFormat _format;
 		/// <summary>
 		/// What naming convention to use for a save file of this type
 		/// </summary>
-		public StratusFileNamingConvention namingConvention { get; set; }
+		public FileNamingConvention namingConvention { get; set; }
 		/// <summary>
 		/// The maximum amount of saves allowed. If 0, the saves are unlimited.
 		/// </summary>
@@ -84,7 +67,7 @@ namespace Stratus.Models.Saves
 
 		public event Action onChanged;
 
-		public StratusSaveSystemConfiguration(StratusSaveFormat format, StratusFileNamingConvention namingConvention)
+		public SaveSystemConfiguration(SaveFormat format, FileNamingConvention namingConvention)
 		{
 			this.format = format;
 			this.namingConvention = namingConvention;

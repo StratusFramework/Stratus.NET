@@ -1,23 +1,22 @@
 ﻿using Stratus.IO;
-using Stratus.Models.Saves;
 
 using System.Collections.Generic;
 using System.IO;
 
-namespace Stratus
+namespace Stratus.Models.Saves
 {
-	public abstract class StratusSaveFormat
+	public abstract class SaveFormat
 	{
 		/// <summary>
-		/// The extension used by main save file (of type <see cref="StratusSave"/>)
+		/// The extension used by main save file (of type <see cref="Save"/>)
 		/// </summary>
 		public string extension { get; set; }
 
 		public abstract string ComposeSavePath(string path, string fileName);
-		public abstract IEnumerable<StratusSaveFileInfo> GetSaveFiles(string path);
+		public abstract IEnumerable<SaveFileInfo> GetSaveFiles(string path);
 
 
-		protected StratusSaveFormat(string extension)
+		protected SaveFormat(string extension)
 		{
 			this.extension = extension;
 		}
@@ -45,14 +44,14 @@ namespace Stratus
 	/// <summary>
 	/// Save files are stored at uncompressed at given path with a given extension
 	/// </summary>
-	public class StratusSaveDefaultFormat : StratusSaveFormat
+	public class DefaultSaveFormat : SaveFormat
 	{
 		/// <summary>
 		/// Whether to create subdirectories for each save
 		/// </summary>
 		public bool createDirectoryPerSave { get; set; }
 
-		public StratusSaveDefaultFormat(bool createDirectoryPerSave = false, string extension = StratusSave.defaultExtension)
+		public DefaultSaveFormat(bool createDirectoryPerSave = false, string extension = Save.defaultExtension)
 			: base(extension)
 		{
 			this.createDirectoryPerSave = createDirectoryPerSave;
@@ -69,9 +68,9 @@ namespace Stratus
 			return FileUtility.CombinePath(path, FileUtility.ChangeExtension(fileName, extension));
 		}
 
-		public override IEnumerable<StratusSaveFileInfo> GetSaveFiles(string path)
+		public override IEnumerable<SaveFileInfo> GetSaveFiles(string path)
 		{
-			IEnumerable<StratusSaveFileInfo> get(string directoryPath)
+			IEnumerable<SaveFileInfo> get(string directoryPath)
 			{
 				var directory = new DirectoryInfo(directoryPath);
 				if (directory.Exists)
@@ -80,7 +79,7 @@ namespace Stratus
 					for (int i = 0; i < files.Length; i++)
 					{
 						string file = files[i];
-						yield return new StratusSaveFileInfo(file);
+						yield return new SaveFileInfo(file);
 					}
 				}
 			}
@@ -90,7 +89,7 @@ namespace Stratus
 				var directories = Directory.GetDirectories(path);
 				foreach (var directoryPath in directories)
 				{
-					foreach(var file in get(directoryPath))
+					foreach (var file in get(directoryPath))
 					{
 						yield return file;
 					}
@@ -106,5 +105,4 @@ namespace Stratus
 
 		}
 	}
-
 }

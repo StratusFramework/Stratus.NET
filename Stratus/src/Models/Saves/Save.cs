@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
-//using UnityEngine;
-using System;
-using Stratus.Extensions;
+﻿using Stratus.Extensions;
 using Stratus.IO;
+using Stratus.Serialization;
+
+using System;
+using System.Collections.Generic;
 
 namespace Stratus.Models.Saves
 {
-	public interface IStratusSave
+	public interface ISave
 	{
 		string name { get; }
 		bool loaded { get; }
@@ -15,10 +16,26 @@ namespace Stratus.Models.Saves
 		StratusOperationResult LoadAsync(Action onLoad);
 	}
 
+	public enum SaveType
+	{
+		/// <summary>
+		/// Manual saves triggered by the player
+		/// </summary>
+		Manual,
+		/// <summary>
+		/// Automatic saves triggered by the game
+		/// </summary>
+		Auto,
+		/// <summary>
+		/// Saves usually triggered by a hotkey
+		/// </summary>
+		Quick
+	}
+
 	/// <summary>
 	/// Base class for saves. Classes inherited from this class add which data they wish to be serialized.
 	/// </summary>
-	public abstract class StratusSave : IStratusSave, IStratusLogger, IDisposable
+	public abstract class Save : ISave, IStratusLogger, IDisposable
 	{
 		#region Fields
 
@@ -48,7 +65,7 @@ namespace Stratus.Models.Saves
 		/// <summary>
 		/// File information about this save
 		/// </summary>
-		public StratusSaveFileInfo file { get; protected set; }
+		public SaveFileInfo file { get; protected set; }
 
 		/// <summary>
 		/// The extension used for save data
@@ -189,5 +206,157 @@ namespace Stratus.Models.Saves
 			Dispose(true);
 		}
 		#endregion
+	}
+
+	public abstract class Save<TData> : Save
+		where TData : class, new()
+	{
+		/// <summary>
+		/// The data for this save
+		/// </summary>
+		public TData data { get; private set; }
+
+		/// <summary>
+		/// Whether the data for the save is loaded
+		/// </summary>
+		public bool dataLoaded => data != null;
+
+		public override bool loaded => dataLoaded;
+
+		/// <summary>
+		/// The file path for where the encapsulated data is saved to
+		/// </summary>
+		public string dataFilePath
+		{
+			get
+			{
+				if (_dataFilePath == null)
+				{
+					_dataFilePath = FileUtility.ChangeExtension(file.path, dataExtension);
+				}
+				return _dataFilePath;
+			}
+		}
+		private string _dataFilePath;
+
+		/// <summary>
+		/// Whether a data file exists for this save
+		/// </summary>
+		public bool dataFileExists => FileUtility.FileExists(dataFilePath);
+
+		/// <summary>
+		/// The data serializer
+		/// </summary>
+		public static readonly StratusJSONSerializer<TData> dataSerializer = new StratusJSONSerializer<TData>();
+
+		/// <summary>
+		/// The extension used for save data
+		/// </summary>
+		public virtual string dataExtension => ".savedata";
+
+		public Save(TData data)
+		{
+			this.data = data;
+		}
+
+		public Save()
+		{
+		}
+
+		public void ResetData()
+		{
+			SetData(new TData());
+		}
+
+		public void SetData(TData data)
+		{
+			this.data = data;
+		}
+
+		protected override void OnDelete()
+		{
+			if (dataFileExists)
+			{
+				FileUtility.DeleteFile(dataFilePath);
+				_dataFilePath = null;
+			}
+		}
+
+		public override StratusOperationResult Load()
+		{
+			return LoadData();
+		}
+
+		public override StratusOperationResult LoadAsync(Action onLoad)
+		{
+			return LoadDataAsync(onLoad);
+		}
+
+		public virtual StratusOperationResult LoadData()
+		{
+			if (dataLoaded)
+			{
+				return new StratusOperationResult(true, "Data already loaded");
+			}
+
+			if (!serialized)
+			{
+				return new StratusOperationResult(false, "Cannot load data before the save has been serialized");
+			}
+
+			try
+			{
+				data = dataSerializer.Deserialize(dataFilePath);
+			}
+			catch (Exception e)
+			{
+				return new StratusOperationResult(false, e.ToString());
+			}
+
+			if (data == null)
+			{
+				return new StratusOperationResult(false, $"Failed to deserialize data from {dataFilePath}");
+			}
+
+			return new StratusOperationResult(true, $"Loaded data file from {dataFilePath}");
+		}
+
+		public virtual StratusOperationResult LoadDataAsync(Action onLoad)
+		{
+			return LoadData();
+		}
+
+		public virtual void UnloadData()
+		{
+			data = null;
+		}
+
+		public virtual bool SaveData()
+		{
+			if (!serialized)
+			{
+				this.LogError("Cannot load data before the save has been serialized");
+				return false;
+			}
+
+			if (data == null)
+			{
+				this.LogError("No data to serialize! This could mean that this save was created yet no data previously assigned to it");
+				return false;
+			}
+
+			this.Log($"Saving data to {dataFilePath}");
+			dataSerializer.Serialize(data, dataFilePath);
+			return true;
+		}
+
+		/// <summary>
+		/// Invoked whenever this save is serialized/deserialized
+		/// </summary>
+		/// <param name="filePath"></param>
+		public override void OnAnySerialization(string filePath)
+		{
+			this.file = new SaveFileInfo(filePath);
+		}
 	}
 }

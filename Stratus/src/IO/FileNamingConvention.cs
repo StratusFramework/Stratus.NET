@@ -1,26 +1,15 @@
 ﻿using Stratus.Collections;
 using Stratus.Extensions;
+using Stratus.Models.Saves;
 
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Stratus
-{
-	public class StratusSaveFileQuery : StratusAssetQuery<StratusSaveFileInfo>
-	{
-		public StratusSaveFileQuery(Func<IList<StratusSaveFileInfo>> getAssetsFunction, Func<StratusSaveFileInfo, string> keyFunction) : base(getAssetsFunction, keyFunction)
-		{
-		}
-	}
-}
-
 namespace Stratus.IO
 {
-	public abstract class StratusFileNamingConvention
+	public abstract class FileNamingConvention
 	{
-		protected StratusFileNamingConvention(string prefix)
+		protected FileNamingConvention(string prefix)
 		{
 			this.prefix = prefix;
 		}
@@ -30,13 +19,13 @@ namespace Stratus.IO
 		public abstract string GenerateFileName(StratusSaveFileQuery files);
 	}
 
-	public class StratusIncrementalFileNamingConvention : StratusFileNamingConvention
+	public class IncrementalFileNamingConvention : FileNamingConvention
 	{
-		public StratusIncrementalFileNamingConvention(string prefix) : base(prefix)
+		public IncrementalFileNamingConvention(string prefix) : base(prefix)
 		{
 		}
 
-		private StratusSortedList<int, StratusSaveFileInfo> filesByIndex { get; set; }
+		private StratusSortedList<int, SaveFileInfo> filesByIndex { get; set; }
 
 		public const string indexPattern = @"(?<index>\d+)";
 		public const string indexCaptureGroupName = "index";
@@ -45,7 +34,7 @@ namespace Stratus.IO
 		{
 			if (filesByIndex == null)
 			{
-				filesByIndex = new StratusSortedList<int, StratusSaveFileInfo>(x => ParseIndex(x.name));
+				filesByIndex = new StratusSortedList<int, SaveFileInfo>(x => ParseIndex(x.name));
 				filesByIndex.AddRange(files.assets);
 			}
 			else if (!files.updated)
@@ -60,6 +49,7 @@ namespace Stratus.IO
 				var lastIndex = filesByIndex.Last().Key;
 				index = lastIndex + 1;
 			}
+
 			return $"{prefix}{prefixSeparator}{index}";
 		}
 
@@ -78,11 +68,11 @@ namespace Stratus.IO
 		}
 	}
 
-	public class StratusDateTimeFileNamingConvention : StratusFileNamingConvention
+	public class DateTimeFileNamingConvention : FileNamingConvention
 	{
 		public static readonly StratusTimestampParameters timestampParameters = new StratusTimestampParameters();
 
-		public StratusDateTimeFileNamingConvention(string prefix) : base(prefix)
+		public DateTimeFileNamingConvention(string prefix) : base(prefix)
 		{
 		}
 
