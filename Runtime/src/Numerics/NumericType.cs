@@ -1,4 +1,4 @@
-﻿namespace Stratus.Types
+﻿namespace Stratus.Numerics
 {
 	public enum NumericType
 	{

@@ -9,6 +9,7 @@ using System;
 using System.Linq;
 using Stratus.Extensions;
 using Stratus.Utilities;
+using Stratus.Numerics;
 
 namespace Stratus.Models.Tests
 {
@@ -56,11 +57,11 @@ namespace Stratus.Models.Tests
 
 		public class MockMap : Grid2D<MockObject, MockLayer>
 		{
-			public MockMap(StratusVector3Int size) : base(size, CellLayout.Rectangle)
+			public MockMap(Vector3Int size) : base(size, CellLayout.Rectangle)
 			{
 			}
 
-			public override float GetTraversalCost(StratusVector3Int position)
+			public override float GetTraversalCost(Vector3Int position)
 			{
 				var terrain = Get<MockTerrain>(MockLayer.Terrain, position);
 				if (terrain == null)
@@ -77,19 +78,19 @@ namespace Stratus.Models.Tests
 		{
 			// This creates a 3x3 map, starting from (0,0) and expanding outwards on X+, Y+
 			int length = 3;
-			StratusVector3Int size = new StratusVector3Int(length, length);
+			Vector3Int size = new Vector3Int(length, length);
 			MockMap map = new MockMap(size);
 
 			for (int x = 0; x < length; x++)
 			{
 				for (int y = 0; y < length; y++)
 				{
-					AssertSuccess(map.ContainsCell(new StratusVector3Int(x, y)));
+					AssertSuccess(map.ContainsCell(new Vector3Int(x, y)));
 					if (x != 0 && y != 0)
 					{
-						AssertFailure(map.ContainsCell(new StratusVector3Int(-x, -y)));
-						AssertFailure(map.ContainsCell(new StratusVector3Int(-x, y)));
-						AssertFailure(map.ContainsCell(new StratusVector3Int(x, -y)));
+						AssertFailure(map.ContainsCell(new Vector3Int(-x, -y)));
+						AssertFailure(map.ContainsCell(new Vector3Int(-x, y)));
+						AssertFailure(map.ContainsCell(new Vector3Int(x, -y)));
 					}
 				}
 			}
@@ -98,13 +99,13 @@ namespace Stratus.Models.Tests
 		[Test]
 		public void AddsObjectsToLayer()
 		{
-			MockMap map = new MockMap(new StratusVector3Int(3, 3));
+			MockMap map = new MockMap(new Vector3Int(3, 3));
 
 			MockActor a = new MockActor("a");
 			MockActor b = new MockActor("b");
 
-			StratusVector3Int aStart = new StratusVector3Int(1, 1);
-			StratusVector3Int bStart = new StratusVector3Int(2, 2);
+			Vector3Int aStart = new Vector3Int(1, 1);
+			Vector3Int bStart = new Vector3Int(2, 2);
 
 			AssertSuccess(map.Set(MockLayer.Actor, a, aStart));
 			Assert.True(map.Contains(MockLayer.Actor, a));
@@ -120,9 +121,9 @@ namespace Stratus.Models.Tests
 		[Test]
 		public void RemovesObjectFromLayer()
 		{
-			MockMap map = new MockMap(new StratusVector3Int(3, 3));
+			MockMap map = new MockMap(new Vector3Int(3, 3));
 			MockActor a = new MockActor("a");
-			StratusVector3Int aStart = new StratusVector3Int(1, 1);
+			Vector3Int aStart = new Vector3Int(1, 1);
 			AssertSuccess(map.Set(MockLayer.Actor, a, aStart));
 			AssertSuccess(map.Remove(MockLayer.Actor, a));
 			AssertFailure(map.Contains(MockLayer.Actor, a));
@@ -131,11 +132,11 @@ namespace Stratus.Models.Tests
 		[Test]
 		public void MovesObjectFromPreviousPosition()
 		{
-			MockMap map = new MockMap(new StratusVector3Int(3, 3));
+			MockMap map = new MockMap(new Vector3Int(3, 3));
 			MockActor a = new MockActor("a");
-			StratusVector3Int aStart = new StratusVector3Int(1, 1);
+			Vector3Int aStart = new Vector3Int(1, 1);
 			AssertSuccess(map.Set(MockLayer.Actor, a, aStart));
-			StratusVector3Int aEnd = new StratusVector3Int(2, 2);
+			Vector3Int aEnd = new Vector3Int(2, 2);
 			AssertSuccess(map.Set(MockLayer.Actor, a, aEnd));
 			Assert.False(map.Contains(MockLayer.Actor, aStart));
 			Assert.True(map.Contains(MockLayer.Actor, aEnd));
@@ -146,7 +147,7 @@ namespace Stratus.Models.Tests
 		{
 			MockMap map = DefaultMap();
 			MockActor a = new MockActor("a");
-			StratusVector3Int aStart = new StratusVector3Int(1, 1);
+			Vector3Int aStart = new Vector3Int(1, 1);
 
 			// With the 3x3 grid and the agent at (1,1) with a speed of 1,
 			// the available cells should be 5, its start position and its 4 neighbors:
@@ -154,25 +155,25 @@ namespace Stratus.Models.Tests
 			var aRange = map.GetRange(MockLayer.Actor, a, a.speed);
 			Assert.AreEqual(5, aRange.Count);
 			AssertContains(aStart, aRange);
-			AssertContains(new StratusVector3Int(0, 1), aRange);
-			AssertContains(new StratusVector3Int(2, 1), aRange);
-			AssertContains(new StratusVector3Int(1, 2), aRange);
-			AssertContains(new StratusVector3Int(1, 1), aRange);
+			AssertContains(new Vector3Int(0, 1), aRange);
+			AssertContains(new Vector3Int(2, 1), aRange);
+			AssertContains(new Vector3Int(1, 2), aRange);
+			AssertContains(new Vector3Int(1, 1), aRange);
 
 			// If we place B at (2,2), it should only have 3 cells in range
 			// since its in the top right corner of the map
 			MockActor b = new MockActor("b");
-			StratusVector3Int bStart = new StratusVector3Int(2, 2);
+			Vector3Int bStart = new Vector3Int(2, 2);
 			AssertSuccess(map.Set(MockLayer.Actor, b, bStart));
 			var bRange = map.GetRange(MockLayer.Actor, b, b.speed);
 			Assert.AreEqual(3, bRange.Count);
-			AssertContainsExactly(bRange, bStart, new StratusVector3Int(1, 2), new StratusVector3Int(2, 1));
+			AssertContainsExactly(bRange, bStart, new Vector3Int(1, 2), new Vector3Int(2, 1));
 		}
 
 		[Test]
 		public void FillsCells()
 		{
-			MockMap map = new MockMap(new StratusVector3Int(3, 3));
+			MockMap map = new MockMap(new Vector3Int(3, 3));
 			map.Fill(MockLayer.Terrain, () => new MockTerrain("Grass"));
 			Assert.AreEqual(9, map.Count(MockLayer.Terrain));
 			AssertSuccess(map.ForEach(MockLayer.Terrain, (MockTerrain t) => t.name == "Grass"));
@@ -181,10 +182,10 @@ namespace Stratus.Models.Tests
 		[Test]
 		public void DoesNotAddObjectOfWrongType()
 		{
-			MockMap map = new MockMap(new StratusVector3Int(3, 3));
+			MockMap map = new MockMap(new Vector3Int(3, 3));
 			map.Associate<MockTerrain>(MockLayer.Terrain);
 			MockActor a = new MockActor("a");
-			AssertFailure(map.Set(MockLayer.Terrain, a, new StratusVector3Int(0, 0)));
+			AssertFailure(map.Set(MockLayer.Terrain, a, new Vector3Int(0, 0)));
 		}
 
 		[Test]
@@ -193,20 +194,20 @@ namespace Stratus.Models.Tests
 			MockMap map = DefaultMap();
 
 			MockActor a = new MockActor("a");
-			StratusVector3Int aStart = new StratusVector3Int(1, 1);
+			Vector3Int aStart = new Vector3Int(1, 1);
 			AssertSuccess(map.Set(MockLayer.Actor, a, aStart));
 
 			// Place B right next to A
 			MockActor b = new MockActor("b");
-			StratusVector3Int bStart = new StratusVector3Int(2, 1);
+			Vector3Int bStart = new Vector3Int(2, 1);
 			AssertSuccess(map.Set(MockLayer.Actor, b, bStart));
 
 			var aRange = map.GetRange(MockLayer.Actor, a, a.speed);
 			AssertContainsExactly(aRange, 
 				aStart, 
-				new StratusVector3Int(0, 1), 
-				new StratusVector3Int(1, 2), 
-				new StratusVector3Int(1, 0));
+				new Vector3Int(0, 1), 
+				new Vector3Int(1, 2), 
+				new Vector3Int(1, 0));
 		}
 
 		[Test]
@@ -215,18 +216,18 @@ namespace Stratus.Models.Tests
 			MockMap map = DefaultMap();
 
 			MockActor a = new MockActor("a");
-			StratusVector3Int aStart = new StratusVector3Int(1, 1);
+			Vector3Int aStart = new Vector3Int(1, 1);
 			AssertSuccess(map.Set(MockLayer.Actor, a, aStart));
-			StratusVector3Int badTerrainPos = new StratusVector3Int(2, 1);
+			Vector3Int badTerrainPos = new Vector3Int(2, 1);
 
 			// Initial range should be 1 + 4 surrounding tiles
 			var aRange = map.GetRange(MockLayer.Actor, a, a.speed);
 			AssertContainsExactly(aRange,
 				aStart,
-				new StratusVector3Int(0, 1),
+				new Vector3Int(0, 1),
 				badTerrainPos,
-				new StratusVector3Int(1, 2),
-				new StratusVector3Int(1, 0));
+				new Vector3Int(1, 2),
+				new Vector3Int(1, 0));
 
 			// If we make (2,1) cost 6, it should be unavailable
 			var terrain = map.Get<MockTerrain>(badTerrainPos);
@@ -234,18 +235,18 @@ namespace Stratus.Models.Tests
 			aRange = map.GetRange(MockLayer.Actor, a, a.speed);
 			AssertContainsExactly(aRange,
 				aStart,
-				new StratusVector3Int(0, 1),
-				new StratusVector3Int(1, 2),
-				new StratusVector3Int(1, 0));
+				new Vector3Int(0, 1),
+				new Vector3Int(1, 2),
+				new Vector3Int(1, 0));
 
 			// If we move the agent to 0,0 and give them 15 speed,
 			// they should cover all cells except (2,2)
-			map.Set(MockLayer.Actor, a, new StratusVector3Int(0, 0));
+			map.Set(MockLayer.Actor, a, new Vector3Int(0, 0));
 			a.speed = 15;
 			terrain.traversalCost = 5;
 			aRange = map.GetRange(MockLayer.Actor, a, a.speed);
 			Assert.AreEqual(8, aRange.Count, aRange.ToStringJoin());
-			Assert.False(aRange.ContainsKey(new StratusVector3Int(2, 2)));
+			Assert.False(aRange.ContainsKey(new Vector3Int(2, 2)));
 		}
 
 		[Test]
@@ -254,18 +255,18 @@ namespace Stratus.Models.Tests
 			MockMap map = DefaultMap();
 
 			MockActor a = new MockActor("a");
-			StratusVector3Int aStart = new StratusVector3Int(0, 0);
+			Vector3Int aStart = new Vector3Int(0, 0);
 			map.Set(MockLayer.Actor, a, aStart);
 
 			MockActor b = new MockActor("b");
-			StratusVector3Int bStart = new StratusVector3Int(1, 1);
+			Vector3Int bStart = new Vector3Int(1, 1);
 			map.Set(MockLayer.Actor, b, bStart);
 
 			// First, itself
 			MockObject[] objectsInRange = map.GetObjectsInRange(a, new GridSearchRangeArguments(a.speed));
 			AssertLength(1, objectsInRange);
 			// Move B nex to A
-			map.Set(b, new StratusVector3Int(1, 0));
+			map.Set(b, new Vector3Int(1, 0));
 			objectsInRange = map.GetObjectsInRange(a, new GridSearchRangeArguments(a.speed));
 			AssertLength(2, objectsInRange);
 		}
@@ -276,21 +277,21 @@ namespace Stratus.Models.Tests
 			MockMap map = DefaultMap();
 
 			MockActor a = new MockActor("a");
-			StratusVector3Int aStart = new StratusVector3Int(0, 0);
+			Vector3Int aStart = new Vector3Int(0, 0);
 			map.Set(MockLayer.Actor, a, aStart);
 
-			StratusVector3Int aEnd = new StratusVector3Int(2, 0);
+			Vector3Int aEnd = new Vector3Int(2, 0);
 			var path = map.SearchPath(aStart, aEnd).ToHashSet();
 			Assert.AreEqual(3, path.Count);
 			AssertContains(path, aStart);
-			AssertContains(path, new StratusVector3Int(1, 0));
-			AssertContains(path, new StratusVector3Int(2, 0));
+			AssertContains(path, new Vector3Int(1, 0));
+			AssertContains(path, new Vector3Int(2, 0));
 
 		}
 
 		MockMap DefaultMap()
 		{
-			MockMap map = new MockMap(new StratusVector3Int(3, 3));
+			MockMap map = new MockMap(new Vector3Int(3, 3));
 			map.Fill(MockLayer.Terrain, () => new MockTerrain("Grass", 5));
 			map.Associate<MockTerrain>(MockLayer.Terrain);
 			map.Associate<MockActor>(MockLayer.Actor);

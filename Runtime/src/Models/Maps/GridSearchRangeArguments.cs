@@ -1,4 +1,5 @@
-﻿using Stratus.Search;
+﻿using Stratus.Numerics;
+using Stratus.Search;
 
 using System;
 
@@ -23,7 +24,7 @@ namespace Stratus.Models.Maps
 
 		public int minimum { get; }
 		public int maximum { get; }
-		public Func<StratusVector3Int, float> traversalCostFunction { get; set; }
-		public StratusTraversalPredicate<StratusVector3Int> traversableFunction { get; set; }
+		public Func<Vector3Int, float> traversalCostFunction { get; set; }
+		public StratusTraversalPredicate<Vector3Int> traversableFunction { get; set; }
 	}
 }

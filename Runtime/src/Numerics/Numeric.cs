@@ -1,6 +1,6 @@
 using System;
 
-namespace Stratus.Types
+namespace Stratus.Numerics
 {
 	/// <summary>
 	/// @note   Credit to Or Aviram: 
