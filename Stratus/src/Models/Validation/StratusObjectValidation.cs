@@ -8,7 +8,7 @@ namespace Stratus
 	/// <summary>
 	/// A validation message for the user
 	/// </summary>
-	public class StratusObjectValidation : StratusOperationResult
+	public class StratusObjectValidation : Result
 	{
 		//------------------------------------------------------------------------/
 		// Declarations

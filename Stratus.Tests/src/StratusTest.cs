@@ -28,12 +28,12 @@ namespace Stratus.Editor.Tests
 			}
 		}
 
-		public static void AssertSuccess(StratusOperationResult result)
+		public static void AssertSuccess(Result result)
 		{
 			Assert.True(result.valid, result.message);
 		}
 
-		public static void AssertFailure(StratusOperationResult result)
+		public static void AssertFailure(Result result)
 		{
 			Assert.False(result.valid, result.message);
 		}

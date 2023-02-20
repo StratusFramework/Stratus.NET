@@ -124,23 +124,23 @@ namespace Stratus.Models.Maps
 		#endregion
 
 		#region Accessors
-		public StratusOperationResult ContainsCell(Vector3Int position)
+		public Result ContainsCell(Vector3Int position)
 		{
 			if (!grid.Contains(position))
 			{
-				return new StratusOperationResult(false, $"Map does not contain cell {position}");
+				return new Result(false, $"Map does not contain cell {position}");
 			}
-			return new StratusOperationResult(true, $"Map contains cell {position}");
+			return new Result(true, $"Map contains cell {position}");
 		}
 
-		public StratusOperationResult ContainsCell(int x, int y) => ContainsCell(new Vector3Int(x, y));
+		public Result ContainsCell(int x, int y) => ContainsCell(new Vector3Int(x, y));
 
 		/// <summary>
 		/// Fills all the cells of a given layer with the given objects
 		/// </summary>
 		/// <returns></returns>
 		/// <remarks>The objects to be added must still be unique/remarks>
-		public StratusOperationResult Fill<UObject>(TLayer layer, Func<UObject> ctor)
+		public Result Fill<UObject>(TLayer layer, Func<UObject> ctor)
 			where UObject : TObject
 		{
 			var typeCheck = IsValid(layer, typeof(UObject));
@@ -157,7 +157,7 @@ namespace Stratus.Models.Maps
 			return true;
 		}
 
-		public StratusOperationResult Set(TLayer layer, TObject obj, Vector3Int position, bool move = true)
+		public Result Set(TLayer layer, TObject obj, Vector3Int position, bool move = true)
 		{
 			// Check the type
 			var typeCheck = IsValid(layer, obj);
@@ -174,42 +174,42 @@ namespace Stratus.Models.Maps
 				}
 				else
 				{
-					return new StratusOperationResult(false, $"{obj} is already present in the layer at {objectPositionsByLayer[layer][obj]}");
+					return new Result(false, $"{obj} is already present in the layer at {objectPositionsByLayer[layer][obj]}");
 				}
 			}
 
 			if (Contains(layer, position))
 			{
-				return new StratusOperationResult(false, $"{Get(layer, position)} is already present in the layer at {position}");
+				return new Result(false, $"{Get(layer, position)} is already present in the layer at {position}");
 			}
 
 			objectPositionsByLayer[layer].Add(position, obj);
 			return true;
 		}
 
-		public StratusOperationResult Set<UObject>(UObject obj, Vector3Int position, bool move = true)
+		public Result Set<UObject>(UObject obj, Vector3Int position, bool move = true)
 			where UObject : TObject
 		{
 			TLayer layer = GetLayer<UObject>();
 			return Set(layer, obj, position, move);
 		}
 
-		public StratusOperationResult Remove(TLayer layer, TObject obj)
+		public Result Remove(TLayer layer, TObject obj)
 		{
 			if (!Contains(layer, obj))
 			{
-				return new StratusOperationResult(false, $"{obj} is not present in the layer {layer}");
+				return new Result(false, $"{obj} is not present in the layer {layer}");
 			}
 
 			return objectPositionsByLayer[layer].Remove(obj);
 		}
 
-		public StratusOperationResult Contains(TLayer layer, TObject obj)
+		public Result Contains(TLayer layer, TObject obj)
 		{
 			return objectPositionsByLayer[layer].Contains(obj);
 		}
 
-		public StratusOperationResult Contains(TLayer layer, Vector3Int position)
+		public Result Contains(TLayer layer, Vector3Int position)
 		{
 			return objectPositionsByLayer[layer].Contains(position);
 		}
@@ -257,7 +257,7 @@ namespace Stratus.Models.Maps
 			return layers.Select(l => Get(l, position)).Where(o => o != null).ToArray();
 		}
 
-		public StratusOperationResult ForEach<UObject>(TLayer layer, Action<UObject> action)
+		public Result ForEach<UObject>(TLayer layer, Action<UObject> action)
 			where UObject : TObject
 		{
 			bool check = IsValid(layer, typeof(UObject));
@@ -274,7 +274,7 @@ namespace Stratus.Models.Maps
 			return true;
 		}
 
-		public StratusOperationResult ForEach<UObject>(TLayer layer, Predicate<UObject> action)
+		public Result ForEach<UObject>(TLayer layer, Predicate<UObject> action)
 			where UObject : TObject
 		{
 			bool check = IsValid(layer, typeof(UObject));
@@ -287,7 +287,7 @@ namespace Stratus.Models.Maps
 			{
 				if (!action((UObject)kvp.Value))
 				{
-					return new StratusOperationResult(false, $"Predicate failed for {kvp.Value}");
+					return new Result(false, $"Predicate failed for {kvp.Value}");
 				}
 			}
 
@@ -313,19 +313,19 @@ namespace Stratus.Models.Maps
 		}
 
 		/// <returns>Whether that object is valid for the given layer</returns>
-		public StratusOperationResult IsValid(TLayer layer, TObject obj)
+		public Result IsValid(TLayer layer, TObject obj)
 		{
 			return IsValid(layer, obj.GetType());
 		}
 
 		/// <returns>Whether that type is valid for the given layer</returns>
-		public StratusOperationResult IsValid(TLayer layer, Type type)
+		public Result IsValid(TLayer layer, Type type)
 		{
 			if (!typesByLayer.Contains(layer) || typesByLayer[layer] == type)
 			{
 				return true;
 			}
-			return new StratusOperationResult(false, $"{type} is not valid for layer {layer}");
+			return new Result(false, $"{type} is not valid for layer {layer}");
 		}
 		#endregion
 

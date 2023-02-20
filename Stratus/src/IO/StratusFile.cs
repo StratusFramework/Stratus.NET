@@ -21,27 +21,27 @@ namespace Stratus
 		public ObjectSerializer serializer { get; private set; }
 
 		#region Serialization
-		public StratusOperationResult Serialize(T data)
+		public Result Serialize(T data)
 		{
 			this.data = data;
 			return Serialize();
 		}
 
-		public StratusOperationResult Serialize()
+		public Result Serialize()
 		{
 			if (!valid)
 			{
-				return new StratusOperationResult(false, "No file path has been set");
+				return new Result(false, "No file path has been set");
 			}
 
 			return serializer.TrySerialize(data, file.FullName);
 		}
 
-		public StratusOperationResult<T> Deserialize()
+		public Result<T> Deserialize()
 		{
 			if (!valid)
 			{
-				return new StratusOperationResult<T>(false, null, "No file path has been set");
+				return new Result<T>(false, null, "No file path has been set");
 			}
 
 			T _data;
@@ -50,7 +50,7 @@ namespace Stratus
 			{
 				data = (T)_data;
 			}
-			return new StratusOperationResult<T>(data != null, data);
+			return new Result<T>(data != null, data);
 		}
 
 		public StratusFile WithJson()

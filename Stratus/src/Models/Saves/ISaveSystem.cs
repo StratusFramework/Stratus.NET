@@ -16,8 +16,8 @@ namespace Stratus.Models.Saves
 	{
 		SaveType[] saves { get; }
 		SaveType CreateSave(Action<SaveType> onCreated = null);
-		StratusOperationResult SaveAs(SaveType save, string fileName);
-		StratusOperationResult Save(SaveType save);
+		Result SaveAs(SaveType save, string fileName);
+		Result Save(SaveType save);
 		SaveType Load(SaveFileInfo file);
 		SaveType GetSaveAtIndex(int index);
 	}

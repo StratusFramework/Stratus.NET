@@ -285,7 +285,7 @@ namespace Stratus.Extensions
 		/// Compares two arrays to determine whether they have equal values
 		/// </summary>
 		/// <returns>True if both arrays are equal in value by comparison</returns>
-		public static StratusOperationResult IsComparableByValues<T>(this T[] first, T[] second)
+		public static Result IsComparableByValues<T>(this T[] first, T[] second)
 		{
 			if (first.Length != second.Length)
 			{
@@ -295,7 +295,7 @@ namespace Stratus.Extensions
 				{
 					message += $"\n[{first.ToStringJoin()}] <-> [{second.ToStringJoin()}]";
 				}
-				return new StratusOperationResult(false, message);
+				return new Result(false, message);
 			}
 
 			// Sort, then compare linearly
@@ -311,7 +311,7 @@ namespace Stratus.Extensions
 				{
 					if (!a[i].Equals(b[i]))
 					{
-						return new StratusOperationResult(false, $"After sorting, the first collection has item {a[i]} while the second has {b[i]}");
+						return new Result(false, $"After sorting, the first collection has item {a[i]} while the second has {b[i]}");
 					}
 				}
 			}
@@ -323,13 +323,13 @@ namespace Stratus.Extensions
 				{
 					if (!set.Contains(value))
 					{
-						return new StratusOperationResult(false, $"First array did not have value {value}");
+						return new Result(false, $"First array did not have value {value}");
 					}
 					set.Remove(value);
 				}
 				if (set.Count != 0)
 				{
-					return new StratusOperationResult(false, $"There were items ({set.Count}) present in the first not in the second");
+					return new Result(false, $"There were items ({set.Count}) present in the first not in the second");
 				}
 			}
 

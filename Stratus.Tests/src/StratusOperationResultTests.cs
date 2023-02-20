@@ -12,23 +12,23 @@ namespace Stratus.Editor.Tests
 			bool valid = true;
 			string message = "Blah blah BLAH!";
 
-			StratusOperationResult result = null;
+			Result result = null;
 
-			result = new StratusOperationResult(valid, message);
+			result = new Result(valid, message);
 			Assert.AreEqual(result.valid, valid);
 			Assert.AreEqual(result.message, message);
 
-			result = new StratusOperationResult(valid);
+			result = new Result(valid);
 			Assert.AreEqual(result.valid, valid);
 			Assert.Null(result.message);
 
-			result = new StratusOperationResult(new Exception(message));
+			result = new Result(new Exception(message));
 			Assert.False(result.valid);
 			Assert.False(result);
 			Assert.AreEqual(result.message, message);
 
 			int value = 7;
-			var result2 = new StratusOperationResult<int>(valid, value, message);
+			var result2 = new Result<int>(valid, value, message);
 			Assert.AreEqual(result2.valid, valid);
 			Assert.AreEqual(result2.message, message);
 			Assert.AreEqual(result2.result, value);
@@ -40,7 +40,7 @@ namespace Stratus.Editor.Tests
 		{
 			string msg = "Dominus";
 			{
-				StratusOperationResult result = new StratusOperationResult(true, msg);
+				Result result = new Result(true, msg);
 				Assert.True(result);
 				result = false;
 				Assert.False(result);
@@ -48,7 +48,7 @@ namespace Stratus.Editor.Tests
 			}
 			{
 				int value = 42;
-				StratusOperationResult<int> result = 42;
+				Result<int> result = 42;
 				Assert.True(result);
 				Assert.True(result.valid);
 				Assert.True(result);

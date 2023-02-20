@@ -159,7 +159,7 @@ namespace Stratus.Extensions
 		/// <summary>
 		/// Compares two arrays to determine whether they have equal values
 		/// </summary>
-		public static StratusOperationResult IsEqualInValues<T>(this ICollection<T> first, ICollection<T> second)
+		public static Result IsEqualInValues<T>(this ICollection<T> first, ICollection<T> second)
 		{
 			return first.ToArray().IsComparableByValues(second.ToArray());
 		}

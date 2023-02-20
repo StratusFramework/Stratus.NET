@@ -234,7 +234,7 @@ namespace Stratus.Models.Saves
 		/// Saves the data to the default path in the application's persistent path
 		/// using the specified name
 		/// </summary>
-		public StratusOperationResult SaveAs(SaveType save, string filePath)
+		public Result SaveAs(SaveType save, string filePath)
 		{
 			// Create the directory if missing
 			if (!Directory.Exists(saveDirectoryPath))
@@ -262,7 +262,7 @@ namespace Stratus.Models.Saves
 		/// Saves new data with a generated save name
 		/// </summary>
 		/// <param name="save"></param>
-		public StratusOperationResult Save(SaveType save)
+		public Result Save(SaveType save)
 		{
 			if (save.serialized)
 			{

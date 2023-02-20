@@ -39,7 +39,7 @@ namespace Stratus
 		/// Prints the given operation result to the console
 		/// </summary>
 		/// <param name="value"></param>
-		public static void Log(this IStratusLogger logger, StratusOperationResult result) => StratusLog.Result(result);
+		public static void Log(this IStratusLogger logger, Result result) => StratusLog.Result(result);
 	}
 
 	public abstract class StratusLogger
@@ -92,7 +92,7 @@ namespace Stratus
 			instance.Value.LogException(ex);
 		}
 
-		public static void Result(StratusOperationResult result)
+		public static void Result(Result result)
 		{
 			if (result)
 			{

@@ -19,7 +19,7 @@ namespace Stratus
 			return $"{attr.name ?? type.Name}.{attr.extension}";
 		}
 
-		public static StratusOperationResult<object> Create(Type type, string filePath, ObjectSerializer serializer)
+		public static Result<object> Create(Type type, string filePath, ObjectSerializer serializer)
 		{
 			var instance = ObjectUtility.Instantiate(type);
 			serializer.Serialize(instance, filePath);

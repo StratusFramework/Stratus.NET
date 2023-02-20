@@ -13,7 +13,7 @@ namespace Stratus.Models.Saves
 		bool loaded { get; }
 		Dictionary<string, string> ComposeDetailedStringMap();
 		void Unload();
-		StratusOperationResult LoadAsync(Action onLoad);
+		Result LoadAsync(Action onLoad);
 	}
 
 	public enum SaveType
@@ -162,7 +162,7 @@ namespace Stratus.Models.Saves
 		/// </summary>
 		/// <param name="onLoad"></param>
 		/// <returns></returns>
-		public virtual StratusOperationResult Load()
+		public virtual Result Load()
 		{
 			return true;
 		}
@@ -171,7 +171,7 @@ namespace Stratus.Models.Saves
 		/// Loads this save asynchronously, invoking the given action afterwards.
 		/// </summary>
 		/// <param name="onLoad"></param>
-		public virtual StratusOperationResult LoadAsync(Action onLoad)
+		public virtual Result LoadAsync(Action onLoad)
 		{
 			onLoad?.Invoke();
 			return true;
@@ -282,26 +282,26 @@ namespace Stratus.Models.Saves
 			}
 		}
 
-		public override StratusOperationResult Load()
+		public override Result Load()
 		{
 			return LoadData();
 		}
 
-		public override StratusOperationResult LoadAsync(Action onLoad)
+		public override Result LoadAsync(Action onLoad)
 		{
 			return LoadDataAsync(onLoad);
 		}
 
-		public virtual StratusOperationResult LoadData()
+		public virtual Result LoadData()
 		{
 			if (dataLoaded)
 			{
-				return new StratusOperationResult(true, "Data already loaded");
+				return new Result(true, "Data already loaded");
 			}
 
 			if (!serialized)
 			{
-				return new StratusOperationResult(false, "Cannot load data before the save has been serialized");
+				return new Result(false, "Cannot load data before the save has been serialized");
 			}
 
 			try
@@ -310,18 +310,18 @@ namespace Stratus.Models.Saves
 			}
 			catch (Exception e)
 			{
-				return new StratusOperationResult(false, e.ToString());
+				return new Result(false, e.ToString());
 			}
 
 			if (data == null)
 			{
-				return new StratusOperationResult(false, $"Failed to deserialize data from {dataFilePath}");
+				return new Result(false, $"Failed to deserialize data from {dataFilePath}");
 			}
 
-			return new StratusOperationResult(true, $"Loaded data file from {dataFilePath}");
+			return new Result(true, $"Loaded data file from {dataFilePath}");
 		}
 
-		public virtual StratusOperationResult LoadDataAsync(Action onLoad)
+		public virtual Result LoadDataAsync(Action onLoad)
 		{
 			return LoadData();
 		}
