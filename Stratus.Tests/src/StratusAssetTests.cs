@@ -54,7 +54,7 @@ namespace Stratus.Tests.Editor
 			collection.Add(a);
 
 			StratusFile<MockAsset> file = new StratusFile<MockAsset>();
-			file.AtTemporaryPath().WithJSON();
+			file.AtTemporaryPath().WithJson();
 			file.Serialize(a);
 
 			var deserialization = file.Deserialize();

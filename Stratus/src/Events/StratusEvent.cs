@@ -83,7 +83,7 @@ namespace Stratus
 
 		public static StratusEvent Instantiate(Type type, string data)
 		{
-			return (StratusEvent)StratusJSONSerializerUtility.Deserialize(data, type);
+			return (StratusEvent)JsonSerializationUtility.Deserialize(data, type);
 		}
 
 

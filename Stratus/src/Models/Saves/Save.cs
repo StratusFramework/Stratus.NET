@@ -247,7 +247,7 @@ namespace Stratus.Models.Saves
 		/// <summary>
 		/// The data serializer
 		/// </summary>
-		public static readonly StratusJSONSerializer<TData> dataSerializer = new StratusJSONSerializer<TData>();
+		public static readonly ObjectSerializer dataSerializer = new JsonObjectSerializer();
 
 		/// <summary>
 		/// The extension used for save data
@@ -306,7 +306,7 @@ namespace Stratus.Models.Saves
 
 			try
 			{
-				data = dataSerializer.Deserialize(dataFilePath);
+				data = dataSerializer.Deserialize<TData>(dataFilePath);
 			}
 			catch (Exception e)
 			{

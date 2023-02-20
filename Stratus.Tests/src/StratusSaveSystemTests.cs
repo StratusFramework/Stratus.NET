@@ -36,7 +36,7 @@ namespace Stratus
 			}
 		}
 		
-		internal class MockSaveSystem : SaveSystem<MockSave, StratusJSONSerializer<MockSave>>
+		internal class MockSaveSystem : SaveSystem<MockSave, JsonObjectSerializer>
 		{
 			public MockSaveSystem(SaveSystemConfiguration configuration) : base(Path.GetTempPath(), configuration)
 			{

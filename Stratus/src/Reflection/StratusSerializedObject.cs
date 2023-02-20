@@ -41,11 +41,11 @@ namespace Stratus.Reflection
 		//------------------------------------------------------------------------/
 		// Methods
 		//------------------------------------------------------------------------/
-		public string Serialize() => StratusJSONSerializerUtility.Serialize(this.target);
+		public string Serialize() => JsonSerializationUtility.Serialize(this.target);
 
 		public void Deserialize(string data)
 		{
-			target = StratusJSONSerializerUtility.Deserialize(data, type);
+			target = JsonSerializationUtility.Deserialize(data, type);
 		}
 
 		public string PrintHierarchy()

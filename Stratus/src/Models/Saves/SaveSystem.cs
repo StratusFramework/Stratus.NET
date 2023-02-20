@@ -24,7 +24,7 @@ namespace Stratus.Models.Saves
 	public class SaveSystem<SaveType, SerializerType> : SaveSystem,
 		 ISaveSystem<SaveType>
 		where SaveType : Save, new()
-		where SerializerType : StratusSerializer<SaveType>, new()
+		where SerializerType : ObjectSerializer, new()
 	{
 		#region Properties
 		/// <summary>
@@ -374,7 +374,7 @@ namespace Stratus.Models.Saves
 			if (!File.Exists(filePath))
 				throw new FileNotFoundException("The file was not found!");
 
-			SaveType saveData = serializer.Deserialize(filePath);
+			SaveType saveData = serializer.Deserialize<SaveType>(filePath);
 			saveData.OnAfterDeserialize();
 			saveData.OnAnySerialization(filePath);
 			return saveData;
