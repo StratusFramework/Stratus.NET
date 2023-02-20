@@ -6,8 +6,8 @@ namespace Stratus.Serialization
 {
 	public interface IObjectSerializer
 	{
-		void Serialize<T>(T value, string filePath);
-		T Deserialize<T>(string filePath);
+		Result Serialize<T>(T value, string filePath);
+		Result<T> Deserialize<T>(string filePath);
 	}
 
 	/// <summary>
@@ -16,58 +16,57 @@ namespace Stratus.Serialization
 	/// <typeparam name="T"></typeparam>
 	public abstract class ObjectSerializer : IObjectSerializer
 	{
-		protected abstract void OnSerialize<T>(T value, string filePath);
-		protected abstract T OnDeserialize<T>(string filePath);
+		protected abstract Result OnSerialize<T>(T value, string filePath);
+		protected abstract Result<T> OnDeserialize<T>(string filePath);
 
-		public void Serialize<T>(T data, string filePath)
+		public Result Serialize<T>(T data, string filePath)
 		{
 			if (data == null)
 			{
-				throw new ArgumentNullException("No data to serialize");
+				return new Result(false, "No data to serialize");
 			}
 
 			if (filePath.IsNullOrEmpty())
 			{
-				throw new ArgumentNullException("No file path given");
+				return new Result(false, "No file path given");
 			}
 
-			OnSerialize(data, filePath);
+			return OnSerialize(data, filePath);
 		}
 
-		public T Deserialize<T>(string filePath)
+		public Result<T> Deserialize<T>(string filePath)
 		{
 			if (filePath.IsNullOrEmpty())
 			{
-				throw new ArgumentNullException("No file path given");
+				return new Result<T>(false, default, "No file path given");
 			}
 			return OnDeserialize<T>(filePath);
 		}
 
-		public bool TrySerialize<T>(T data, string filePath)
+		public Result TrySerialize<T>(T data, string filePath)
 		{
 			try
 			{
-				Serialize(data, filePath);
+				return Serialize(data, filePath);
 			}
-			catch (Exception e)
+			catch (Exception ex)
 			{
-				return false;
-			}
-			return true;
+				return new Result(ex);
+			};
 		}
 
-		public bool TryDeserialize<T>(string filePath, out T data)
+		public Result TryDeserialize<T>(string filePath, out T data)
 		{
 			try
 			{
 				data = Deserialize<T>(filePath);
+				return true;
 			}
-			catch (Exception e)
+			catch (Exception ex)
 			{
 				data = default;
-				return false;
+				return new Result(ex);
 			}
-			return true;
 		}
 	}
 }

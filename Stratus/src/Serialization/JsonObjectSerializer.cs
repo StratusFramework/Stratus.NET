@@ -12,16 +12,17 @@ namespace Stratus.Serialization
 	{
 		private JsonSerializerSettings settings = new JsonSerializerSettings();
 
-		protected override T OnDeserialize<T>(string filePath)
+		protected override Result<T> OnDeserialize<T>(string filePath)
 		{
 			var serialization = File.ReadAllText(filePath);
 			return JsonConvert.DeserializeObject<T>(serialization, settings);
 		}
 
-		protected override void OnSerialize<T>(T value, string filePath)
+		protected override Result OnSerialize<T>(T value, string filePath)
 		{
 			var serialization = JsonConvert.SerializeObject(value, settings);
 			File.WriteAllText(filePath, serialization);
+			return true;
 		}
 	}
 }

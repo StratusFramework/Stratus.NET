@@ -1,6 +1,7 @@
 using NUnit.Framework;
 
 using Stratus.Editor.Tests;
+using Stratus.IO;
 
 using System.Collections.Generic;
 
@@ -53,7 +54,7 @@ namespace Stratus.Tests.Editor
 			StratusAssetCollection<MockAsset> collection = new StratusAssetCollection<MockAsset>();
 			collection.Add(a);
 
-			StratusFile<MockAsset> file = new StratusFile<MockAsset>();
+			AssetFile<MockAsset> file = new AssetFile<MockAsset>();
 			file.AtTemporaryPath().WithJson();
 			file.Serialize(a);
 

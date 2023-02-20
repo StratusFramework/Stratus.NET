@@ -1,9 +1,11 @@
-﻿namespace Stratus
+﻿using System;
+
+namespace Stratus.Timers
 {
 	/// <summary>
 	/// Provides an easy way to manage cooldowns
 	/// </summary>
-	public class StratusCooldown
+	public class Cooldown
 	{
 		/// <summary>
 		/// Whether this cooldown timer is currently ticking
@@ -18,15 +20,15 @@
 		/// <summary>
 		/// The internal countdown used by this timer
 		/// </summary>
-		private StratusCountdown countdown;
+		private Countdown countdown;
 
 		/// <param name="cooldownPeriod">How long this cooldown will take</param>
 		/// <param name="startOnCooldown">Whether the cooldown should be active immediately</param>
-		public StratusCooldown(float cooldownPeriod, bool startOnCooldown = false, StratusTimer.Callback onFinished = null)
+		public Cooldown(float cooldownPeriod, bool startOnCooldown = false, Action onFinished = null)
 		{
-			countdown = new StratusCountdown(cooldownPeriod);
+			countdown = new Countdown(cooldownPeriod);
 			if (!startOnCooldown) countdown.Finish();
-			if (onFinished != null) this.countdown.SetCallback(onFinished);
+			if (onFinished != null) this.countdown.WhenFinished(onFinished);			
 		}
 
 		/// <summary>
@@ -49,7 +51,5 @@
 
 			return false;
 		}
-
 	}
-
 }

@@ -1,18 +1,13 @@
-namespace Stratus
+using System;
+
+namespace Stratus.Timers
 {
 	/// <summary>
 	/// The base class for all timers
 	/// </summary>
-	public abstract class StratusTimer
+	public abstract class Timer
 	{
-		/// <summary>
-		/// A zero-argument for when a timer has finished (which depends on its type)
-		/// </summary>
-		public delegate void Callback();
-
-		//------------------------------------------------------------------------/
-		// Properties
-		//------------------------------------------------------------------------/
+		#region Properties
 		/// <summary>
 		/// Returns the maximum duration for this timer
 		/// </summary>
@@ -32,7 +27,7 @@ namespace Stratus
 		/// <summary>
 		/// The current progress in this timer as a percentage value ranging from 0 to 1.
 		/// </summary>
-		public virtual float normalizedProgress { get { if (total == 0.0f) return 0.0f; return (current / total); } }
+		public virtual float normalizedProgress { get { if (total == 0.0f) return 0.0f; return current / total; } }
 		/// <summary>
 		/// The inverse of the normalized progress, as a percentage value ranging from 0 to 1
 		/// </summary>
@@ -40,30 +35,27 @@ namespace Stratus
 		/// <summary>
 		/// The current progress in this timer as a percentage value ranging from 0 to 100.
 		/// </summary>
-		public virtual float progress { get { if (total == 0.0f) return 0.0f; return (current / total) * 100.0f; } }
+		public virtual float progress { get { if (total == 0.0f) return 0.0f; return current / total * 100.0f; } }
 		/// <summary>
 		/// Whether this timer should automatically reset when it has finished
 		/// </summary>
 		public bool resetOnFinished { get; set; } = false;
+		#endregion
 
-		//------------------------------------------------------------------------/
-		// Fields
-		//------------------------------------------------------------------------/
+		#region Events
 		/// <summary>
 		/// The callback function for when this timer finishes
 		/// </summary>
-		Callback onFinished;
+		public event Action onFinished;
+		#endregion
 
-		//------------------------------------------------------------------------/
-		// Interface
-		//------------------------------------------------------------------------/
+		#region Virtual
 		public abstract void Set(float time);
 		public abstract bool Update(float dt);
 		protected abstract void OnReset();
+		#endregion
 
-		//------------------------------------------------------------------------/
-		// Ro
-		//------------------------------------------------------------------------/
+		#region Interface
 		/// <summary>
 		/// Finishes the timer
 		/// </summary>
@@ -80,7 +72,7 @@ namespace Stratus
 		/// Sets a callback function to be called when this timer finishes
 		/// </summary>
 		/// <param name="onFinished"></param>
-		public void SetCallback(Callback onFinished)
+		public void WhenFinished(Action onFinished)
 		{
 			this.onFinished = onFinished;
 		}
@@ -92,10 +84,7 @@ namespace Stratus
 		{
 			isFinished = false;
 			this.OnReset();
-		}
-	}	
-}
-
-namespace Stratus.Extensions
-{
+		} 
+		#endregion
+	}
 }

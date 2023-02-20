@@ -1,10 +1,10 @@
-﻿namespace Stratus
+﻿namespace Stratus.Timers
 {
 	/// <summary>
 	/// Counts down from the specified amount of time. 
 	/// From <i>n</i> amount of time to 0.0f;
 	/// </summary>
-	public class StratusCountdown : StratusTimer
+	public class Countdown : Timer
 	{
 		public override float remaining => this.current;
 
@@ -12,7 +12,7 @@
 		/// Constructor for the countdown.
 		/// </summary>
 		/// <param name="total">The total amount of time to countdown.</param>
-		public StratusCountdown(float total)
+		public Countdown(float total)
 		{
 			this.total = total;
 			this.current = total;
@@ -54,6 +54,4 @@
 			return false;
 		}
 	}
-
-
 }

@@ -1,3 +1,5 @@
+using Stratus.Timers;
+
 namespace Stratus.Interpolation
 {
 	/// <summary>
@@ -11,7 +13,7 @@ namespace Stratus.Interpolation
 		protected T _currentValue;
 		protected T _EndingValue;
 		bool _Active;
-		StratusStopwatch Timer;
+		Stopwatch Timer;
 		#endregion
 
 		#region Virtual
@@ -67,7 +69,7 @@ namespace Stratus.Interpolation
 		/// <param name="time"></param>
 		public void Start(float time)
 		{
-			Timer = new StratusStopwatch(time);
+			Timer = new Stopwatch(time);
 			_Active = true;
 		}
 

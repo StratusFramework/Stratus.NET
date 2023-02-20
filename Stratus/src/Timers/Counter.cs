@@ -1,15 +1,12 @@
 ﻿using System;
 
-namespace Stratus
+namespace Stratus.Timers
 {
 	/// <summary>
 	/// A counter of items, which is incremented one at a time.
 	/// </summary>
-	public class StratusCounter
+	public class Counter
 	{
-		//------------------------------------------------------------------------/
-		// Properties
-		//------------------------------------------------------------------------/
 		/// <summary>
 		/// The upper bound of this counter
 		/// </summary>
@@ -45,7 +42,7 @@ namespace Stratus
 		{
 			get
 			{
-				return ((float)current / (float)total) * 100.0f;
+				return current / (float)total * 100.0f;
 			}
 		}
 
@@ -54,24 +51,18 @@ namespace Stratus
 		/// </summary>
 		public string completion { get { return current + "/" + total; } }
 
-		//------------------------------------------------------------------------/
-		// CTOR
-		//------------------------------------------------------------------------/
-		public StratusCounter(int total)
+		public Counter(int total)
 		{
 			this.total = total;
 			this.current = 0;
 		}
 
-		public StratusCounter()
+		public Counter()
 		{
 			this.total = 1;
 			this.current = 0;
 		}
 
-		//------------------------------------------------------------------------/
-		// Methods
-		//------------------------------------------------------------------------/
 		/// <summary>
 		/// Increments this counter
 		/// </summary>
@@ -104,8 +95,5 @@ namespace Stratus
 		{
 			current = total;
 		}
-
 	}
-
-
 }

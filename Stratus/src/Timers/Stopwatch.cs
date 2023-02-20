@@ -1,13 +1,13 @@
-﻿namespace Stratus
+﻿namespace Stratus.Timers
 {
 	/// <summary>
 	/// Counts up to the specified amount of time, starting from 0.0f.
 	/// </summary>
-	public class StratusStopwatch : StratusTimer
+	public class Stopwatch : Timer
 	{
 		public override float remaining => this.total - this.current;
 
-		public StratusStopwatch(float total)
+		public Stopwatch(float total)
 		{
 			this.total = total;
 			this.current = 0.0f;
