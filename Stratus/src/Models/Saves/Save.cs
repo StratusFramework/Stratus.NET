@@ -1,5 +1,6 @@
 ﻿using Stratus.Extensions;
 using Stratus.IO;
+using Stratus.Logging;
 using Stratus.Serialization;
 
 using System;

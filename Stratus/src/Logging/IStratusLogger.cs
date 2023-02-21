@@ -1,14 +1,25 @@
-﻿using Stratus.Types;
+﻿using Stratus.Logging;
+using Stratus.Types;
 
 using System;
 using System.Linq;
 
-namespace Stratus
+namespace Stratus.Logging
 {
 	public interface IStratusLogger
 	{
 	}
 
+	public enum LogType
+	{
+		Info,
+		Warning,
+		Error
+	}
+}
+
+namespace Stratus.Logging
+{
 	public static class IStratusLoggerExtensions
 	{
 		/// <summary>
@@ -41,7 +52,10 @@ namespace Stratus
 		/// <param name="value"></param>
 		public static void Log(this IStratusLogger logger, Result result) => StratusLog.Result(result);
 	}
+}
 
+namespace Stratus.Logging
+{
 	public abstract class StratusLogger
 	{
 		public static Lazy<Type[]> types = new Lazy<Type[]>(() => TypeUtility.SubclassesOf<StratusLogger>());
@@ -52,7 +66,10 @@ namespace Stratus
 		public abstract void LogException(Exception ex);
 
 	}
+}
 
+namespace Stratus
+{
 	public static class StratusLog
 	{
 		private static Lazy<StratusLogger> instance
@@ -61,7 +78,7 @@ namespace Stratus
 				if (StratusLogger.types.Value.Length > 0)
 				{
 					var implementations = StratusLogger.types.Value;
-					return (StratusLogger) ObjectUtility.Instantiate(implementations.First());
+					return (StratusLogger)ObjectUtility.Instantiate(implementations.First());
 				}
 				return null;
 			});
