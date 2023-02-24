@@ -29,6 +29,11 @@ namespace Stratus.Numerics
 			this.z = 0;
 		}
 
+		public override string ToString()
+		{
+			return $"({x},{y},{z})";
+		}
+
 		public static implicit operator Vector3Int(Vector3 value)
 		{
 			return new Vector3Int(value);
