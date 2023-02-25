@@ -3,6 +3,7 @@ using Stratus.Types;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
@@ -15,22 +16,15 @@ namespace Stratus.Systems
 		string usage { get; set; }
 		bool hidden { get; }
 		StratusConsoleCommandParameterInformation[] parameters { get; set; }
+		Action<string> invocation { get; set; }
 	}
 
 	public abstract class ConsoleCommand : IConsoleCommand
 	{
-		//------------------------------------------------------------------------/
-		// Declarations
-		//------------------------------------------------------------------------/
-		/// <summary>
-		/// The current history of commands
-		/// </summary>
+		#region Declarations
 		[Serializable]
 		public class History
 		{
-			/// <summary>
-			/// What type of console command entry was recorded
-			/// </summary>
 			public enum EntryType
 			{
 				Submit,
@@ -39,9 +33,6 @@ namespace Stratus.Systems
 				Error
 			}
 
-			/// <summary>
-			/// What kind of entry was recorded
-			/// </summary>
 			public struct Entry
 			{
 				public string text;
@@ -71,53 +62,58 @@ namespace Stratus.Systems
 			}
 		}
 
+		private class Instance
+		{
+			public IConsoleCommand commamd { get; }
+			public StratusConsoleCommandParameterInformation[] parameters { get; internal set; }
+			public Action<string> invocation { get; internal set; }
+
+			public Instance(IConsoleCommand commamd, StratusConsoleCommandParameterInformation[] parameters, Action<string> invocation)
+			{
+				this.commamd = commamd;
+				this.parameters = parameters;
+				this.invocation = invocation;
+			}
+		}
+
 		public delegate void EntryEvent(History.Entry e);
 		public delegate void SubmitEvent(string command);
+		#endregion
 
-		//------------------------------------------------------------------------/
-		// Fields
-		//------------------------------------------------------------------------/
+		#region Constants
 		public const char delimiter = ' ';
 		public const string delimiterStr = " ";
 		private static readonly BindingFlags flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
-		private static Dictionary<string, Action<string>> commandActions;
+		#endregion
 
-		//------------------------------------------------------------------------/
-		// Properties: Interface
-		//------------------------------------------------------------------------/
+		#region Properties
 		string IConsoleCommand.name { get; set; }
 		string IConsoleCommand.description { get; set; }
 		string IConsoleCommand.usage { get; set; }
 		bool IConsoleCommand.hidden { get; }
 		StratusConsoleCommandParameterInformation[] IConsoleCommand.parameters { get; set; }
+		public Action<string> invocation { get; set; }
+		#endregion
 
-		//------------------------------------------------------------------------/
-		// Properties: Static
-		//------------------------------------------------------------------------/
-		public static Type[] handlerTypes { get; private set; }
-		public static Dictionary<string, Type> handlerTypesByName { get; private set; }
-		public static IConsoleCommand[] commands { get; private set; }
-		public static Dictionary<string, IConsoleCommand> commandsByName { get; private set; }
-		public static History history { get; private set; }
-		public static string[] commandLabels { get; private set; }
-		public static string[] variableNames { get; private set; }
+		#region Static Properties
+		public static Lazy<Type[]> handlerTypes = new Lazy<Type[]>(() => TypeUtility.GetInterfaces(typeof(IConsoleCommandProvider)));
+		public static Lazy<Dictionary<string, Type>> handlerTypesByName = new Lazy<Dictionary<string, Type>>(() => handlerTypes.Value.ToDictionary(t => t.Name));
+		public static Lazy<IEnumerable<IConsoleCommand>> commands = new Lazy<IEnumerable<IConsoleCommand>>(Generate);
+		public static Lazy<Dictionary<string, IConsoleCommand>> commandsByName
+			= new Lazy<Dictionary<string, IConsoleCommand>>(() => commands.Value.ToDictionary(c => c.name));
+		private static Lazy<Dictionary<string, Action<string>>> commandActions =
+			new Lazy<Dictionary<string, Action<string>>>(() => commands.Value.ToDictionary(c => (c.name, c.invocation)));
+
+		public static History history { get; private set; } = new History();
 		public static string lastCommand => history.commands.LastOrDefault();
 		public static string latestResult => history.results.LastOrDefault();
 
-		//------------------------------------------------------------------------/
-		// Events
-		//------------------------------------------------------------------------/
+		#endregion
+
+		#region Events
 		public static event EntryEvent onEntry;
 		public static event SubmitEvent onSubmit;
-
-		//------------------------------------------------------------------------/
-		// Messages
-		//------------------------------------------------------------------------/
-		static ConsoleCommand()
-		{
-			RegisterCommands();
-			history = new History();
-		}
+		#endregion
 
 		//------------------------------------------------------------------------/
 		// Methods
@@ -147,7 +143,7 @@ namespace Stratus.Systems
 			for (int i = length; i >= 0; i--)
 			{
 				commandName = commandSplit.Take(i).Join(delimiterStr);
-				commandAction = commandActions.GetValueOrDefault(commandName);
+				commandAction = commandActions.Value.GetValueOrDefault(commandName);
 				if (commandAction != null)
 				{
 					if (i > 0)
@@ -226,24 +222,15 @@ namespace Stratus.Systems
 		//------------------------------------------------------------------------/
 		// Procedures
 		//------------------------------------------------------------------------/
-		private static void RegisterCommands()
+		private static IEnumerable<IConsoleCommand> Generate()
 		{
-			commandsByName = new Dictionary<string, IConsoleCommand>();
-			commandActions = new Dictionary<string, Action<string>>();
-
-			List<IConsoleCommand> commands = new List<IConsoleCommand>();
-			List<string> variableNames = new List<string>();
-
-			handlerTypes = TypeUtility.GetInterfaces(typeof(IConsoleCommandProvider));
-			handlerTypesByName = new Dictionary<string, Type>();
-			handlerTypesByName.AddRange(x => x.Name, handlerTypes);
-
-			foreach (Type handler in handlerTypes)
+			foreach (Type handler in handlerTypes.Value)
 			{
 				// Methods
 				foreach (MethodInfo method in handler.GetMethods(flags))
 				{
-					TryAddCommand(method, (command) =>
+					var command = GetCommand(method);
+					if (command != null)
 					{
 						command.parameters = ConsoleCommandParameterExtensions.DeduceMethodParameters(method);
 						if (command.usage.IsNullOrEmpty())
@@ -251,7 +238,7 @@ namespace Stratus.Systems
 							command.usage = $"({method.GetParameterNames()})";
 						}
 
-						commandActions.Add(command.name, (args) =>
+						command.invocation = (args) =>
 						{
 							object[] parsedArgs = Parse(command, args);
 							object returnValue = method.Invoke(null, parsedArgs);
@@ -259,14 +246,17 @@ namespace Stratus.Systems
 							{
 								RecordResult($"{command.name}({args}) = {returnValue}", $"{returnValue}");
 							}
-						});
-					});
+						};
+
+						yield return command;
+					}
 				}
 
 				// Fields
 				foreach (FieldInfo field in handler.GetFields(flags))
 				{
-					TryAddCommand(field, (command) =>
+					var command = GetCommand(field);
+					if (command != null)
 					{
 						command.parameters = ConsoleCommandParameterExtensions.DeduceParameters(field);
 						StratusConsoleCommandParameterInformation parameter = command.parameters[0];
@@ -275,7 +265,7 @@ namespace Stratus.Systems
 							command.usage = $"{parameter.type}";
 						}
 
-						commandActions.Add(command.name, (args) =>
+						command.invocation = (args) =>
 						{
 							bool hasValue = args.IsValid();
 							if (hasValue)
@@ -287,15 +277,17 @@ namespace Stratus.Systems
 								object value = field.GetValue(null);
 								RecordResult($"{command.name} = {value}", value);
 							}
-						});
+						};
 
-					});
+						yield return command;
+					}
 				}
 
 				// Properties
 				foreach (PropertyInfo property in handler.GetProperties(flags))
 				{
-					TryAddCommand(property, (command) =>
+					var command = GetCommand(property);
+					if (command != null)
 					{
 						command.parameters = ConsoleCommandParameterExtensions.DeduceParameters(property);
 						StratusConsoleCommandParameterInformation parameter = command.parameters[0];
@@ -308,7 +300,7 @@ namespace Stratus.Systems
 						bool hasSetter = property.GetSetMethod(true) != null;
 						if (hasSetter)
 						{
-							commandActions.Add(command.name, (args) =>
+							command.invocation = (args) =>
 							{
 								bool hasValue = args.IsValid();
 								if (hasValue)
@@ -320,11 +312,11 @@ namespace Stratus.Systems
 									object value = property.GetValue(null);
 									RecordResult($"{command.name} = {value}", value);
 								}
-							});
+							};
 						}
 						else
 						{
-							commandActions.Add(command.name, (args) =>
+							command.invocation = (args) =>
 							{
 								bool hasValue = args.IsValid();
 								if (hasValue)
@@ -336,40 +328,26 @@ namespace Stratus.Systems
 									object value = property.GetValue(null);
 									RecordResult($"{command.name} = {value}", value);
 								}
-							});
+							};
 						}
 
-					});
+						yield return command;
+					}
 				}
 			}
+		}
 
-			IConsoleCommand TryAddCommand(MemberInfo member, Action<IConsoleCommand> onCommandAdded)
+		private static IConsoleCommand GetCommand(MemberInfo member)
+		{
+			IConsoleCommand command = member.GetAttribute<ConsoleCommandAttribute>();
+			if (command != null)
 			{
-				IConsoleCommand command = member.GetAttribute<ConsoleCommandAttribute>();
-				if (command != null)
+				if (command.name.IsNullOrEmpty())
 				{
-					if (command.name.IsNullOrEmpty())
-					{
-						command.name = member.Name;
-					}
-
-					try
-					{
-						onCommandAdded(command);
-					}
-					catch (Exception ex)
-					{
-						StratusLog.Info($"Failed to add command {command}");
-						StratusLog.Exception(ex);
-					}
-					commandsByName.Add(command.name, command);
-					commands.Add(command);
+					command.name = member.Name;
 				}
-				return command;
 			}
-
-			ConsoleCommand.variableNames = variableNames.ToArray();
-			ConsoleCommand.commands = commands.ToArray();
+			return command;
 		}
 
 		public static object Parse(StratusConsoleCommandParameterInformation parameter, string arg)

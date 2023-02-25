@@ -16,7 +16,15 @@ namespace Stratus.Types
 
 		public ImplementationTypeInstancer(Type genericType)
 		{
-			implementations = new Lazy<Dictionary<Type, Type[]>>(() => TypeUtility.TypeDefinitionParameterMap(genericType));
+			implementations = new Lazy<Dictionary<Type, Type[]>>(() =>
+			{
+				var result = TypeUtility.TypeDefinitionParameterMap(genericType);
+				if (result.Count == 0)
+				{
+					StratusLog.Error($"Found no implementations for {genericType}");
+				}
+				return result;
+			});
 		}
 
 		/// <summary>
@@ -26,17 +34,21 @@ namespace Stratus.Types
 		/// <returns></returns>
 		public Type Resolve(Type parameterType)
 		{
-			var actionType = implementations.Value.GetValueOrDefault(parameterType).First();
-			return actionType;
+			var implementations = this.implementations.Value.GetValueOrDefault(parameterType);
+			if (implementations == null)
+			{
+				return null;
+			}
+			return implementations.First();
 		}
 
-		public bool TryResolve(Type parameterType, out T instance)
+		public Result TryResolve(Type parameterType, out T instance)
 		{
 			instance = default;
 			Type implType = Resolve(parameterType);
 			if (implType == null)
 			{
-				return false;
+				return new Result(false, $"Found no implementation for {parameterType}");
 			}
 			instance = Instantiate(implType);
 			return true;

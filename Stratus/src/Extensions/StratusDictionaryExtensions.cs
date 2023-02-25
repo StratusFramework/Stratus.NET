@@ -1,3 +1,5 @@
+using Stratus.Reflection;
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -331,6 +333,19 @@ namespace Stratus.Extensions
 					self[kvp.Key].AddRange(kvp.Value);
 				}
 			}
+		}
+
+		public static Dictionary<Key2, Value2> ToDictionaryFrom<Key, Value, Key2, Value2>(this Dictionary<Key, Value> original, 
+			Func<KeyValuePair<Key, Value>, (Key2 key, Value2 value)> selector)
+		{
+			Dictionary<Key2, Value2> result = new Dictionary<Key2, Value2>();
+			foreach (var kvp in original)
+			{
+				var output = selector(kvp);
+				result.Add(output.key, output.value);
+
+			}
+			return result;
 		}
 	}
 }

@@ -520,6 +520,27 @@ namespace Stratus.Extensions
 		}
 
 		/// <summary>
+		/// Returns a dictionary from the given enumerable, given a function to get the key for each value
+		/// </summary>
+		public static Dictionary<TKey, TValue> ToDictionary<TElement, TKey, TValue>(this IEnumerable<TElement> source,
+			Func<TElement, (TKey key, TValue value)> selector)
+		{
+			Dictionary<TKey, TValue> dictionary = new Dictionary<TKey, TValue>();
+			if (source != null)
+			{
+				foreach(var element in source)
+				{
+					if (element != null)
+					{
+						var kvp = selector(element);
+						dictionary.Add(kvp.key, kvp.value);
+					}
+				}
+			}
+			return dictionary;
+		}
+
+		/// <summary>
 		/// Returns a dictionary from the given enumerable, given a function to get a value for each key and a predicate
 		/// </summary>
 		public static Dictionary<Key, Value> ToDictionaryFromKey<Key, Value>(this IEnumerable<Key> source,

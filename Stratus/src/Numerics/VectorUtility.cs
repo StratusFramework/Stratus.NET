@@ -1,4 +1,8 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
+using System.Text.RegularExpressions;
+
+using Stratus.Extensions;
 
 namespace Stratus.Numerics
 {
@@ -33,22 +37,17 @@ namespace Stratus.Numerics
 		/// </summary>
 		public static Vector3 ParseVector3(string value)
 		{
-			// Remove the parentheses
-			if (value.StartsWith("(") && value.EndsWith(")"))
+			const string pattern = "(?<x>\\d+(\\.\\d+)?).(?<y>\\d+(\\.\\d+)?).(?<z>\\d+(\\.\\d+)?)";
+			value = value.Replace(" ", string.Empty);
+			var match = Regex.Match(value, pattern);
+			if (match.Success)
 			{
-				value = value.Substring(1, value.Length - 2);
+				var x = float.Parse(match.Groups["x"].Value);
+				var y = float.Parse(match.Groups["y"].Value);
+				var z = float.Parse(match.Groups["z"].Value);
+				return new Vector3(x, y, z);
 			}
-
-			// split the items
-			string[] values = value.Split(',');
-
-			// store as a Vector3
-			Vector3 result = new Vector3(
-				float.Parse(values[0]),
-				float.Parse(values[1]),
-				float.Parse(values[2]));
-
-			return result;
+			throw new Exception($"Failed to parse {value}");
 		}
 	}
 }

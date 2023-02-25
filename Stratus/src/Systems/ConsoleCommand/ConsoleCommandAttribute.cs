@@ -16,8 +16,8 @@ namespace Stratus.Systems
 		public string description { get; set; }
 		public string usage { get; set; }
 		public bool hidden { get; set; }
-
 		public StratusConsoleCommandParameterInformation[] parameters { get; set; }
+		public Action<string> invocation { get; set; }
 
 		public ConsoleCommandAttribute()
 		{

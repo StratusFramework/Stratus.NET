@@ -16,6 +16,12 @@ namespace Stratus.Editor.Tests
 
 		private static string lastCommand => ConsoleCommand.lastCommand;
 
+		[Test]
+		public void FindsCommands()
+		{
+			var values = ConsoleCommand.commands.Value;
+		}
+
 		//------------------------------------------------------------------------/
 		// Methods
 		//------------------------------------------------------------------------/
