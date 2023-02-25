@@ -1,110 +1,92 @@
-﻿using System;
+﻿using Stratus.Numerics;
+using Stratus.Types;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 
 namespace Stratus.Systems
 {
-	public enum ConsoleCommandParameter
+
+	public abstract class ConsoleCommandParameterHandler
 	{
-		Integer,
-		Float,
-		String,
-		Enum,
-		Boolean,
-		Object,
-		//Vector2,
-		//Vector3,
-		//Rect,
+		public abstract object Parse(string arg);
 	}
 
-	public abstract class ConsoleCommandParameter<T>
+	public abstract class ConsoleCommandParameterHandler<T> : ConsoleCommandParameterHandler
 	{
 		public readonly Type type = typeof(T);
 		public bool Matches(Type type) => this.type == type;
+
+		public override object Parse(string arg)
+		{
+			return OnParse(arg);
+		}
+
+		protected abstract T OnParse(string arg);
 	}
 
-	public static class ConsoleCommandParameterExtensions
+	#region Default Handler Implementations 
+	public class IntegerConsoleCommandParameterHandler : ConsoleCommandParameterHandler<int>
+	{
+		protected override int OnParse(string arg)
+		{
+			return int.Parse(arg);
+		}
+	}
+
+	public class BooleanConsoleCommandParameterHandler : ConsoleCommandParameterHandler<bool>
 	{
 		public const string booleanTrueAlternative = "on";
 		public const string booleanFalseAlternative = "off";
-		public const char delimiter = ConsoleCommand.delimiter;
 
-		//public static Type ToType(this StratusConsoleCommandParameter parameter)
-		//{
-		//	switch (parameter)
-		//	{
-		//		case StratusConsoleCommandParameter.Integer:
-		//			return typeof(int);
-		//		case StratusConsoleCommandParameter.Float:
-		//			return typeof(float);
-		//		case StratusConsoleCommandParameter.String:
-		//			return typeof(string);
-		//		case StratusConsoleCommandParameter.Boolean:
-		//			return typeof(bool);
-		//		case StratusConsoleCommandParameter.Enum:
-		//			return typeof(Enum);
-		//		case StratusConsoleCommandParameter.Vector2:
-		//			return typeof(Vector2);
-		//		case StratusConsoleCommandParameter.Vector3:
-		//			return typeof(Vector3);
-		//		case StratusConsoleCommandParameter.Rect:
-		//			return typeof(Rect);
-		//		case StratusConsoleCommandParameter.Object:
-		//			return typeof(object);
-		//	}
-		//	return null;
-		//}
-
-		public static bool TryDeduceParameter(Type type, out ConsoleCommandParameter parameter)
+		protected override bool OnParse(string arg)
 		{
-			if (type.Equals(typeof(int)))
+			bool value = false;
+			string lowercaseArg = arg.ToLower();
+			if (lowercaseArg.Equals(booleanTrueAlternative))
 			{
-				parameter = ConsoleCommandParameter.Integer;
-				return true;
+				value = true;
 			}
-			else if (type.Equals(typeof(float)))
+			else if (lowercaseArg.Equals(booleanFalseAlternative))
 			{
-				parameter = ConsoleCommandParameter.Float;
-				return true;
-			}
-			else if (type.Equals(typeof(string)))
-			{
-				parameter = ConsoleCommandParameter.String;
-				return true;
-			}
-			else if (type.Equals(typeof(bool)))
-			{
-				parameter = ConsoleCommandParameter.Boolean;
-				return true;
-			}
-			else if (type.IsEnum)
-			{
-				parameter = ConsoleCommandParameter.Enum;
-				return true;
+				value = false;
 			}
 			else
 			{
-				//if (type.Equals(typeof(Vector2)))
-				//{
-				//	parameter = StratusConsoleCommandParameter.Vector2;
-				//	return true;
-				//}
-				//else if (type.Equals(typeof(Vector3)))
-				//{
-				//	parameter = StratusConsoleCommandParameter.Vector3;
-				//	return true;
-				//}
-				//else if (type.Equals(typeof(Rect)))
-				//{
-				//	parameter = StratusConsoleCommandParameter.Rect;
-				//	return true;
-				//}
+				value = bool.Parse(arg);
 			}
-
-			parameter = ConsoleCommandParameter.Object;
-			return true;
+			return value;
 		}
+	}
+
+	public class FloatConsoleCommandParameterHandler : ConsoleCommandParameterHandler<float>
+	{
+		protected override float OnParse(string arg)
+		{
+			return float.Parse(arg);
+		}
+	}
+
+	public class Vector3ConsoleCommandParameterHandler : ConsoleCommandParameterHandler<Vector3>
+	{
+		protected override Vector3 OnParse(string arg)
+		{
+			return VectorUtility.ParseVector3(arg);
+		}
+	}
+	#endregion
+
+	public static class ConsoleCommandParameterExtensions
+	{
+		public static ImplementationTypeInstancer<ConsoleCommandParameterHandler> handlers
+			= new ImplementationTypeInstancer<ConsoleCommandParameterHandler>(typeof(ConsoleCommandParameterHandler<>));
+
+
+		public const char delimiter = ConsoleCommand.delimiter;
+
 
 		/// <summary>
 		/// Converts a given a string arg to the supported parameter type
@@ -115,46 +97,17 @@ namespace Stratus.Systems
 		public static object Parse(string arg, StratusConsoleCommandParameterInformation info)
 		{
 			object value = null;
-			switch (info.deducedType)
+			if (info.valid)
 			{
-				case ConsoleCommandParameter.Integer:
-					value = int.Parse(arg);
-					break;
-				case ConsoleCommandParameter.Float:
-					value = float.Parse(arg);
-					break;
-				case ConsoleCommandParameter.String:
-					value = arg;
-					break;
-				case ConsoleCommandParameter.Boolean:
-					string lowercaseArg = arg.ToLower();
-					if (lowercaseArg.Equals(booleanTrueAlternative))
-					{
-						value = true;
-					}
-					else if (lowercaseArg.Equals(booleanFalseAlternative))
-					{
-						value = false;
-					}
-					else
-					{
-						value = bool.Parse(arg);
-					}
-					break;
-				case ConsoleCommandParameter.Enum:
-					value = Enum.Parse(info.type, arg);
-					break;
-				//case StratusConsoleCommandParameter.Vector2:
-				//	value = StratusExtensions.ParseVector2(arg);
-				//	break;
-				//case StratusConsoleCommandParameter.Vector3:
-				//	value = StratusExtensions.ParseVector3(arg);
-				//	break;
-				//case StratusConsoleCommandParameter.Rect:
-				//	value = StratusExtensions.ParseRect(arg);
-				//	break;
-				case ConsoleCommandParameter.Object:
-					throw new Exception("Submitting parameters for object types is not supported!");
+				value = info.handler.Parse(arg);
+			}
+			else if (info.type == typeof(string))
+			{
+				value = arg;
+			}
+			else if (info.type.IsEnum)
+			{
+				value = Enum.Parse(info.type, arg);
 			}
 			return value;
 		}
@@ -176,7 +129,7 @@ namespace Stratus.Systems
 			{
 				throw new ArgumentException("Not enough arguments passed!");
 			}
-			else if (args.Length > parameterCount && command.parameters.Last().deducedType != ConsoleCommandParameter.String)
+			else if (args.Length > parameterCount && command.parameters.Last().type != typeof(string))
 			{
 				throw new ArgumentException("Too many arguments passed!");
 			}
@@ -189,7 +142,7 @@ namespace Stratus.Systems
 			}
 
 			// If the last parameter is a string, add the rest of the args to it
-			if (command.parameters.Last().deducedType == ConsoleCommandParameter.String
+			if (command.parameters.Last().type == typeof(string)
 				&& args.Length != parameterCount)
 			{
 				int lastIndex = parameterCount - 1;
@@ -205,9 +158,9 @@ namespace Stratus.Systems
 			foreach (ParameterInfo parameter in method.GetParameters())
 			{
 				// = ConsoleCommandParameter.Unsupported;
-				if (TryDeduceParameter(parameter.ParameterType, out ConsoleCommandParameter deducedType))
+				if (TryDeduceParameter(parameter.ParameterType, out ConsoleCommandParameterHandler handler))
 				{
-					parameters.Add(new StratusConsoleCommandParameterInformation(parameter.ParameterType, deducedType));
+					parameters.Add(new StratusConsoleCommandParameterInformation(parameter.ParameterType, handler));
 				}
 				else
 				{
@@ -219,20 +172,25 @@ namespace Stratus.Systems
 
 		public static StratusConsoleCommandParameterInformation[] DeduceParameters(FieldInfo field)
 		{
-			if (TryDeduceParameter(field.FieldType, out ConsoleCommandParameter consoleParameter))
+			if (TryDeduceParameter(field.FieldType, out ConsoleCommandParameterHandler handler))
 			{
-				return new StratusConsoleCommandParameterInformation[] { new StratusConsoleCommandParameterInformation(field.FieldType, consoleParameter) };
+				return new StratusConsoleCommandParameterInformation[] { new StratusConsoleCommandParameterInformation(field.FieldType, handler) };
 			}
 			throw new ArgumentOutOfRangeException($"Unsupported parameter type for field {field.FieldType}");
 		}
 
 		public static StratusConsoleCommandParameterInformation[] DeduceParameters(PropertyInfo property)
 		{
-			if (TryDeduceParameter(property.PropertyType, out ConsoleCommandParameter consoleParameter))
+			if (TryDeduceParameter(property.PropertyType, out ConsoleCommandParameterHandler handler))
 			{
-				return new StratusConsoleCommandParameterInformation[] { new StratusConsoleCommandParameterInformation(property.PropertyType, consoleParameter) };
+				return new StratusConsoleCommandParameterInformation[] { new StratusConsoleCommandParameterInformation(property.PropertyType, handler) };
 			}
 			throw new ArgumentOutOfRangeException($"Unsupported parameter type for field {property.PropertyType}");
+		}
+
+		private static bool TryDeduceParameter(Type type, out ConsoleCommandParameterHandler handler)
+		{
+			return handlers.TryResolve(type, out handler);
 		}
 	}
 
@@ -242,15 +200,13 @@ namespace Stratus.Systems
 		/// The qualified type of the parameter
 		/// </summary>
 		public Type type;
-		/// <summary>
-		/// The deduced type (whether it is supported)
-		/// </summary>
-		public ConsoleCommandParameter deducedType;
+		public ConsoleCommandParameterHandler handler;
+		public bool valid => handler != null;
 
-		public StratusConsoleCommandParameterInformation(Type type, ConsoleCommandParameter parameter)
+		public StratusConsoleCommandParameterInformation(Type type, ConsoleCommandParameterHandler handler)
 		{
 			this.type = type;
-			this.deducedType = parameter;
+			this.handler = handler;
 		}
 	}
 }

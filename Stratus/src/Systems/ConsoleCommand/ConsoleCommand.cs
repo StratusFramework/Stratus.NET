@@ -79,8 +79,7 @@ namespace Stratus.Systems
 		//------------------------------------------------------------------------/
 		public const char delimiter = ' ';
 		public const string delimiterStr = " ";
-		private static readonly BindingFlags flags =
-			BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+		private static readonly BindingFlags flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 		private static Dictionary<string, Action<string>> commandActions;
 
 		//------------------------------------------------------------------------/
@@ -248,7 +247,9 @@ namespace Stratus.Systems
 					{
 						command.parameters = ConsoleCommandParameterExtensions.DeduceMethodParameters(method);
 						if (command.usage.IsNullOrEmpty())
+						{
 							command.usage = $"({method.GetParameterNames()})";
+						}
 
 						commandActions.Add(command.name, (args) =>
 						{
@@ -270,7 +271,9 @@ namespace Stratus.Systems
 						command.parameters = ConsoleCommandParameterExtensions.DeduceParameters(field);
 						StratusConsoleCommandParameterInformation parameter = command.parameters[0];
 						if (command.usage.IsNullOrEmpty())
-							command.usage = $"{parameter.deducedType}";
+						{
+							command.usage = $"{parameter.type}";
+						}
 
 						commandActions.Add(command.name, (args) =>
 						{
@@ -298,7 +301,9 @@ namespace Stratus.Systems
 						StratusConsoleCommandParameterInformation parameter = command.parameters[0];
 
 						if (command.usage.IsNullOrEmpty())
-							command.usage = $"{parameter.deducedType}";
+						{
+							command.usage = $"{parameter.type}";
+						}
 
 						bool hasSetter = property.GetSetMethod(true) != null;
 						if (hasSetter)
@@ -344,8 +349,19 @@ namespace Stratus.Systems
 				if (command != null)
 				{
 					if (command.name.IsNullOrEmpty())
+					{
 						command.name = member.Name;
-					onCommandAdded(command);
+					}
+
+					try
+					{
+						onCommandAdded(command);
+					}
+					catch (Exception ex)
+					{
+						StratusLog.Info($"Failed to add command {command}");
+						StratusLog.Exception(ex);
+					}
 					commandsByName.Add(command.name, command);
 					commands.Add(command);
 				}

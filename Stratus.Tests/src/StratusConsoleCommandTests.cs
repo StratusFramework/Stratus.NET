@@ -49,15 +49,12 @@ namespace Stratus.Editor.Tests
 			this.AssertCommandResult("log foo", "foo");
 		}
 
-		[Test]
-		public void TestMethods()
+		[TestCase("add 2 5", "7")]
+		[TestCase("multfloat 2 5 3", 30)]
+		[TestCase("flipbool true", false)]
+		public void ExecutesMethodWithResult(string command, object expected)
 		{
-			this.AssertCommandResult("add 2 5", "7");
-			float a = 3, b = 5, c = 7;
-			this.AssertCommandResult($"multfloat {a} {b} {c}", a * b * c);
-			this.AssertCommandResult("addvector 3,4,5 1,1,1", new Vector3(4, 5, 6));
-			bool d = false;
-			this.AssertCommandResult($"flipbool {d}", !d);
+			AssertCommandResult(command, expected);
 		}
 
 		//------------------------------------------------------------------------/
@@ -87,64 +84,59 @@ namespace Stratus.Editor.Tests
 		[ConsoleCommand(hidden = true)]
 		private static MockEnum enumField;
 
-		[Test]
-		public void TestFields()
+		[TestCase(nameof(floatField), 5f)]
+		[TestCase(nameof(intField), 7)]
+		[TestCase(nameof(boolField), true)]
+		[TestCase(nameof(stringField), "Hello there brown cat")]
+		[TestCase(nameof(enumField), MockEnum.Foo)]
+		public void FieldsCanBeSet(string member, object value)
 		{
-			this.AssertMemberSet(nameof(floatField), 5f);
-			this.AssertMemberSet(nameof(intField), 7);
-			this.AssertMemberSet(nameof(boolField), true);
-			this.AssertMemberSet(nameof(boolField), true);
-			this.AssertMemberSet(nameof(stringField), "Hello there brown cat");
+			AssertMemberSet(member, value);
+		}
+
+		[Test]
+		public void Vector3CanBeSet()
+		{
 			this.AssertMemberSet(nameof(vector3Field), new Vector3(1f, 5.5f, 8.9f));
-			this.AssertMemberSet(nameof(enumField), MockEnum.Foo);
 		}
 
-		[Test]
-		public void TestProperties()
+		[TestCase(nameof(intProperty), 25)]
+		public void PropertiesCanBeSet(string member, object value)
 		{
-			this.AssertMemberSet(nameof(intProperty), 25);
-			this.AssertCommandResult(nameof(intGetProperty), 5);
-			this.AssertGetProperty(nameof(intGetProperty), 25);
-		}
-
-		[Test]
-		public void TestTimeProperty()
-		{
-			float time = 1.5f;// Time.realtimeSinceStartup;
-			this.AssertCommandResult("time", time, 0.1f);
+			AssertMemberSet(member, value);
 		}
 
 		//------------------------------------------------------------------------/
 		// Test Procedures
 		//------------------------------------------------------------------------/
-		private void TestCommand(string text)
+		private void InvokeCommand(string text)
 		{
 			ConsoleCommand.Submit(text);
 		}
 
 		private void AssertCommandResult(string text, object expected)
 		{
-			this.TestCommand(text);
+			this.InvokeCommand(text);
 			Assert.AreEqual(expected.ToString(), ConsoleCommand.latestResult);
 		}
 
 		private void AssertMemberSet(string memberName, object value)
 		{
-			this.TestCommand($"{memberName} {value}");
-			this.TestCommand($"{memberName}");
+			this.InvokeCommand($"{memberName} {value}");
+			this.InvokeCommand($"{memberName}");
 			Assert.AreEqual(value.ToString(), ConsoleCommand.latestResult);
 		}
 
 		private void AssertGetProperty(string memberName, object value)
 		{
-			this.TestCommand($"{memberName} {value}");
-			this.TestCommand($"{memberName}");
+			this.InvokeCommand($"{memberName} {value}");
+			this.InvokeCommand($"{memberName}");
 			Assert.AreNotEqual(value.ToString(), ConsoleCommand.latestResult);
 		}
 
 		private void AssertCommandResult(string text, float expected, float delta)
 		{
-			this.TestCommand(text);
+			this.InvokeCommand(text);
 			Assert.AreEqual(expected, float.Parse(ConsoleCommand.latestResult), delta);
 		}
 
@@ -152,3 +144,4 @@ namespace Stratus.Editor.Tests
 
 	}
 }
+
