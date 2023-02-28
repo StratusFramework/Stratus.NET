@@ -1,6 +1,4 @@
-﻿#define STRATUS_SYMBOLTABLE_USEMAP
-
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Text;
@@ -81,7 +79,7 @@ namespace Stratus.Data
 				string[] values = new string[symbols.Count];
 				for (int i = 0; i < symbols.Count; ++i)
 				{
-					values[i] = symbols[i].annotation;
+					values[i] = symbols[i].ToString();
 				}
 				return values;
 			}
@@ -134,7 +132,7 @@ namespace Stratus.Data
 		{
 			// Look for the key in the list
 			Symbol symbol = Find(key);
-			symbol.SetValue(value);
+			symbol.Set(value);
 		}
 
 		/// <summary>
@@ -147,7 +145,7 @@ namespace Stratus.Data
 		{
 			// Look for the key in the list
 			Symbol symbol = Find(key);
-			symbol.SetValue(value);
+			symbol.Set(value);
 		}
 
 		/// <summary>

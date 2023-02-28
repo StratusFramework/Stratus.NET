@@ -120,7 +120,7 @@ namespace Stratus.Data
 		{
 			public string key;
 			public Scope scope;
-			public VariantType type { get; } = VariantUtilities.Convert(typeof(T));
+			public VariantType type { get; } = VariantUtility.Convert(typeof(T));
 
 			public T GetValue(Blackboard blackboard, object gameObject)
 			{
@@ -316,7 +316,7 @@ namespace Stratus.Data
 		public void SetLocal<T>(object owner, string key, T value)
 		{
 			Symbol symbol = GetLocals(owner).Find(key);
-			symbol.SetValue(value);
+			symbol.Set(value);
 			onLocalSymbolChanged?.Invoke(owner, symbol);
 		}
 
@@ -329,7 +329,7 @@ namespace Stratus.Data
 		public void SetLocal(object owner, string key, object value)
 		{
 			Symbol symbol = GetLocals(owner).Find(key);
-			symbol.SetValue(value);
+			symbol.Set(value);
 			onLocalSymbolChanged?.Invoke(owner, symbol);
 		}
 
@@ -342,7 +342,7 @@ namespace Stratus.Data
 		public void SetGlobal<T>(string key, T value)
 		{
 			Symbol symbol = GetGlobals().Find(key);
-			symbol.SetValue(value);
+			symbol.Set(value);
 			onGlobalSymbolChanged?.Invoke(symbol);
 
 			//GetGlobals().SetValue<T>(key, value);
@@ -357,7 +357,7 @@ namespace Stratus.Data
 		public void SetGlobal(string key, object value)
 		{
 			Symbol symbol = GetGlobals().Find(key);
-			symbol.SetValue(value);
+			symbol.Set(value);
 			onGlobalSymbolChanged?.Invoke(symbol);
 			//GetGlobals().SetValue(key, value);
 		}

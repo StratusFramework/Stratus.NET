@@ -6,75 +6,102 @@ namespace Stratus.Data
 	/// <summary>
 	/// A pair between a variant an a generic key
 	/// </summary>
-	/// <typeparam name="KeyType"></typeparam>
-	public class KeyVariantPair<KeyType> where KeyType : IComparable
+	/// <typeparam name="TKey"></typeparam>
+	public class KeyVariantPair<TKey> where TKey : IComparable
 	{
-		//--------------------------------------------------------------------/
-		// Fields
-		//--------------------------------------------------------------------/
+		#region Fields
 		/// <summary>
 		/// The key used for this variant pair
 		/// </summary>
-		public KeyType key;
+		public TKey key;
 		/// <summary>
 		/// The variant used by the pair
 		/// </summary>
 		public Variant value;
+		#endregion
 
-		//--------------------------------------------------------------------/
-		// Properties
-		//--------------------------------------------------------------------/
+		#region Properties
 		/// <summary>
 		/// The current type for this variant pair
 		/// </summary>
-		public VariantType type { get { return value.currentType; } }
+		public VariantType type => value.type;
+		#endregion
 
-		/// <summary>
-		/// Information about the symbol
-		/// </summary>
-		public string annotation => $"{key} ({value.currentType})";
-
-		//--------------------------------------------------------------------/
-		// Constructors
-		//--------------------------------------------------------------------/
-		public KeyVariantPair(KeyType key, int value) { this.key = key; this.value = new Variant(value); }
-		public KeyVariantPair(KeyType key, float value) { this.key = key; this.value = new Variant(value); }
-		public KeyVariantPair(KeyType key, bool value) { this.key = key; this.value = new Variant(value); }
-		public KeyVariantPair(KeyType key, string value) { this.key = key; this.value = new Variant(value); }
-		public KeyVariantPair(KeyType key, Vector3 value) { this.key = key; this.value = new Variant(value); }
-		public KeyVariantPair(KeyType key, Variant value) { this.key = key; this.value = new Variant(value); }
-		public KeyVariantPair(KeyVariantPair<KeyType> other) { key = other.key; value = new Variant(other.value); }
-
-		//--------------------------------------------------------------------/
-		// Methods
-		//--------------------------------------------------------------------/
-		public ValueType GetValue<ValueType>()
+		#region Constructors
+		public KeyVariantPair(TKey key)
 		{
-			return value.Get<ValueType>();
+			this.key= key;
+		}
+		public KeyVariantPair(TKey key, int value) 
+			: this(key)
+		{
+			this.value = new Variant(value);
+		}
+		public KeyVariantPair(TKey key, float value) 
+		{
+			this.value = new Variant(value); 
+		}
+		public KeyVariantPair(TKey key, bool value) 
+		{
+			this.value = new Variant(value);
+		}
+		public KeyVariantPair(TKey key, string value)
+		{
+			this.value = new Variant(value);
+		}
+		public KeyVariantPair(TKey key, Vector3 value) 
+		{
+			this.value = new Variant(value); 
+		}
+		public KeyVariantPair(TKey key, Variant value) 
+		{
+			this.value = new Variant(value); 
+		}
+		public KeyVariantPair(KeyVariantPair<TKey> other)
+			: this(other.key)
+		{
+			value = new Variant(other.value);
+		}
+		#endregion
+
+		public override string ToString()
+		{
+			return $"{this.key} ({value})";
 		}
 
-		public void SetValue<ValueType>(ValueType value)
+		#region Interface
+		public TValue Get<TValue>()
+		{
+			return value.Get<TValue>();
+		}
+
+		public object Get() => value.Get();
+
+		public void Set<TValue>(TValue value)
 		{
 			this.value.Set(value);
 		}
 
-		public bool Compare(KeyVariantPair<KeyType> other)
+		public void Set(object value)
+		{
+			this.value.Set(value);
+		}
+
+		public bool Compare(KeyVariantPair<TKey> other)
 		{
 			// https://msdn.microsoft.com/en-us/library/system.icomparable(v=vs.110).aspx
 			if (this.key.CompareTo(other.key) < 0)
+			{
 				return false;
+			}
 
 			return this.value.Compare(other.value);
 		}
 
-		public KeyVariantPair<KeyType> Copy()
+		public KeyVariantPair<TKey> Copy()
 		{
-			return new KeyVariantPair<KeyType>(key, value);
+			return new KeyVariantPair<TKey>(key, value);
 		}
-
-		public override string ToString()
-		{
-			return $"{this.key} ({value.ToString()})";
-		}
+		#endregion
 	}
 }

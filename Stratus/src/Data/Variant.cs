@@ -1,10 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
 
 namespace Stratus.Data
 {
+	public enum VariantType
+	{
+		Integer,
+		Boolean,
+		Float,
+		String,
+		Vector3
+	}
+
 	/// <summary>
 	/// A Variant is a dynamic value type which represent a variety of types.
 	/// It can be used in situtations where you need a common interface
@@ -13,12 +21,8 @@ namespace Stratus.Data
 	[Serializable]
 	public struct Variant
 	{
-		#region Declarations
-
-		#endregion
-
 		#region Fields
-		private VariantType type;
+		private VariantType _type;
 		private int integerValue;
 		private float floatValue;
 		private bool booleanValue;
@@ -27,78 +31,64 @@ namespace Stratus.Data
 		#endregion
 
 		#region Properties
-		/// <summary>
-		/// Retrieves the current type of this Variant
-		/// </summary>
-		public VariantType currentType { get { return type; } }
+		public VariantType type => _type;
 		#endregion
 
 		#region Constructors
 		public Variant(int value) : this()
 		{
-			type = VariantType.Integer;
-			this.integerValue = value;
+			SetInteger(value);
 		}
 
 		public Variant(float value) : this()
 		{
-			type = VariantType.Float;
-			this.floatValue = value;
+			SetFloat(value);
 		}
 
 		public Variant(bool value) : this()
 		{
-			type = VariantType.Boolean;
-			this.booleanValue = value;
+			SetBoolean(value);
 		}
 
 		public Variant(string value) : this()
 		{
-			type = VariantType.String;
-			this.stringValue = value;
+			SetString(value);
 		}
 
 		public Variant(Vector3 value) : this()
 		{
-			type = VariantType.Vector3;
-			this.vector3Value = value;
+			SetVector3(value);
 		}
 
 		public Variant(Variant variant) : this()
 		{
-			type = variant.type;
-			this.Set(variant.Get());
+			_type = variant._type;
+			Set(variant.Get());
 		}
 		#endregion
 
-		#region Static
-		/// <summary>
-		/// Constructs a variant based from a given value. It only accepts supported types,
-		/// which are found in the Types enum.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public static Variant Make<T>(T value)
+		#region Virtual
+		public override string ToString()
 		{
-			var type = typeof(T);
+			switch (_type)
+			{
+				case VariantType.Integer:
+					return integerValue.ToString();
+				case VariantType.Float:
+					return floatValue.ToString();
+				case VariantType.Boolean:
+					return booleanValue.ToString();
+				case VariantType.String:
+					return stringValue;
+				case VariantType.Vector3:
+					return vector3Value.ToString();
+			}
 
-			if (type == typeof(int))
-				return new Variant((int)(object)value);
-			else if (type == typeof(float))
-				return new Variant((float)(object)value);
-			else if (type == typeof(bool))
-				return new Variant((bool)(object)value);
-			else if (type == typeof(string))
-				return new Variant((string)(object)value);
-			else if (type == typeof(Vector3))
-				return new Variant((Vector3)(object)value);
-
-			throw new Exception("Unsupported type being used (" + type.Name + ")");
-		}
+			throw new NotSupportedException($"Unsupported type {type} used");
+		} 
 		#endregion
 
-		#region Accessors
+		#region Generic Accessors
 		/// <summary>
 		/// Gets the current value of this variant
 		/// </summary>
@@ -107,11 +97,14 @@ namespace Stratus.Data
 		public T Get<T>()
 		{
 			var givenType = typeof(T);
+
 			if (!Match(givenType))
-				throw new ArgumentException("The provided type '" + givenType.Name + "' is not the correct type for this value (" + this.type.ToString() + ")");
+			{
+				throw new ArgumentException($"The provided type '{givenType.Name} is not the correct type for this value ({this._type.ToString()})");
+			}
 
 			object value = null;
-			switch (this.type)
+			switch (this._type)
 			{
 				case VariantType.Integer:
 					value = integerValue;
@@ -141,7 +134,7 @@ namespace Stratus.Data
 		public object Get()
 		{
 			object value = null;
-			switch (type)
+			switch (_type)
 			{
 				case VariantType.Integer:
 					value = integerValue;
@@ -167,148 +160,128 @@ namespace Stratus.Data
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
-		public void Set(object value)
+		public void Set(object value, bool strict = false)
 		{
-			var givenType = value.GetType();
-			if (!Match(givenType))
-				throw new ArgumentException("The provided type '" + givenType.Name + "' is not the correct type for this value (" + this.type.ToString() + ")");
+			var valueType = value.GetType();
+			var variantType = VariantUtility.Convert(valueType);
 
-			switch (type)
+			if (strict && variantType != _type)
+			{
+				throw new Exception($"The given type {variantType} does not match the current ({type}).");
+			}
+
+			switch (variantType)
 			{
 				case VariantType.Integer:
-					integerValue = (int)value;
+					SetInteger((int)value);
 					break;
 				case VariantType.Boolean:
-					booleanValue = (bool)value;
+					SetBoolean((bool)value);
 					break;
 				case VariantType.Float:
-					floatValue = (float)value;
+					SetFloat((float)value);
 					break;
 				case VariantType.String:
-					stringValue = value as string;
+					SetString(value as string);
 					break;
 				case VariantType.Vector3:
-					vector3Value = (Vector3)value;
+					SetVector3((Vector3)value);
 					break;
 			}
 		}
 		#endregion
 
-		#region Accessors Specific
+		#region Specific Accessors
 		public void SetInteger(int value)
 		{
-			if (type != VariantType.Integer)
-				throw new ArgumentException("This variant has not been set as an integer type");
 			integerValue = value;
+			_type = VariantType.Integer;
 		}
 
 		public int GetInteger()
 		{
-			if (type != VariantType.Integer)
+			if (_type != VariantType.Integer)
+			{
 				throw new ArgumentException("This variant has not been set as an integer type");
+			}
 			return integerValue;
 		}
 
 		public void SetFloat(float value)
 		{
-			if (type != VariantType.Float)
-				throw new ArgumentException("This variant has not been set as a float type");
 			floatValue = value;
+			_type = VariantType.Float;
 		}
 
 		public float GetFloat()
 		{
-			if (type != VariantType.Integer)
+			if (_type != VariantType.Float)
+			{
 				throw new ArgumentException("This variant has not been set as a float type");
+			}
 			return floatValue;
 		}
 
 		public void SetString(string value)
 		{
-			if (type != VariantType.String)
-				throw new ArgumentException("This variant has not been set as a string type");
 			stringValue = value;
+			_type = VariantType.String;
 		}
 
 		public string GetString()
 		{
-			if (type != VariantType.String)
+			if (_type != VariantType.String)
+			{
 				throw new ArgumentException("This variant has not been set as a string type");
+			}
 			return stringValue;
 		}
 
-		public void SetBool(bool value)
+		public void SetBoolean(bool value)
 		{
-			if (type != VariantType.Boolean)
-				throw new ArgumentException("This variant has not been set as a boolean type");
 			booleanValue = value;
+			_type = VariantType.Boolean;
 		}
 
 		public bool GetBool()
 		{
-			if (type != VariantType.Boolean)
+			if (_type != VariantType.Boolean)
+			{
 				throw new ArgumentException("This variant has not been set as a boolean type");
+			}
 			return booleanValue;
 		}
 
-
 		public void SetVector3(Vector3 value)
 		{
-			if (type != VariantType.Vector3)
+			if (_type != VariantType.Vector3)
+			{
 				throw new ArgumentException("This variant has not been set as a Vector3 type");
+			}
+
 			vector3Value = value;
+			_type = VariantType.Vector3;
 		}
 
 		public Vector3 GetVector3()
 		{
-			if (type != VariantType.Vector3)
+			if (_type != VariantType.Vector3)
+			{
 				throw new ArgumentException("This variant has not been set as a Vector3 type");
+			}
 			return vector3Value;
 		}
 		#endregion
 
 		#region Comparison
-		/// <summary>
-		/// Prints the current value of this variant
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		public override string ToString()
-		{
-			var builder = new StringBuilder();
-			switch (this.type)
-			{
-				case VariantType.Integer:
-					builder.Append(integerValue.ToString());
-					break;
-				case VariantType.Float:
-					builder.Append(floatValue.ToString());
-					break;
-				case VariantType.Boolean:
-					builder.Append(booleanValue.ToString());
-					break;
-				case VariantType.String:
-					builder.Append(stringValue);
-					break;
-				case VariantType.Vector3:
-					builder.Append(vector3Value.ToString());
-					break;
-			}
-
-			return builder.ToString();
-		}
-
-		/// <summary>
-		/// Compares the value of this variant with another
-		/// </summary>
-		/// <param name="other"></param>
-		/// <returns></returns>
 		public bool Compare(Variant other)
 		{
-			if (this.type != other.type)
+			if (this._type != other._type)
+			{
 				throw new Exception("Mismatching variants are being compared!");
+			}
 
-			switch (other.type)
+			switch (other._type)
 			{
 				case VariantType.Boolean:
 					return this.booleanValue == other.booleanValue;
@@ -322,32 +295,45 @@ namespace Stratus.Data
 					return this.vector3Value == other.vector3Value;
 			}
 
-			throw new Exception("Wrong type?");
+			throw new NotSupportedException($"Unsupported type {other._type} used");
 		}
 
-		/// <summary>
-		/// Checks whether the given type matches that of the variant
-		/// </summary>
-		/// <param name="type"></param>
-		/// <returns></returns>
 		private bool Match(Type type)
 		{
-			VariantType givenVariantType = VariantUtilities.Convert(type);
-			return givenVariantType == this.type;
+			VariantType givenVariantType = VariantUtility.Convert(type);
+			return givenVariantType == this._type;
+		}
+		#endregion
+
+		#region Static
+		/// <summary>
+		/// Constructs a variant based from a given value. It only accepts supported types,
+		/// which are found in the Types enum.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public static Variant Make<T>(T value)
+		{
+			var type = typeof(T);
+
+			if (type == typeof(int))
+				return new Variant((int)(object)value);
+			else if (type == typeof(float))
+				return new Variant((float)(object)value);
+			else if (type == typeof(bool))
+				return new Variant((bool)(object)value);
+			else if (type == typeof(string))
+				return new Variant((string)(object)value);
+			else if (type == typeof(Vector3))
+				return new Variant((Vector3)(object)value);
+
+			throw new Exception("Unsupported type being used (" + type.Name + ")");
 		}
 		#endregion
 	}
 
-	public enum VariantType
-	{
-		Integer,
-		Boolean,
-		Float,
-		String,
-		Vector3
-	}
-
-	public static class VariantUtilities
+	public static class VariantUtility
 	{
 		private static Dictionary<Type, VariantType> systemTypeToVariantType { get; } = new Dictionary<Type, VariantType>()
 		{
