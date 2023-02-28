@@ -7,7 +7,7 @@ namespace Stratus.Data
 	/// A pair between a variant an a generic key
 	/// </summary>
 	/// <typeparam name="KeyType"></typeparam>
-	public class StratusKeyVariantPair<KeyType> where KeyType : IComparable
+	public class KeyVariantPair<KeyType> where KeyType : IComparable
 	{
 		//--------------------------------------------------------------------/
 		// Fields
@@ -19,7 +19,7 @@ namespace Stratus.Data
 		/// <summary>
 		/// The variant used by the pair
 		/// </summary>
-		public StratusVariant value;
+		public Variant value;
 
 		//--------------------------------------------------------------------/
 		// Properties
@@ -27,7 +27,7 @@ namespace Stratus.Data
 		/// <summary>
 		/// The current type for this variant pair
 		/// </summary>
-		public StratusVariant.VariantType type { get { return value.currentType; } }
+		public VariantType type { get { return value.currentType; } }
 
 		/// <summary>
 		/// Information about the symbol
@@ -37,13 +37,13 @@ namespace Stratus.Data
 		//--------------------------------------------------------------------/
 		// Constructors
 		//--------------------------------------------------------------------/
-		public StratusKeyVariantPair(KeyType key, int value) { this.key = key; this.value = new StratusVariant(value); }
-		public StratusKeyVariantPair(KeyType key, float value) { this.key = key; this.value = new StratusVariant(value); }
-		public StratusKeyVariantPair(KeyType key, bool value) { this.key = key; this.value = new StratusVariant(value); }
-		public StratusKeyVariantPair(KeyType key, string value) { this.key = key; this.value = new StratusVariant(value); }
-		public StratusKeyVariantPair(KeyType key, Vector3 value) { this.key = key; this.value = new StratusVariant(value); }
-		public StratusKeyVariantPair(KeyType key, StratusVariant value) { this.key = key; this.value = new StratusVariant(value); }
-		public StratusKeyVariantPair(StratusKeyVariantPair<KeyType> other) { key = other.key; value = new StratusVariant(other.value); }
+		public KeyVariantPair(KeyType key, int value) { this.key = key; this.value = new Variant(value); }
+		public KeyVariantPair(KeyType key, float value) { this.key = key; this.value = new Variant(value); }
+		public KeyVariantPair(KeyType key, bool value) { this.key = key; this.value = new Variant(value); }
+		public KeyVariantPair(KeyType key, string value) { this.key = key; this.value = new Variant(value); }
+		public KeyVariantPair(KeyType key, Vector3 value) { this.key = key; this.value = new Variant(value); }
+		public KeyVariantPair(KeyType key, Variant value) { this.key = key; this.value = new Variant(value); }
+		public KeyVariantPair(KeyVariantPair<KeyType> other) { key = other.key; value = new Variant(other.value); }
 
 		//--------------------------------------------------------------------/
 		// Methods
@@ -58,7 +58,7 @@ namespace Stratus.Data
 			this.value.Set(value);
 		}
 
-		public bool Compare(StratusKeyVariantPair<KeyType> other)
+		public bool Compare(KeyVariantPair<KeyType> other)
 		{
 			// https://msdn.microsoft.com/en-us/library/system.icomparable(v=vs.110).aspx
 			if (this.key.CompareTo(other.key) < 0)
@@ -67,9 +67,9 @@ namespace Stratus.Data
 			return this.value.Compare(other.value);
 		}
 
-		public StratusKeyVariantPair<KeyType> Copy()
+		public KeyVariantPair<KeyType> Copy()
 		{
-			return new StratusKeyVariantPair<KeyType>(key, value);
+			return new KeyVariantPair<KeyType>(key, value);
 		}
 
 		public override string ToString()

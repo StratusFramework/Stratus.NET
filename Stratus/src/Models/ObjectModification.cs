@@ -95,21 +95,21 @@ namespace Stratus.Models
 	{
 		public class Initializer
 		{
-			public Func<TObject, IEnumerable<StratusValueSelector<TValue>>> evaluationFunction { get; private set; }
-			public StratusProvider<StratusValueSelector<TValue>[]> values { get; }
+			public Func<TObject, IEnumerable<ValueSelector<TValue>>> evaluationFunction { get; private set; }
+			public StratusProvider<ValueSelector<TValue>[]> values { get; }
 
-			public Initializer(params StratusValueSelector<TValue>[] values)
+			public Initializer(params ValueSelector<TValue>[] values)
 			{
 				this.values = values;
 			}
 
-			public Initializer(IEnumerable<StratusValueSelector<TValue>> values)
+			public Initializer(IEnumerable<ValueSelector<TValue>> values)
 			{
 				this.values = values.ToArray();
 			}
 
-			public Initializer(IEnumerable<StratusValueSelector<TValue>> values,
-				Func<TObject, IEnumerable<StratusValueSelector<TValue>>> evaluationFunction)
+			public Initializer(IEnumerable<ValueSelector<TValue>> values,
+				Func<TObject, IEnumerable<ValueSelector<TValue>>> evaluationFunction)
 			{
 				this.values = values.ToArray();
 				this.evaluationFunction = evaluationFunction;
@@ -119,7 +119,7 @@ namespace Stratus.Models
 		/// <summary>
 		/// The provided selectors
 		/// </summary>
-		protected StratusValueSelector<TValue>[] _selectors;
+		protected ValueSelector<TValue>[] _selectors;
 		/// <summary>
 		/// If provided, evaluates more possible values
 		/// </summary>
@@ -129,11 +129,11 @@ namespace Stratus.Models
 		/// <summary>
 		/// Made selections
 		/// </summary>
-		private Dictionary<StratusValueSelector<TValue>, TValue> _selections { get; } = new Dictionary<StratusValueSelector<TValue>, TValue>();
+		private Dictionary<ValueSelector<TValue>, TValue> _selections { get; } = new Dictionary<ValueSelector<TValue>, TValue>();
 		/// <summary>
 		/// Available selectors
 		/// </summary>
-		public IReadOnlyList<StratusValueSelector<TValue>> selectors => _selectors;
+		public IReadOnlyList<ValueSelector<TValue>> selectors => _selectors;
 		/// <summary>
 		/// The total amount of selectors available (selected, not selected)
 		/// </summary>
@@ -147,7 +147,7 @@ namespace Stratus.Models
 		/// </summary>
 		public override int selectionsLeft => _selectors.Count(x => !x.hasBeenSelected);
 		public bool evaluated { get; private set; } = true;
-		public IEnumerable<StratusValueSelector<TValue>> remainingSelections =>
+		public IEnumerable<ValueSelector<TValue>> remainingSelections =>
 			_selectors.Where(v => v.hasBeenSelected);
 		#endregion
 
@@ -162,7 +162,7 @@ namespace Stratus.Models
 		{
 		}
 
-		protected ObjectModification(TObject target, IEnumerable<StratusValueSelector<TValue>> values)
+		protected ObjectModification(TObject target, IEnumerable<ValueSelector<TValue>> values)
 			: this(target)
 		{
 			Set(values);
@@ -197,14 +197,14 @@ namespace Stratus.Models
 			Set(values);
 		}
 
-		protected virtual void Set(IEnumerable<StratusValueSelector<TValue>> values)
+		protected virtual void Set(IEnumerable<ValueSelector<TValue>> values)
 		{
 			_selectors = values.ToArray();
 		}
 
 		protected virtual void Set(IEnumerable<TValue> values)
 		{
-			Set(values.Select(v => new StratusValueSelector<TValue>(v)));
+			Set(values.Select(v => new ValueSelector<TValue>(v)));
 		}
 		#endregion
 
@@ -252,7 +252,7 @@ namespace Stratus.Models
 		/// <summary>
 		/// </summary>
 		/// <returns>The selector that has all the given values</returns>
-		public IEnumerable<StratusValueSelector<TValue>> GetSelectors(params TValue[] values)
+		public IEnumerable<ValueSelector<TValue>> GetSelectors(params TValue[] values)
 		{
 			return _selectors
 				.Where(s => s.ContainsAll(values))
@@ -262,7 +262,7 @@ namespace Stratus.Models
 		/// <summary>
 		/// </summary>
 		/// <returns>The selector that has all the given values</returns>
-		public StratusValueSelector<TValue> GetSelector(params TValue[] values)
+		public ValueSelector<TValue> GetSelector(params TValue[] values)
 		{
 			return GetSelectors(values).First();
 		}
@@ -323,7 +323,7 @@ namespace Stratus.Models
 			});
 		}
 
-		private bool Apply(StratusValueSelector<TValue> selector)
+		private bool Apply(ValueSelector<TValue> selector)
 		{
 			if (!Apply(selector.selection))
 			{
@@ -335,7 +335,7 @@ namespace Stratus.Models
 			return true;
 		}
 
-		private bool Revert(StratusValueSelector<TValue> selector)
+		private bool Revert(ValueSelector<TValue> selector)
 		{
 			OnSelection();
 			TValue value = _selections[selector];

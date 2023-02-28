@@ -11,17 +11,10 @@ namespace Stratus.Data
 	/// for your types to represent a variety of data.
 	/// </summary>
 	[Serializable]
-	public struct StratusVariant
+	public struct Variant
 	{
 		#region Declarations
-		public enum VariantType
-		{
-			Integer,
-			Boolean,
-			Float,
-			String,
-			Vector3
-		}
+
 		#endregion
 
 		#region Fields
@@ -41,37 +34,37 @@ namespace Stratus.Data
 		#endregion
 
 		#region Constructors
-		public StratusVariant(int value) : this()
+		public Variant(int value) : this()
 		{
 			type = VariantType.Integer;
 			this.integerValue = value;
 		}
 
-		public StratusVariant(float value) : this()
+		public Variant(float value) : this()
 		{
 			type = VariantType.Float;
 			this.floatValue = value;
 		}
 
-		public StratusVariant(bool value) : this()
+		public Variant(bool value) : this()
 		{
 			type = VariantType.Boolean;
 			this.booleanValue = value;
 		}
 
-		public StratusVariant(string value) : this()
+		public Variant(string value) : this()
 		{
 			type = VariantType.String;
 			this.stringValue = value;
 		}
 
-		public StratusVariant(Vector3 value) : this()
+		public Variant(Vector3 value) : this()
 		{
 			type = VariantType.Vector3;
 			this.vector3Value = value;
 		}
 
-		public StratusVariant(StratusVariant variant) : this()
+		public Variant(Variant variant) : this()
 		{
 			type = variant.type;
 			this.Set(variant.Get());
@@ -86,20 +79,20 @@ namespace Stratus.Data
 		/// <typeparam name="T"></typeparam>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public static StratusVariant Make<T>(T value)
+		public static Variant Make<T>(T value)
 		{
 			var type = typeof(T);
 
 			if (type == typeof(int))
-				return new StratusVariant((int)(object)value);
+				return new Variant((int)(object)value);
 			else if (type == typeof(float))
-				return new StratusVariant((float)(object)value);
+				return new Variant((float)(object)value);
 			else if (type == typeof(bool))
-				return new StratusVariant((bool)(object)value);
+				return new Variant((bool)(object)value);
 			else if (type == typeof(string))
-				return new StratusVariant((string)(object)value);
+				return new Variant((string)(object)value);
 			else if (type == typeof(Vector3))
-				return new StratusVariant((Vector3)(object)value);
+				return new Variant((Vector3)(object)value);
 
 			throw new Exception("Unsupported type being used (" + type.Name + ")");
 		}
@@ -274,9 +267,6 @@ namespace Stratus.Data
 		}
 		#endregion
 
-		//--------------------------------------------------------------------/
-		// Methods: Helper
-		//--------------------------------------------------------------------/
 		#region Comparison
 		/// <summary>
 		/// Prints the current value of this variant
@@ -313,7 +303,7 @@ namespace Stratus.Data
 		/// </summary>
 		/// <param name="other"></param>
 		/// <returns></returns>
-		public bool Compare(StratusVariant other)
+		public bool Compare(Variant other)
 		{
 			if (this.type != other.type)
 				throw new Exception("Mismatching variants are being compared!");
@@ -348,28 +338,37 @@ namespace Stratus.Data
 		#endregion
 	}
 
+	public enum VariantType
+	{
+		Integer,
+		Boolean,
+		Float,
+		String,
+		Vector3
+	}
+
 	public static class VariantUtilities
 	{
-		private static Dictionary<Type, StratusVariant.VariantType> systemTypeToVariantType { get; } = new Dictionary<Type, StratusVariant.VariantType>()
+		private static Dictionary<Type, VariantType> systemTypeToVariantType { get; } = new Dictionary<Type, VariantType>()
 		{
-			{typeof(int), StratusVariant.VariantType.Integer},
-			{typeof(bool), StratusVariant.VariantType.Boolean},
-			{typeof(float), StratusVariant.VariantType.Float},
-			{typeof(string), StratusVariant.VariantType.String},
-			{typeof(Vector3), StratusVariant.VariantType.Vector3},
+			{typeof(int), VariantType.Integer},
+			{typeof(bool), VariantType.Boolean},
+			{typeof(float), VariantType.Float},
+			{typeof(string), VariantType.String},
+			{typeof(Vector3), VariantType.Vector3},
 		};
 
-		private static Dictionary<StratusVariant.VariantType, Type> variantTypeToSystemType { get; } = new Dictionary<StratusVariant.VariantType, Type>()
+		private static Dictionary<VariantType, Type> variantTypeToSystemType { get; } = new Dictionary<VariantType, Type>()
 		{
-			{StratusVariant.VariantType.Integer, typeof(int)},
-			{StratusVariant.VariantType.Boolean, typeof(bool)},
-			{StratusVariant.VariantType.Float, typeof(float)},
-			{StratusVariant.VariantType.String, typeof(string)},
-			{StratusVariant.VariantType.Vector3, typeof(Vector3)},
+			{VariantType.Integer, typeof(int)},
+			{VariantType.Boolean, typeof(bool)},
+			{VariantType.Float, typeof(float)},
+			{VariantType.String, typeof(string)},
+			{VariantType.Vector3, typeof(Vector3)},
 		};
 
-		public static Type Convert(this StratusVariant.VariantType type) => variantTypeToSystemType[type];
-		public static StratusVariant.VariantType Convert(Type type) => systemTypeToVariantType[type];
+		public static Type Convert(this VariantType type) => variantTypeToSystemType[type];
+		public static VariantType Convert(Type type) => systemTypeToVariantType[type];
 
 	}
 }

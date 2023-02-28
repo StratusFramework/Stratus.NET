@@ -11,7 +11,7 @@ namespace Stratus
 	/// or that requires the user to select one of the possible values (> 1 value).
 	/// </summary>
 	/// <typeparam name="TValue"></typeparam>
-	public class StratusValueSelector<TValue> 
+	public class ValueSelector<TValue> 
 	{
 		public virtual TValue[] values { get; private set; }
 		public TValue selection { get; private set; }
@@ -22,16 +22,16 @@ namespace Stratus
 		public event Action<TValue> onSelection;
 		public event Action onDeselection;
 
-		public StratusValueSelector()
+		public ValueSelector()
 		{
 		}
 
-		public StratusValueSelector(IEnumerable<TValue> values)
+		public ValueSelector(IEnumerable<TValue> values)
 			: this(values.ToArray())
 		{
 		}
 
-		public StratusValueSelector(params TValue[] values)
+		public ValueSelector(params TValue[] values)
 		{
 			this.values = values;
 			if (this.values.Length == 1)
@@ -68,7 +68,7 @@ namespace Stratus
 			onDeselection?.Invoke();
 		}
 
-		public StratusValueSelector<TValue> From(Func<object, TValue> evaluation)
+		public ValueSelector<TValue> From(Func<object, TValue> evaluation)
 		{
 			return this;
 		}
@@ -81,7 +81,7 @@ namespace Stratus
 		}
 	}
 
-	public class StratusValueSelection<TValue, TEvaluatedObject> : StratusValueSelector<TValue>
+	public class StratusValueSelection<TValue, TEvaluatedObject> : ValueSelector<TValue>
 	{
 		private Func<TEvaluatedObject, TValue[]> evaluationFunction;
 		public override TValue[] values

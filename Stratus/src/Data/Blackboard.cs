@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System;
 using System.Numerics;
-using Stratus.Data;
 
-namespace Stratus
+namespace Stratus.Data
 {
 	/// <summary>
 	///  A blackboard system is an artificial intelligence approach based on the blackboard architectural model, 
@@ -95,7 +94,7 @@ namespace Stratus
 		{
 			public string key;
 			public Scope scope;
-			public StratusVariant.VariantType type;
+			public VariantType type;
 
 			public object GetValue(Blackboard blackboard, object gameObject)
 			{
@@ -121,7 +120,7 @@ namespace Stratus
 		{
 			public string key;
 			public Scope scope;
-			public StratusVariant.VariantType type { get; } = VariantUtilities.Convert(typeof(T));
+			public VariantType type { get; } = VariantUtilities.Convert(typeof(T));
 
 			public T GetValue(Blackboard blackboard, object gameObject)
 			{
@@ -133,9 +132,9 @@ namespace Stratus
 			public void SetValue(Blackboard blackboard, object gameObject, T value)
 			{
 				if (scope == Scope.Local)
-					blackboard.SetLocal<T>(gameObject, key, value);
+					blackboard.SetLocal(gameObject, key, value);
 				else
-					blackboard.SetGlobal<T>(key, value);
+					blackboard.SetGlobal(key, value);
 			}
 		}
 
@@ -153,8 +152,8 @@ namespace Stratus
 		{
 		}
 
-		public delegate void OnGlobalSymbolChanged(StratusSymbol symbol);
-		public delegate void OnLocalSymbolChanged(object gameObject, StratusSymbol symbol);
+		public delegate void OnGlobalSymbolChanged(Symbol symbol);
+		public delegate void OnLocalSymbolChanged(object gameObject, Symbol symbol);
 		#endregion
 
 		#region Fields
@@ -176,11 +175,11 @@ namespace Stratus
 		/// <summary>
 		/// Runtime instantiated globals for a given blackboard
 		/// </summary>
-		private static Dictionary<Blackboard, StratusSymbolTable> instancedGlobals = new();
+		private static Dictionary<Blackboard, SymbolTable> instancedGlobals = new();
 		/// <summary>
 		/// Runtime instantiated locals (symbol tables) for a given blackboard, where we use a gameobject as the key
 		/// </summary>
-		private static Dictionary<Blackboard, Dictionary<object, StratusSymbolTable>> instancedLocals = new();
+		private static Dictionary<Blackboard, Dictionary<object, SymbolTable>> instancedLocals = new();
 
 		//----------------------------------------------------------------------/
 		// Fields
@@ -188,11 +187,11 @@ namespace Stratus
 		/// <summary>
 		/// Symbols which are available to all agents using this blackboard
 		/// </summary>
-		public StratusSymbolTable globals = new StratusSymbolTable();
+		public SymbolTable globals = new SymbolTable();
 		/// <summary>
 		/// Symbols specific for each agent of this blackboard
 		/// </summary>
-		public StratusSymbolTable locals = new StratusSymbolTable();
+		public SymbolTable locals = new SymbolTable();
 
 
 		//----------------------------------------------------------------------/
@@ -210,7 +209,7 @@ namespace Stratus
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="symbol"></param>
-		public void Add(StratusSymbol symbol, Scope scope)
+		public void Add(Symbol symbol, Scope scope)
 		{
 			switch (scope)
 			{
@@ -228,7 +227,7 @@ namespace Stratus
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="symbol"></param>
-		public void AddGlobal(StratusSymbol symbol)
+		public void AddGlobal(Symbol symbol)
 		{
 			this.globals.Add(symbol);
 		}
@@ -238,7 +237,7 @@ namespace Stratus
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="symbol"></param>
-		public void AddLocal(StratusSymbol symbol)
+		public void AddLocal(Symbol symbol)
 		{
 			this.locals.Add(symbol);
 		}
@@ -247,10 +246,10 @@ namespace Stratus
 		/// Returns all the global symbols for this blackboard at runtime
 		/// </summary>
 		/// <returns></returns>
-		public StratusSymbolTable GetGlobals()
+		public SymbolTable GetGlobals()
 		{
 			if (!instancedGlobals.ContainsKey(this))
-				instancedGlobals.Add(this, new StratusSymbolTable(this.globals));
+				instancedGlobals.Add(this, new SymbolTable(this.globals));
 			return instancedGlobals[this];
 		}
 
@@ -259,15 +258,15 @@ namespace Stratus
 		/// </summary>
 		/// <param name="local"></param>
 		/// <returns></returns>
-		public StratusSymbolTable GetLocals(object owner)
+		public SymbolTable GetLocals(object owner)
 		{
 			if (!instancedLocals.ContainsKey(this))
 			{
-				instancedLocals.Add(this, new Dictionary<object, StratusSymbolTable>());
+				instancedLocals.Add(this, new Dictionary<object, SymbolTable>());
 			}
 
 			if (!instancedLocals[this].ContainsKey(owner))
-				instancedLocals[this].Add(owner, new StratusSymbolTable(this.locals));
+				instancedLocals[this].Add(owner, new SymbolTable(this.locals));
 
 			return instancedLocals[this][owner];
 		}
@@ -316,7 +315,7 @@ namespace Stratus
 		/// <param name="value"></param>
 		public void SetLocal<T>(object owner, string key, T value)
 		{
-			StratusSymbol symbol = GetLocals(owner).Find(key);
+			Symbol symbol = GetLocals(owner).Find(key);
 			symbol.SetValue(value);
 			onLocalSymbolChanged?.Invoke(owner, symbol);
 		}
@@ -329,7 +328,7 @@ namespace Stratus
 		/// <param name="value"></param>
 		public void SetLocal(object owner, string key, object value)
 		{
-			StratusSymbol symbol = GetLocals(owner).Find(key);
+			Symbol symbol = GetLocals(owner).Find(key);
 			symbol.SetValue(value);
 			onLocalSymbolChanged?.Invoke(owner, symbol);
 		}
@@ -342,7 +341,7 @@ namespace Stratus
 		/// <param name="value"></param>
 		public void SetGlobal<T>(string key, T value)
 		{
-			StratusSymbol symbol = GetGlobals().Find(key);
+			Symbol symbol = GetGlobals().Find(key);
 			symbol.SetValue(value);
 			onGlobalSymbolChanged?.Invoke(symbol);
 
@@ -357,7 +356,7 @@ namespace Stratus
 		/// <param name="value"></param>
 		public void SetGlobal(string key, object value)
 		{
-			StratusSymbol symbol = GetGlobals().Find(key);
+			Symbol symbol = GetGlobals().Find(key);
 			symbol.SetValue(value);
 			onGlobalSymbolChanged?.Invoke(symbol);
 			//GetGlobals().SetValue(key, value);
@@ -374,7 +373,7 @@ namespace Stratus
 		/// <param name="table"></param>
 		/// <param name="key"></param>
 		/// <returns></returns>
-		private T Get<T>(Scope scope, StratusSymbolTable table, string key)
+		private T Get<T>(Scope scope, SymbolTable table, string key)
 		{
 			try
 			{
@@ -396,7 +395,7 @@ namespace Stratus
 		/// <param name="table"></param>
 		/// <param name="key"></param>
 		/// <returns></returns>
-		private void Set<T>(Scope scope, StratusSymbolTable table, string key, T value)
+		private void Set<T>(Scope scope, SymbolTable table, string key, T value)
 		{
 			try
 			{

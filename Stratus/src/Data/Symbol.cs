@@ -7,17 +7,17 @@ namespace Stratus.Data
 	/// and the value is a variant (which can represent multiple types)
 	/// </summary>
 	[Serializable]
-	public class StratusSymbol : StratusKeyVariantPair<string>
+	public class Symbol : KeyVariantPair<string>
 	{
 		//--------------------------------------------------------------------/
 		// Constructors
 		//--------------------------------------------------------------------/
-		public StratusSymbol(string key, int value) : base(key, value) { }
-		public StratusSymbol(string key, float value) : base(key, value) { }
-		public StratusSymbol(string key, bool value) : base(key, value) { }
-		public StratusSymbol(string key, string value) : base(key, value) { }
-		public StratusSymbol(string key, StratusVariant value) : base(key, value) { }
-		public StratusSymbol(StratusSymbol other) : base(other) { }
+		public Symbol(string key, int value) : base(key, value) { }
+		public Symbol(string key, float value) : base(key, value) { }
+		public Symbol(string key, bool value) : base(key, value) { }
+		public Symbol(string key, string value) : base(key, value) { }
+		public Symbol(string key, Variant value) : base(key, value) { }
+		public Symbol(Symbol other) : base(other) { }
 
 		//--------------------------------------------------------------------/
 		// Methods
@@ -29,9 +29,9 @@ namespace Stratus.Data
 		/// <param name="key"></param>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public static StratusSymbol Construct<T>(string key, T value)
+		public static Symbol Construct<T>(string key, T value)
 		{
-			return new StratusSymbol(key, StratusVariant.Make(value));
+			return new Symbol(key, Variant.Make(value));
 		}
 
 		//--------------------------------------------------------------------/
@@ -50,18 +50,18 @@ namespace Stratus.Data
 		public class Reference
 		{
 			public string key;
-			public StratusVariant.VariantType type;
+			public VariantType type;
 
 			public Reference()
 			{
 			}
 
-			public Reference(StratusVariant.VariantType type)
+			public Reference(VariantType type)
 			{
 				this.type = type;
 			}
 
-			public Reference(string key, StratusVariant.VariantType type)
+			public Reference(string key, VariantType type)
 			{
 				this.key = key;
 				this.type = type;

@@ -8,7 +8,7 @@ namespace Stratus.Data
 	/// Base class for numeric range fields
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	public abstract class StratusNumericRange<T> where T : struct
+	public abstract class NumericRange<T> where T : struct
 	{
 		public T minimum, maximum;
 		public abstract T randomInRange { get; }
@@ -18,7 +18,7 @@ namespace Stratus.Data
 	/// Represents a range consisting of two floating point values
 	/// </summary>
 	[Serializable]
-	public class StratusFloatRange : StratusNumericRange<float>
+	public class FloatRange : NumericRange<float>
 	{
 		public override float randomInRange => RandomUtility.Range(minimum, maximum);
 	}
@@ -27,7 +27,7 @@ namespace Stratus.Data
 	/// Represents a range consisting of two integer values
 	/// </summary>
 	[Serializable]
-	public class StratusIntegerRange : StratusNumericRange<int>
+	public class StratusIntegerRange : NumericRange<int>
 	{
 		public override int randomInRange => RandomUtility.Range(minimum, maximum);
 	}

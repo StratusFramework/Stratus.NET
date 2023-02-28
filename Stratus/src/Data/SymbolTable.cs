@@ -12,21 +12,21 @@ namespace Stratus.Data
 	/// An internally-managed list of symbols
 	/// </summary>
 	[Serializable]
-	public class StratusSymbolTable : IEnumerable<StratusSymbol>
+	public class SymbolTable : IEnumerable<Symbol>
 	{
 		#region Declarations
-		public delegate void OnSymbolChanged(StratusSymbol symbol);
+		public delegate void OnSymbolChanged(Symbol symbol);
 		#endregion
 
 		#region Fields
-		public List<StratusSymbol> symbols = new List<StratusSymbol>();
+		public List<Symbol> symbols = new List<Symbol>();
 		#endregion
 
 		#region Properties
 		/// <summary>
 		/// The lookup table for quick access to symbols
 		/// </summary>
-		private Dictionary<string, StratusSymbol> symbolsMap { get; set; } = new Dictionary<string, StratusSymbol>();
+		private Dictionary<string, Symbol> symbolsMap { get; set; } = new Dictionary<string, Symbol>();
 
 		/// <summary>
 		/// Whether the lookupp table has been initialized. It will be initialized
@@ -58,11 +58,11 @@ namespace Stratus.Data
 		/// <summary>
 		/// References to all the current symbols in this table
 		/// </summary>
-		public StratusSymbol.Reference[] references
+		public Symbol.Reference[] references
 		{
 			get
 			{
-				StratusSymbol.Reference[] values = new StratusSymbol.Reference[symbols.Count];
+				Symbol.Reference[] values = new Symbol.Reference[symbols.Count];
 				for (int i = 0; i < symbols.Count; ++i)
 				{
 					values[i] = symbols[i].reference;
@@ -89,13 +89,13 @@ namespace Stratus.Data
 		#endregion
 
 		#region Constructors
-		public StratusSymbolTable()
+		public SymbolTable()
 		{
 		}
 
-		public StratusSymbolTable(StratusSymbolTable other)
+		public SymbolTable(SymbolTable other)
 		{
-			symbols = other.symbols.ConvertAll(symbol => new StratusSymbol(symbol));
+			symbols = other.symbols.ConvertAll(symbol => new Symbol(symbol));
 		}
 		#endregion
 
@@ -108,7 +108,7 @@ namespace Stratus.Data
 		/// <returns></returns>
 		public T GetValue<T>(string key)
 		{
-			StratusSymbol symbol = Find(key);
+			Symbol symbol = Find(key);
 			return symbol.value.Get<T>();
 		}
 
@@ -120,7 +120,7 @@ namespace Stratus.Data
 		public object GetValue(string key)
 		{
 			// Look for the key in the list
-			StratusSymbol symbol = Find(key);
+			Symbol symbol = Find(key);
 			return symbol.value.Get();
 		}
 
@@ -133,7 +133,7 @@ namespace Stratus.Data
 		public void SetValue<T>(string key, T value)
 		{
 			// Look for the key in the list
-			StratusSymbol symbol = Find(key);
+			Symbol symbol = Find(key);
 			symbol.SetValue(value);
 		}
 
@@ -146,7 +146,7 @@ namespace Stratus.Data
 		public void SetValue(string key, object value)
 		{
 			// Look for the key in the list
-			StratusSymbol symbol = Find(key);
+			Symbol symbol = Find(key);
 			symbol.SetValue(value);
 		}
 
@@ -155,7 +155,7 @@ namespace Stratus.Data
 		/// </summary>
 		/// <param name="key"></param>
 		/// <returns></returns>
-		public StratusSymbol Find(string key)
+		public Symbol Find(string key)
 		{
 #if STRATUS_SYMBOLTABLE_USEMAP
 
@@ -185,7 +185,7 @@ namespace Stratus.Data
 		/// <returns></returns>
 		public bool Contains(string key)
 		{
-			StratusSymbol symbol = Find(key);
+			Symbol symbol = Find(key);
 			return symbol != null;
 		}
 
@@ -193,7 +193,7 @@ namespace Stratus.Data
 		/// Adds a symbol to this table at runtime
 		/// </summary>
 		/// <param name="symbol"></param>
-		public void Add(StratusSymbol symbol)
+		public void Add(Symbol symbol)
 		{
 			symbols.Add(symbol);
 			symbolsMap.Add(symbol.key, symbol);
@@ -233,14 +233,14 @@ namespace Stratus.Data
 			return builder.ToString();
 		}
 
-		public IEnumerator<StratusSymbol> GetEnumerator()
+		public IEnumerator<Symbol> GetEnumerator()
 		{
-			return ((IEnumerable<StratusSymbol>)this.symbols).GetEnumerator();
+			return ((IEnumerable<Symbol>)this.symbols).GetEnumerator();
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return ((IEnumerable<StratusSymbol>)this.symbols).GetEnumerator();
+			return ((IEnumerable<Symbol>)this.symbols).GetEnumerator();
 		}
 		#endregion
 	}

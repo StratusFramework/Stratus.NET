@@ -172,7 +172,7 @@ namespace Stratus.Models
 		/// <summary>
 		/// </summary>
 		/// <returns>All the selections of the given modification, ordered by those with the least possible selections</returns>
-		public StratusValueSelector<TValue>[] GetSelectors<TM2, TValue>()
+		public ValueSelector<TValue>[] GetSelectors<TM2, TValue>()
 			where TM2 : ObjectModification<TObject, TValue>, TObjectModification
 		{
 			TM2[] mods = Get<TM2>();
@@ -185,7 +185,7 @@ namespace Stratus.Models
 		/// <summary>
 		/// </summary>
 		/// <returns>All the selections of the given modification, ordered by those with the least possible selections</returns>
-		public StratusValueSelector<TValue>[] GetAvailableSelectors<TModification, TValue>()
+		public ValueSelector<TValue>[] GetAvailableSelectors<TModification, TValue>()
 			where TModification : ObjectModification<TObject, TValue>, TObjectModification
 		{
 			return GetSelectors<TModification, TValue>()
