@@ -1,4 +1,5 @@
 ﻿using Stratus.Data;
+using Stratus.Events;
 
 namespace Stratus
 {
@@ -8,7 +9,7 @@ namespace Stratus
 	/// <typeparam name="T"></typeparam>
 	public abstract class StratusEventDrivenVariableAttribute<T> : StratusValue
 	{
-		public abstract class BaseEvent : StratusEvent
+		public abstract class BaseEvent : Event
 		{
 			public float value { get; set; }
 		}

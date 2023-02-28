@@ -2,20 +2,16 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Stratus
+namespace Stratus.Events
 {
-	public interface IStratusEventSubscriber
-	{
-	}
-
-	public static class StratusEventSystemExtensions
+	public interface IEventSubscriber
 	{
 	}
 
 	/// <summary>
 	/// The class which manages an event system for entities of type <typeparamref name="TObject"/>
 	/// </summary>
-	public class StratusEventSystem<TObject>
+	public class EventSystem<TObject>
 	{
 		#region Declarations
 		internal class EventDelegateList : List<Delegate>
@@ -23,7 +19,7 @@ namespace Stratus
 		}
 
 		/// <summary>
-		/// The key being the <see cref="StratusEvent"/> type name
+		/// The key being the <see cref="Event"/> type name
 		/// </summary>
 		internal class EventDelegateMap : Dictionary<string, EventDelegateList>
 		{
@@ -49,18 +45,18 @@ namespace Stratus
 		/// <summary>
 		/// The system instance
 		/// </summary>
-		internal static StratusEventSystem<TObject> instance
+		internal static EventSystem<TObject> instance
 		{
 			get
 			{
 				if (_instance == null)
 				{
-					_instance = new StratusEventSystem<TObject>();
+					_instance = new EventSystem<TObject>();
 				}
 				return _instance;
 			}
 		}
-		private static StratusEventSystem<TObject> _instance;
+		private static EventSystem<TObject> _instance;
 		/// <summary>
 		/// Whether we are doing tracing for debugging purposes.
 		/// </summary>
@@ -106,7 +102,7 @@ namespace Stratus
 		/// <param name="subscriber">The subscriber we are connecting to whose events we are connecting to. </param>
 		/// <param name="memFunc">The member function to connect to. </param>
 		public static void Connect<TEvent>(TObject subscriber, Action<TEvent> memFunc)
-			where TEvent : StratusEvent
+			where TEvent : Event
 		{
 			Connect(subscriber, typeof(TEvent), e => memFunc((TEvent)e));
 		}
@@ -117,7 +113,7 @@ namespace Stratus
 		/// <param name="subscriber"></param>
 		/// <param name="callback"></param>
 		/// <param name="type"></param>
-		public static void Connect(TObject subscriber, Type type, Action<StratusEvent> callback)
+		public static void Connect(TObject subscriber, Type type, Action<Event> callback)
 		{
 			string key = instance.GetKey(type);
 
@@ -144,7 +140,7 @@ namespace Stratus
 		/// Connects to broadcast events 
 		/// </summary>
 		public static void Connect<TEvent>(Action<TEvent> callback)
-			where TEvent : StratusEvent
+			where TEvent : Event
 		{
 			Connect(typeof(TEvent), e => callback((TEvent)e));
 		}
@@ -152,7 +148,7 @@ namespace Stratus
 		/// <summary>
 		/// Connects to broadcast events 
 		/// </summary>
-		public static void Connect(Type type, Action<StratusEvent> callback)
+		public static void Connect(Type type, Action<Event> callback)
 		{
 			string key = instance.GetKey(type);
 			if (!instance.broadcastMap.ContainsKey(key))
@@ -169,7 +165,7 @@ namespace Stratus
 		/// <summary>
 		/// Broadcast the given event
 		/// </summary>
-		public static void Broadcast(StratusEvent e, Type typeOverride = null)
+		public static void Broadcast(Event e, Type typeOverride = null)
 		{
 			Type type = typeOverride ?? e.GetType();
 			string key = instance.GetKey(type);
@@ -190,7 +186,7 @@ namespace Stratus
 		/// <param name="e">The event to which to listen for.</param>
 		/// <param name="nextFrame">Whether to send this event on the next frame.</param>
 		public static void Dispatch<TEvent>(TObject target, TEvent e)
-			where TEvent : StratusEvent
+			where TEvent : Event
 		{
 			Dispatch(target, e, null);
 		}
@@ -202,7 +198,7 @@ namespace Stratus
 		/// <param name="target">The object to which to connect to.</param>
 		/// <param name="e">The name of the event to which to listen for.</param>
 		/// <param name="typeOverride">If set, will override the type to which to send the event to</param>
-		public static void Dispatch(TObject target, StratusEvent e, Type typeOverride = null)
+		public static void Dispatch(TObject target, Event e, Type typeOverride = null)
 		{
 			Type type = typeOverride ?? e.GetType();
 			string key = instance.GetKey(type);
@@ -265,7 +261,7 @@ namespace Stratus
 		/// </summary>
 		/// <param name="obj"></param>
 		public static void Disconnect<TEvent>(TObject obj)
-			where TEvent : StratusEvent
+			where TEvent : Event
 		{
 			Disconnect(obj, typeof(TEvent));
 		}
@@ -300,7 +296,7 @@ namespace Stratus
 		#endregion
 
 		#region Implementation
-		private static void Invoke(StratusEvent e, bool watching, EventDelegateList delegateList)
+		private static void Invoke(Event e, bool watching, EventDelegateList delegateList)
 		{
 			EventDelegateList delegatesToRemove = null;
 			foreach (Delegate deleg in delegateList)

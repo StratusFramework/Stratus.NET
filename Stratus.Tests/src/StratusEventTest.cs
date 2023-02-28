@@ -1,14 +1,14 @@
 using NUnit.Framework;
 
+using Stratus.Events;
+
 using System;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace Stratus.Tests
 {
-    public class StratusEventTest
+	public class StratusEventTest
     {
-		private class MockEntity : IStratusEventSubscriber
+		private class MockEntity : IEventSubscriber
 		{
             public MockEntity(string name)
             {
@@ -18,11 +18,11 @@ namespace Stratus.Tests
             public string name { get; }
         }
 
-        private class MockEventSystem : StratusEventSystem<MockEntity>
+        private class MockEventSystem : EventSystem<MockEntity>
         {
         }
 
-		public class EntityEvent : StratusEvent
+		public class EntityEvent : Event
 		{
 		}
 

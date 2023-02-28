@@ -9,7 +9,6 @@ using System.Reflection;
 
 namespace Stratus.Systems
 {
-
 	public abstract class ConsoleCommandParameterHandler
 	{
 		public abstract object Parse(string arg, params object[] context);
