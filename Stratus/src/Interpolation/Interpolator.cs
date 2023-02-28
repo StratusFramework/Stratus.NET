@@ -3,10 +3,10 @@ using Stratus.Timers;
 namespace Stratus.Interpolation
 {
 	/// <summary>
-	/// A general-purpose utility class for interpolation of struct types
+	/// A general-purpose utility class for interpolation of specific types
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	public abstract class StratusInterpolator<T>
+	public abstract class Interpolator<T>
 	{
 		#region Fields
 		protected T _startingValue;
