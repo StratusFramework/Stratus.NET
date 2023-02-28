@@ -9,40 +9,7 @@ namespace Stratus.Data
 	[Serializable]
 	public class Symbol : KeyVariantPair<string>
 	{
-		//--------------------------------------------------------------------/
-		// Constructors
-		//--------------------------------------------------------------------/
-		public Symbol(string key, int value) : base(key, value) { }
-		public Symbol(string key, float value) : base(key, value) { }
-		public Symbol(string key, bool value) : base(key, value) { }
-		public Symbol(string key, string value) : base(key, value) { }
-		public Symbol(string key, Variant value) : base(key, value) { }
-		public Symbol(Symbol other) : base(other) { }
-
-		//--------------------------------------------------------------------/
-		// Methods
-		//--------------------------------------------------------------------/
-		/// <summary>
-		/// Constructs a symbol with the given key and value
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="key"></param>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public static Symbol Construct<T>(string key, T value)
-		{
-			return new Symbol(key, Variant.Make(value));
-		}
-
-		//--------------------------------------------------------------------/
-		// Properties
-		//--------------------------------------------------------------------/
-		/// <summary>
-		/// Constructs a reference to this symbol
-		/// </summary>
-		/// <returns></returns>
-		public Reference reference => new Reference(key, type);
-
+		#region Declarations
 		/// <summary>
 		/// A reference of a symbol
 		/// </summary>
@@ -67,5 +34,44 @@ namespace Stratus.Data
 				this.type = type;
 			}
 		}
+		#endregion
+
+		#region Constructors
+		public Symbol(string key) : base(key)
+		{
+		}
+		public Symbol(string key, int value) : base(key, value)
+		{
+		}
+		public Symbol(string key, float value) : base(key, value)
+		{
+		}
+		public Symbol(string key, bool value) : base(key, value)
+		{
+		}
+		public Symbol(string key, string value) : base(key, value)
+		{
+		}
+		public Symbol(string key, Variant value) : base(key, value)
+		{
+		}
+		public Symbol(Symbol other) : base(other)
+		{
+		}
+		#endregion
+
+		#region Interface
+		public Reference ToReference()
+		{
+			return new Reference(key, type);
+		}
+		#endregion
+
+		#region Static Constructors
+		public static Symbol Construct<T>(string key, T value)
+		{
+			return new Symbol(key, Variant.Make(value));
+		}
+		#endregion
 	}
 }

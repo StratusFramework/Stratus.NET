@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using System.Text;
 using Stratus.Extensions;
+using Stratus.Serialization;
 
 namespace Stratus.Data
 {
@@ -63,7 +64,7 @@ namespace Stratus.Data
 				Symbol.Reference[] values = new Symbol.Reference[symbols.Count];
 				for (int i = 0; i < symbols.Count; ++i)
 				{
-					values[i] = symbols[i].reference;
+					values[i] = symbols[i].ToReference();
 				}
 				return values;
 			}

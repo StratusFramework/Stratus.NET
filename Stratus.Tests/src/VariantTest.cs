@@ -26,7 +26,7 @@ namespace Stratus.Tests
 			variant.Set(first);
 			var firstType = variant.type;
 			variant.Set(second);
-			var secondType = variant.type;	
+			var secondType = variant.type;
 			Assert.That(firstType, !Is.EqualTo(secondType));
 		}
 	}
