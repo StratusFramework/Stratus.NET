@@ -90,7 +90,7 @@ namespace Stratus.Models.Maps
 		public SquareGrid grid { get; }
 		public CellLayout cellLayout { get; }
 
-		private StratusBictionary<TLayer, Type> typesByLayer = new StratusBictionary<TLayer, Type>();
+		private Bictionary<TLayer, Type> typesByLayer = new Bictionary<TLayer, Type>();
 		public HashSet<TObject> objects { get; }
 		/// <summary>
 		/// All the available layers for this map
@@ -101,8 +101,8 @@ namespace Stratus.Models.Maps
 		/// </summary>
 		protected virtual TLayer baseLayer => layers[0];
 
-		private Dictionary<TLayer, StratusBictionary<Vector3Int, TObject>> objectPositionsByLayer { get; }
-			= new Dictionary<TLayer, StratusBictionary<Vector3Int, TObject>>();
+		private Dictionary<TLayer, Bictionary<Vector3Int, TObject>> objectPositionsByLayer { get; }
+			= new Dictionary<TLayer, Bictionary<Vector3Int, TObject>>();
 		protected static readonly Type baseType = typeof(TObject);
 		#endregion
 
@@ -113,7 +113,7 @@ namespace Stratus.Models.Maps
 			this.grid = grid;
 			foreach (var layer in layers)
 			{
-				objectPositionsByLayer.Add(layer, new StratusBictionary<Vector3Int, TObject>());
+				objectPositionsByLayer.Add(layer, new Bictionary<Vector3Int, TObject>());
 			}
 		}
 

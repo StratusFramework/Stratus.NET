@@ -7,11 +7,9 @@ namespace Stratus.Collections
 	/// A list of filtered items
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	public class StratusFilteredList<T>
+	public class FilteredList<T>
 	{
-		//--------------------------------------------------------------------------/
-		// Declarations
-		//--------------------------------------------------------------------------/
+		#region Declarations
 		public struct Entry
 		{
 			public int index;
@@ -29,18 +27,15 @@ namespace Stratus.Collections
 			public List<T> values;
 			public Action onFinished;
 		}
+		#endregion
 
-
-		private string _filter;
-
-		//--------------------------------------------------------------------------/
-		// Properties
-		//--------------------------------------------------------------------------/
+		#region Properties
 		public string filter
 		{
 			get => this._filter;
 			private set => this.UpdateFilter(value);
 		}
+		private string _filter;
 
 		public List<Entry> currentEntries { get; private set; }
 		public Item[] entries { get; private set; }
@@ -49,11 +44,10 @@ namespace Stratus.Collections
 		private Func<T, string> nameFunction { get; set; }
 		public int maxIndex => this.currentEntries.Count - 1;
 		public bool hasFilter => !string.IsNullOrEmpty(this.filter);
+		#endregion
 
-		//--------------------------------------------------------------------------/
-		// CTOR
-		//--------------------------------------------------------------------------/
-		public StratusFilteredList(T[] items, Func<T, string> nameFunction)
+		#region Constructors
+		public FilteredList(T[] items, Func<T, string> nameFunction)
 		{
 			this.entries = new Item[items.Length];
 			for (int i = 0; i < items.Length; ++i)
@@ -65,10 +59,9 @@ namespace Stratus.Collections
 			this.currentEntries = new List<Entry>();
 			this.UpdateFilter(string.Empty);
 		}
+		#endregion
 
-		//--------------------------------------------------------------------------/
-		// Methods
-		//--------------------------------------------------------------------------/
+		#region Interface
 		public bool UpdateFilter(string filter)
 		{
 			// Set the filter
@@ -111,10 +104,11 @@ namespace Stratus.Collections
 
 			this.displayOptions = displayOptions.ToArray();
 			return true;
-		}
+		} 
+		#endregion
 	}
 
-	public class StratusFilteredStringList : StratusFilteredList<string>
+	public class StratusFilteredStringList : FilteredList<string>
 	{
 		private static Func<string, string> stringNameFunction { get; } = (value) => value;
 

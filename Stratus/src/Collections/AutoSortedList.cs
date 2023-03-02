@@ -3,11 +3,11 @@ using System;
 
 namespace Stratus.Collections
 {
-	public class StratusSortedList<KeyType, ValueType> : SortedList<KeyType, ValueType>
+	public class AutoSortedList<KeyType, ValueType> : SortedList<KeyType, ValueType>
 	{
 		private Func<ValueType, KeyType> keyFunction;
 
-		public StratusSortedList(Func<ValueType, KeyType> keyFunction,
+		public AutoSortedList(Func<ValueType, KeyType> keyFunction,
 			int capacity = 0,
 			IComparer<KeyType> comparer = null)
 			: base(capacity, comparer)
@@ -15,7 +15,7 @@ namespace Stratus.Collections
 			this.keyFunction = keyFunction;
 		}
 
-		public StratusSortedList(Func<ValueType, KeyType> keyFunction, IEnumerable<ValueType> values,
+		public AutoSortedList(Func<ValueType, KeyType> keyFunction, IEnumerable<ValueType> values,
 			int capacity = 0,
 			IComparer<KeyType> comparer = null)
 			: this(keyFunction, capacity, comparer)

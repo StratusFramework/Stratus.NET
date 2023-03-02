@@ -7,7 +7,7 @@ namespace Stratus.Collections
 	/// Utlity class for generating content for a SelectableGrid
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	public class StratusSelectableGrid<T> where T : class
+	public class SelectableGrid<T> where T : class
 	{
 		//------------------------------------------------------------------------/
 		// Properties
@@ -31,7 +31,7 @@ namespace Stratus.Collections
 		//------------------------------------------------------------------------/
 		// Methods
 		//------------------------------------------------------------------------/
-		public StratusSelectableGrid(T[] array)
+		public SelectableGrid(T[] array)
 		{
 			this.array = array;
 			this.isList = false;
@@ -39,7 +39,7 @@ namespace Stratus.Collections
 			this.content = new string[rows * columns];
 		}
 
-		public StratusSelectableGrid(List<T> list)
+		public SelectableGrid(List<T> list)
 		{
 			this.list = list;
 			this.isList = true;

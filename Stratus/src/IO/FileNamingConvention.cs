@@ -25,7 +25,7 @@ namespace Stratus.IO
 		{
 		}
 
-		private StratusSortedList<int, SaveFileInfo> filesByIndex { get; set; }
+		private AutoSortedList<int, SaveFileInfo> filesByIndex { get; set; }
 
 		public const string indexPattern = @"(?<index>\d+)";
 		public const string indexCaptureGroupName = "index";
@@ -34,7 +34,7 @@ namespace Stratus.IO
 		{
 			if (filesByIndex == null)
 			{
-				filesByIndex = new StratusSortedList<int, SaveFileInfo>(x => ParseIndex(x.name));
+				filesByIndex = new AutoSortedList<int, SaveFileInfo>(x => ParseIndex(x.name));
 				filesByIndex.AddRange(files.assets);
 			}
 			else if (!files.updated)

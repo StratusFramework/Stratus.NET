@@ -20,5 +20,19 @@ namespace Stratus.Tests
 			Assert.That(reference.type, Is.EqualTo(symbol.type));
 		}
 	}
+
+	public class SymbolTableTests
+	{
+		[Test]
+		public void AddsSymbolsToTable()
+		{
+			var first = new Symbol("foo", 7);
+			var second = new Symbol("bar", true);
+
+			var table = new SymbolTable();
+			table.Add(first);
+			table.Add(second);
+		}
+	}
 }
 

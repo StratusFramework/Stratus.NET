@@ -49,19 +49,19 @@ namespace Stratus
 		private List<TAsset> _assets = new List<TAsset>();
 
 		#region Properties
-		public StratusSortedList<string, TAsset> assetsByName
+		public AutoSortedList<string, TAsset> assetsByName
 		{
 			get
 			{
 				if (_assetsByName == null)
 				{
-					_assetsByName = new StratusSortedList<string, TAsset>(GetKey, _assets.Count, StringComparer.InvariantCultureIgnoreCase);
+					_assetsByName = new AutoSortedList<string, TAsset>(GetKey, _assets.Count, StringComparer.InvariantCultureIgnoreCase);
 					_assetsByName.AddRange(_assets);
 				}
 				return _assetsByName;
 			}
 		}
-		private StratusSortedList<string, TAsset> _assetsByName;
+		private AutoSortedList<string, TAsset> _assetsByName;
 		public StratusAssetToken<TAsset> this[string key]
 		{
 			get => GetAsset(key);

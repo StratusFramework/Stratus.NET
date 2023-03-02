@@ -32,7 +32,7 @@ namespace Stratus
 	public abstract class StratusAssetResolver<TAsset> : IStratusAssetResolver<TAsset>
 		where TAsset : class
 	{
-		public StratusSortedList<string, StratusAssetToken<TAsset>> assetsByName
+		public AutoSortedList<string, StratusAssetToken<TAsset>> assetsByName
 		{
 			get
 			{
@@ -43,7 +43,7 @@ namespace Stratus
 				return _assetsByName;
 			}
 		}
-		private StratusSortedList<string, StratusAssetToken<TAsset>> _assetsByName;
+		private AutoSortedList<string, StratusAssetToken<TAsset>> _assetsByName;
 
 		public abstract StratusAssetSource<TAsset>[] sources { get; }
 		protected virtual string GetKey(StratusAssetToken<TAsset> element) => element.ToString();
@@ -53,7 +53,7 @@ namespace Stratus
 		{
 			if (_assetsByName == null || force)
 			{
-				_assetsByName = new StratusSortedList<string, StratusAssetToken<TAsset>>(
+				_assetsByName = new AutoSortedList<string, StratusAssetToken<TAsset>>(
 					a => a.name,
 					0, 
 					StringComparer.InvariantCultureIgnoreCase);

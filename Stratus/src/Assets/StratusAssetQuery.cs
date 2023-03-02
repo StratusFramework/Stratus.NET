@@ -78,11 +78,11 @@ namespace Stratus
 	public class StratusAssetQuery<AssetType> : StratusAssetQuery
 		where AssetType : class
 	{
-		private StratusSortedList<string, AssetType> _assetsByName;
+		private AutoSortedList<string, AssetType> _assetsByName;
 		private Func<IList<AssetType>> getAssetsFunction;
 		private Func<AssetType, string> keyFunction;
 
-		private StratusSortedList<string, AssetType> assetsByName
+		private AutoSortedList<string, AssetType> assetsByName
 		{
 			get
 			{
@@ -132,7 +132,7 @@ namespace Stratus
 		public override void Update()
 		{
 			IList<AssetType> values = getAssetsFunction();
-			_assetsByName = new StratusSortedList<string, AssetType>(keyFunction, values.Count);
+			_assetsByName = new AutoSortedList<string, AssetType>(keyFunction, values.Count);
 			_assetsByName.AddRange(values);
 			base.Update();
 		}

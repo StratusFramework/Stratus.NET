@@ -24,7 +24,7 @@ namespace Stratus.Collections
 	/// are always O(1). Index access is also O(1).
 	/// More info @ wikipedia: http://en.wikipedia.org/wiki/Circular_buffer
 	/// </summary>
-	public class StratusCircularBuffer<T> : IEnumerable<T>
+	public class CircularBuffer<T> : IEnumerable<T>
 	{
 		#region Fields
 		private readonly T[] _buffer;
@@ -46,12 +46,12 @@ namespace Stratus.Collections
 		#endregion
 
 		#region Constructors
-		public StratusCircularBuffer(int capacity) : this(capacity, new T[] { })
+		public CircularBuffer(int capacity) : this(capacity, new T[] { })
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StratusCircularBuffer{T}"/> class.
+		/// Initializes a new instance of the <see cref="CircularBuffer{T}"/> class.
 		/// </summary>
 		/// <param name='capacity'>
 		/// Buffer capacity. Must be positive.
@@ -61,7 +61,7 @@ namespace Stratus.Collections
 		/// Suggestion: use Skip(x).Take(y).ToArray() to build this argument from
 		/// any enumerable.
 		/// </param>
-		public StratusCircularBuffer(int capacity, T[] items)
+		public CircularBuffer(int capacity, T[] items)
 		{
 			if (capacity < 1)
 			{

@@ -249,8 +249,8 @@ namespace Stratus.Reflection
 
 	public static class SerializedFieldTypeExtensions
 	{
-		private static StratusBictionary<Type, StratusSerializedFieldType> serializedFieldTypeMap { get; set; }
-			= new StratusBictionary<Type, StratusSerializedFieldType>()
+		private static Bictionary<Type, StratusSerializedFieldType> serializedFieldTypeMap { get; set; }
+			= new Bictionary<Type, StratusSerializedFieldType>()
 			{
 				{ typeof(bool), StratusSerializedFieldType.Boolean },
 				{ typeof(int), StratusSerializedFieldType.Integer},

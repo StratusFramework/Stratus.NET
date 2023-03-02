@@ -3,9 +3,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace Stratus.Collections
+namespace Stratus.Models
 {
-	public abstract class StratusEnumRelationshipMatrix<RelationType, ValueType>
+	public abstract class EnumRelationshipMatrix<RelationType, ValueType>
 		where RelationType : Enum
 	{
 		public class RelationValue
@@ -37,7 +37,7 @@ namespace Stratus.Collections
 		protected abstract ValueType defaultValue { get; }
 		protected abstract ValueType selfValue { get; }
 
-		public StratusEnumRelationshipMatrix()
+		public EnumRelationshipMatrix()
 		{
 			enumType = typeof(RelationType);
 			relations = EnumUtility.Values<RelationType>();
@@ -51,7 +51,7 @@ namespace Stratus.Collections
 			Reset();
 		}
 
-		public StratusEnumRelationshipMatrix(IEnumerable<RelationValue> values)
+		public EnumRelationshipMatrix(IEnumerable<RelationValue> values)
 			: this()
 		{
 			Set(values);

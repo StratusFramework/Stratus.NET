@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace Stratus.Collections
 {
-	public class StratusDictionary<TKey, TValue> : Dictionary<TKey, TValue>
+	public class AutoDictionary<TKey, TValue> : Dictionary<TKey, TValue>
 	{
 		private Func<TValue, TKey> keyFunction;
 
-		public StratusDictionary(Func<TValue, TKey> keyFunction,
+		public AutoDictionary(Func<TValue, TKey> keyFunction,
 								 int capacity = 0,
 								 IEqualityComparer<TKey> comparer = null)
 								 : base(capacity, comparer)
@@ -15,7 +15,7 @@ namespace Stratus.Collections
 			this.keyFunction = keyFunction;
 		}
 
-		public StratusDictionary(Func<TValue, TKey> keyFunction,
+		public AutoDictionary(Func<TValue, TKey> keyFunction,
 								IEnumerable<TValue> values,
 								 int capacity = 0,
 								 IEqualityComparer<TKey> comparer = null)

@@ -7,7 +7,7 @@ using Stratus.Serialization;
 
 namespace Stratus.Collections
 {
-	public interface IReadOnlyStratusMap<TKey, TValue> : IEnumerable<TValue>
+	public interface IReadOnlyMap<TKey, TValue> : IEnumerable<TValue>
 	{
 		int Count { get; }
 		bool Contains(TKey key);
@@ -16,13 +16,14 @@ namespace Stratus.Collections
 	}
 
 	/// <summary>
-	/// A collection that serializes the <see cref="List{TValue}"/>, generates the <see cref="Dictionary{TKey, TValue}"/> during runtime
+	/// A collection that generates keys automatically for given values.
 	/// </summary>
 	/// <typeparam name="TKey">The key type used for the dictionary</typeparam>
 	/// <typeparam name="TValue">The value type</typeparam>
-	public abstract class StratusMap<TKey, TValue> : IEnumerable<TValue>, IReadOnlyStratusMap<TKey, TValue>
+	/// <remarks>It serializes the values in a <see cref="List{TValue}"/>, generates the <see cref="Dictionary{TKey, TValue}"/> during runtime</remarks>
+	public abstract class AutoMap<TKey, TValue> : IEnumerable<TValue>, IReadOnlyMap<TKey, TValue>
 	{
-		[SerializeFieldAttribute]
+		[SerializeField]
 		private List<TValue> _list = new List<TValue>();
 		[NonSerialized]
 		private Dictionary<TKey, TValue> _dictionary;
@@ -40,10 +41,16 @@ namespace Stratus.Collections
 			}
 		}
 		public int Count => _list.Count;
+		public bool isEmpty => Count == 0;
 		public IReadOnlyList<TValue> Values => _list;
 		public IReadOnlyCollection<TKey> Keys => lookup.Keys;
 		#endregion
 
+		#region Virtual
+		protected abstract TKey GetKey(TValue value); 
+		#endregion
+
+		#region Interface
 		public bool Add(TValue value)
 		{
 			TKey key = GetKey(value);
@@ -116,15 +123,15 @@ namespace Stratus.Collections
 		{
 			_list?.Clear();
 			lookup?.Clear();
-		}
+		} 
+		#endregion
 
 		private void GenerateLookup()
 		{
 			_dictionary = new Dictionary<TKey, TValue>();
 		}
 
-		protected abstract TKey GetKey(TValue value);
-
+		#region IEnumerable
 		public IEnumerator<TValue> GetEnumerator()
 		{
 			return ((IEnumerable<TValue>)this._list).GetEnumerator();
@@ -133,17 +140,18 @@ namespace Stratus.Collections
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return ((IEnumerable)this._list).GetEnumerator();
-		}
+		} 
+		#endregion
 	}
 
 	/// <summary>
 	/// Non-serialized version
 	/// </summary>
-	public class StratusDefaultMap<TKey, TValue> : StratusMap<TKey, TValue>
+	public class DefaultAutoMap<TKey, TValue> : AutoMap<TKey, TValue>
 	{
 		private Func<TValue, TKey> keyFunction;
 
-		public StratusDefaultMap(Func<TValue, TKey> keyFunction)
+		public DefaultAutoMap(Func<TValue, TKey> keyFunction)
 		{
 			this.keyFunction = keyFunction;
 		}

@@ -13,10 +13,6 @@ namespace Stratus.Data
 	[Serializable]
 	public class SymbolTable : IEnumerable<Symbol>
 	{
-		#region Declarations
-		public delegate void OnSymbolChanged(Symbol symbol);
-		#endregion
-
 		#region Fields
 		public List<Symbol> symbols = new List<Symbol>();
 		#endregion
@@ -36,7 +32,7 @@ namespace Stratus.Data
 		/// <summary>
 		/// True if the table is empty of symbols
 		/// </summary>
-		public bool isEmpty { get { return symbols.Count == 0; } }
+		public bool isEmpty => symbols.Count == 0;
 
 		/// <summary>
 		/// The names of all keys for all symbols in this table
@@ -215,7 +211,9 @@ namespace Stratus.Data
 			foreach (var symbol in symbols)
 			{
 				if (!symbolsMap.ContainsKey(symbol.key))
+				{
 					symbolsMap.Add(symbol.key, symbol);
+				}
 			}
 			hasLookupTable = true;
 		}

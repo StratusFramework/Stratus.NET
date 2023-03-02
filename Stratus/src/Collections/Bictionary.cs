@@ -4,21 +4,41 @@ using System.Collections.Generic;
 namespace Stratus.Collections
 {
 	/// <summary>
-	/// A two-way dictionary
+	/// A two-way dictionary, providing a way to map between <typeparamref name="T1"/> and <typeparamref name="T2"/>
 	/// </summary>
 	/// <typeparam name="T1"></typeparam>
 	/// <typeparam name="T2"></typeparam>
-	public class StratusBictionary<T1, T2> : IEnumerable<KeyValuePair<T1, T2>>
+	public class Bictionary<T1, T2> : IEnumerable<KeyValuePair<T1, T2>>
 	{
-		//-------------------------------------------------------------------------/
-		// Fields
-		//-------------------------------------------------------------------------/
+		#region Declarations
+		public class Indexer<T3, T4>
+		{
+			private readonly Dictionary<T3, T4> _dictionary;
+
+			public Indexer(Dictionary<T3, T4> dictionary)
+			{
+				_dictionary = dictionary;
+			}
+
+			public T4 this[T3 index]
+			{
+				get { return _dictionary[index]; }
+				set { _dictionary[index] = value; }
+			}
+
+			public bool Contains(T3 key)
+			{
+				return _dictionary.ContainsKey(key);
+			}
+		}
+		#endregion
+
+		#region Fields
 		private readonly Dictionary<T1, T2> _forward = new Dictionary<T1, T2>();
 		private readonly Dictionary<T2, T1> _reverse = new Dictionary<T2, T1>();
+		#endregion
 
-		//-------------------------------------------------------------------------/
-		// Properties
-		//-------------------------------------------------------------------------/
+		#region Properties
 		/// <summary>
 		/// Maps T1 to T2
 		/// </summary>
@@ -45,19 +65,17 @@ namespace Stratus.Collections
 		/// Length of elements
 		/// </summary>
 		public int Count => _forward.Count;
+		#endregion
 
-		//-------------------------------------------------------------------------/
-		// CTOR
-		//-------------------------------------------------------------------------/
-		public StratusBictionary()
+		#region Constructors
+		public Bictionary()
 		{
 			forward = new Indexer<T1, T2>(_forward);
 			reverse = new Indexer<T2, T1>(_reverse);
 		}
+		#endregion
 
-		//-------------------------------------------------------------------------/
-		// Methods
-		//-------------------------------------------------------------------------/
+		#region Methods
 		public void Add(T1 t1, T2 t2)
 		{
 			_forward.Add(t1, t2);
@@ -110,7 +128,9 @@ namespace Stratus.Collections
 			_forward.Clear();
 			_reverse.Clear();
 		}
+		#endregion
 
+		#region Enumerable
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return GetEnumerator();
@@ -119,28 +139,7 @@ namespace Stratus.Collections
 		public IEnumerator<KeyValuePair<T1, T2>> GetEnumerator()
 		{
 			return _forward.GetEnumerator();
-		}
-
-		public class Indexer<T3, T4>
-		{
-			private readonly Dictionary<T3, T4> _dictionary;
-
-			public Indexer(Dictionary<T3, T4> dictionary)
-			{
-				_dictionary = dictionary;
-			}
-
-			public T4 this[T3 index]
-			{
-				get { return _dictionary[index]; }
-				set { _dictionary[index] = value; }
-			}
-
-			public bool Contains(T3 key)
-			{
-				return _dictionary.ContainsKey(key);
-			}
-		}
+		} 
+		#endregion
 	}
-
 }

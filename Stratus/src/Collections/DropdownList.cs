@@ -8,7 +8,7 @@ namespace Stratus.Collections
 	/// <summary>
 	/// An utility class for generating content for a dropdown list
 	/// </summary>
-	public class StratusDropdownList
+	public class DropdownList
 	{
 		//------------------------------------------------------------------------/
 		// Properties
@@ -20,7 +20,7 @@ namespace Stratus.Collections
 	/// <summary>
 	/// An utility class for generating content for a dropdown list
 	/// </summary>
-	public class StratusDropdownList<T> : StratusDropdownList where T : class
+	public class DropdownList<T> : DropdownList where T : class
 	{
 		//------------------------------------------------------------------------/
 		// Properties
@@ -38,7 +38,7 @@ namespace Stratus.Collections
 		//------------------------------------------------------------------------/
 		// CTOR
 		//------------------------------------------------------------------------/
-		public StratusDropdownList(List<T> list, Func<T, string> nameFunction, T initial = null)
+		public DropdownList(List<T> list, Func<T, string> nameFunction, T initial = null)
 		{
 			this.list = list;
 			isList = true;
@@ -49,7 +49,7 @@ namespace Stratus.Collections
 				SetIndex(initial);
 		}
 
-		public StratusDropdownList(List<T> list, Func<T, string> namer, int index = 0)
+		public DropdownList(List<T> list, Func<T, string> namer, int index = 0)
 		{
 			this.list = list;
 			isList = true;
@@ -58,7 +58,7 @@ namespace Stratus.Collections
 			selectedIndex = index;
 		}
 
-		public StratusDropdownList(T[] array, Func<T, string> namer, T initial = null)
+		public DropdownList(T[] array, Func<T, string> namer, T initial = null)
 		{
 			this.array = array;
 			isList = false;

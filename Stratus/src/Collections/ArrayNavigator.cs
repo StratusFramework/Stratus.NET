@@ -9,7 +9,7 @@ namespace Stratus.Collections
 	/// <summary>
 	/// Base class for the array navigator
 	/// </summary>
-	public class StratusArrayNavigator
+	public class ArrayNavigator
 	{
 		public enum Direction
 		{
@@ -24,7 +24,7 @@ namespace Stratus.Collections
 	/// Provides a generic way to navigate a 1D array using directional axis.
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	public class StratusArrayNavigator<T> : StratusArrayNavigator
+	public class ArrayNavigator<T> : ArrayNavigator
 	{
 		//------------------------------------------------------------------------/
 		// Properties
@@ -161,17 +161,17 @@ namespace Stratus.Collections
 		//------------------------------------------------------------------------/
 		// CTOR
 		//------------------------------------------------------------------------/
-		public StratusArrayNavigator()
+		public ArrayNavigator()
 		{
 			currentIndex = 0;
 		}
 
-		public StratusArrayNavigator(IList<T> array, bool loop = false)
+		public ArrayNavigator(IList<T> array, bool loop = false)
 			: this(array, 0, loop)
 		{
 		}
 
-		public StratusArrayNavigator(IList<T> array, int index, bool loop = false)
+		public ArrayNavigator(IList<T> array, int index, bool loop = false)
 		{
 			this.values = array;
 			this.loop = loop;

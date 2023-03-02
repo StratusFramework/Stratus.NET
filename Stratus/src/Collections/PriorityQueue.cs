@@ -4,7 +4,7 @@ using System;
 
 namespace Stratus.Collections
 {
-	public class StratusPriorityQueue<Element, Key>
+	public class PriorityQueue<Element, Key>
 		where Key : IComparable<Key>
 	{
 		private readonly FibonacciHeap<Element, Key> heap;
@@ -32,7 +32,7 @@ namespace Stratus.Collections
 		/// CTOR
 		/// </summary>
 		/// <param name="minPriority"></param>
-		public StratusPriorityQueue(Key minPriority)
+		public PriorityQueue(Key minPriority)
 		{
 			heap = new FibonacciHeap<Element, Key>(minPriority);
 		}
