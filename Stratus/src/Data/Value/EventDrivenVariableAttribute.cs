@@ -1,13 +1,13 @@
 ﻿using Stratus.Data;
 using Stratus.Events;
 
-namespace Stratus
+namespace Stratus.Models.Values
 {
 	/// <summary>
 	/// An event driven variable
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	public abstract class EventDrivenVariableAttribute<T> : StratusValue
+	public abstract class EventDrivenVariableAttribute<T> : BoundedFloat
 	{
 		public abstract class BaseEvent : Event
 		{
@@ -26,10 +26,8 @@ namespace Stratus
 
 		public abstract string defaultLabel { get; }
 
-		public EventDrivenVariableAttribute(float value,
-			float floor = 0,
-			float ceiling = float.MaxValue)
-			: base(value, floor, ceiling)
+		public EventDrivenVariableAttribute(float value)
+			: base(value)
 		{
 		}
 

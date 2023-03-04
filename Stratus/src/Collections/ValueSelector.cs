@@ -4,14 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Stratus
+namespace Stratus.Collections
 {
 	/// <summary>
 	/// Provides a way to define a selection that is either fixed (1 value) 
 	/// or that requires the user to select one of the possible values (> 1 value).
 	/// </summary>
 	/// <typeparam name="TValue"></typeparam>
-	public class ValueSelector<TValue> 
+	public class ValueSelector<TValue>
 	{
 		public virtual TValue[] values { get; private set; }
 		public TValue selection { get; private set; }
@@ -74,14 +74,14 @@ namespace Stratus
 		}
 	}
 
-	public class StratusValueEvaluationException : Exception
+	public class ValueEvaluationException : Exception
 	{
-		public StratusValueEvaluationException(string message) : base(message)
+		public ValueEvaluationException(string message) : base(message)
 		{
 		}
 	}
 
-	public class StratusValueSelection<TValue, TEvaluatedObject> : ValueSelector<TValue>
+	public class ValueSelection<TValue, TEvaluatedObject> : ValueSelector<TValue>
 	{
 		private Func<TEvaluatedObject, TValue[]> evaluationFunction;
 		public override TValue[] values
@@ -91,7 +91,7 @@ namespace Stratus
 				if (_values == null
 					&& evaluationFunction != null)
 				{
-					throw new StratusValueEvaluationException($"The possible values were not evaluated. Make sure the {nameof(Evaluate)} function is invoked on this object");
+					throw new ValueEvaluationException($"The possible values were not evaluated. Make sure the {nameof(Evaluate)} function is invoked on this object");
 				}
 				return _values;
 			}
@@ -99,15 +99,15 @@ namespace Stratus
 
 		private TValue[] _values;
 
-		public StratusValueSelection()
+		public ValueSelection()
 		{
 		}
 
-		public StratusValueSelection(params TValue[] values) : base(values)
+		public ValueSelection(params TValue[] values) : base(values)
 		{
 		}
 
-		public StratusValueSelection(Func<TEvaluatedObject, TValue[]> evaluationFunction)
+		public ValueSelection(Func<TEvaluatedObject, TValue[]> evaluationFunction)
 		{
 			Set(evaluationFunction);
 		}

@@ -28,6 +28,11 @@ namespace Stratus.Editor.Tests
 			}
 		}
 
+		public static void AssertResult(Result result, bool expected)
+		{
+			Assert.That(result.valid, Is.EqualTo(expected), result.message);
+		}
+
 		public static void AssertSuccess(Result result)
 		{
 			Assert.True(result.valid, result.message);
@@ -62,6 +67,17 @@ namespace Stratus.Editor.Tests
 				object bValue = field.GetValue(b);
 				Assert.AreEqual(aValue, bValue, $"{a} did not match {b}");
 			}
+		}
+	}
+
+	public static class TestExtensions
+	{
+		/// <summary>
+		/// Invokes an assertion (<see cref="NUnit.Framework.Assert"/>) on the given result
+		/// </summary>
+		public static void Assert(this Result result, bool expected = true)
+		{
+			StratusTest.AssertResult(result, expected);
 		}
 	}
 }
