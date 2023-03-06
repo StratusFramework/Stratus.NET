@@ -106,7 +106,7 @@ namespace Stratus.Search
 		/// <summary>
 		/// A priority-queue for use in searches
 		/// </summary>
-		private class PriorityQueue : PriorityQueue<Node, float>
+		private class PriorityQueue : Stratus.Collections.PriorityQueue<Node, float>
 		{
 			public PriorityQueue(float minPriority) : base(minPriority)
 			{
