@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Stratus.Logging;
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -174,6 +176,13 @@ namespace Stratus.Events
 			{
 				watching = true;
 			}
+
+			if (!instance.broadcastMap.ContainsKey(key))
+			{
+				StratusLog.Warning($"No one has connected to broadcast for events of type {type}");
+				return;
+			}
+
 			EventDelegateList delegateList = instance.broadcastMap[key];
 			Invoke(e, watching, delegateList);
 		}
