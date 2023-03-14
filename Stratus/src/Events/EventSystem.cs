@@ -188,6 +188,12 @@ namespace Stratus.Events
 		}
 
 		/// <summary>
+		/// Broadcast the given event of type <typeparamref name="TEvent"/>
+		/// </summary>
+		public static void Broadcast<TEvent>() where TEvent : Event, new()
+			=> Broadcast(new TEvent());
+
+		/// <summary>
 		/// Dispatches the given event of the specified type onto the object.
 		/// </summary>
 		/// <typeparam name="T">The event class.</typeparam>

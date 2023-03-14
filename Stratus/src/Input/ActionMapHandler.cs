@@ -97,8 +97,9 @@ namespace Stratus.Inputs
 		#region Interface
 		public virtual void Bind(string name, InputActionType type, Action<TInput> action)
 		{
+			name = lowercase ? name.ToLowerInvariant() : name;
 			var binding = new Binding(name, type, action);
-			_actionsByName.AddOrUpdate(lowercase ? name.ToLowerInvariant() : name, binding);
+			_actionsByName.AddOrUpdate(name, binding);
 		}
 
 		public void Bind(string action, Action onAction)
@@ -115,7 +116,7 @@ namespace Stratus.Inputs
 
 		public Result TryBindAll<TAction>() where TAction : Enum
 		{
-			var enumeratedValuesByName = EnumUtility.Values<TAction>().ToDictionary(v => v.ToString(), 
+			var enumeratedValuesByName = EnumUtility.Values<TAction>().ToDictionary(v => v.ToString(),
 				StringComparer.InvariantCultureIgnoreCase);
 
 			var members = this.GetAllFieldsOrProperties()
