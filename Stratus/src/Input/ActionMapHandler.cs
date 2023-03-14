@@ -17,6 +17,13 @@ namespace Stratus.Inputs
 		bool HandleInput(object input);
 	}
 
+	public enum InputActionType
+	{
+		None,
+		Button,
+		Composite,
+	}
+
 	public interface ICustomActionMapHandler : IActionMapHandler
 	{
 		bool lowercase { get; }
@@ -41,13 +48,29 @@ namespace Stratus.Inputs
 
 	public abstract class ActionMapHandler<TInput> : ActionMapHandlerBase<TInput>, ICustomActionMapHandler
 	{
+		#region Declarations
+		public class Binding
+		{
+			public Binding(string name, InputActionType type, Action<TInput> action)
+			{
+				this.name = name;
+				this.type = type;
+				this.action = action;
+			}
+
+			public Action<TInput> action { get; }
+			public string name { get; }
+			public InputActionType type { get; }
+		}
+		#endregion
+
 		#region Fields
-		protected Dictionary<string, Action<TInput>> _actions = new Dictionary<string, Action<TInput>>(StringComparer.InvariantCultureIgnoreCase);
+		protected Dictionary<string, Binding> _actionsByName = new Dictionary<string, Binding>(StringComparer.InvariantCultureIgnoreCase);
 		#endregion
 
 		#region Properties
 		public bool initialized { get; private set; }
-		public IReadOnlyDictionary<string, Action<TInput>> actions
+		public IReadOnlyDictionary<string, Binding> actions
 		{
 			get
 			{
@@ -57,7 +80,7 @@ namespace Stratus.Inputs
 					initialized = true;
 				}
 
-				return _actions;
+				return _actionsByName;
 			}
 		}
 		public int count => actions.Count;
@@ -72,14 +95,15 @@ namespace Stratus.Inputs
 		#endregion
 
 		#region Interface
-		public void Bind(string action, Action<TInput> onAction)
+		public virtual void Bind(string name, InputActionType type, Action<TInput> action)
 		{
-			_actions.AddOrUpdate(lowercase ? action.ToLowerInvariant() : action, onAction);
+			var binding = new Binding(name, type, action);
+			_actionsByName.AddOrUpdate(lowercase ? name.ToLowerInvariant() : name, binding);
 		}
 
 		public void Bind(string action, Action onAction)
 		{
-			Bind(action, a => onAction());
+			Bind(action, InputActionType.Button, a => onAction());
 		}
 
 		public bool Contains(string name) => actions.ContainsKey(name);
