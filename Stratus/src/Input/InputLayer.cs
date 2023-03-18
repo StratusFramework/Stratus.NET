@@ -73,6 +73,8 @@ namespace Stratus.Inputs
 			}
 		}
 		private bool _active;
+
+		public PushEvent pushEvent { get; }
 		#endregion
 
 		#region Events
@@ -87,7 +89,7 @@ namespace Stratus.Inputs
 		#endregion
 
 		#region Virtual
-		public override string ToString() => $"{name}";
+		public override string ToString() => name;
 		protected abstract void OnActive(bool enabled);
 		public abstract bool HandleInput(object input);
 		#endregion
@@ -96,58 +98,7 @@ namespace Stratus.Inputs
 		public InputLayer(string name)
 		{
 			this.name = name;
-		}
-		#endregion
-
-		#region Interface
-		/// <summary>
-		/// Activates this input layer by sending a scene-level event that will be received by 
-		/// any applicable Stratus Player Input behaviour
-		/// </summary>
-		public void PushByEvent()
-		{
-			if (pushed)
-			{
-				this.LogWarning($"Layer {this} already enabled");
-				return;
-			}
-			pushed = true;
-			onPushed?.Invoke(true);
-			PushEvent e = new PushEvent(this);
-		}
-
-		/// <summary>
-		/// Deactivates this input layer by sending a scene-level event that will be received by 
-		/// any applicable Stratus Player Input behaviour.
-		/// If this input layer is not at the top, it will be popped from the input stack
-		/// when the ones above it have been.
-		/// </summary>
-		public void PopByEvent()
-		{
-			if (!pushed)
-			{
-				StratusLog.Error($"Cannot pop disabled layer {name}");
-				return;
-			}
-			pushed = false;
-			onPushed?.Invoke(false);
-			PopEvent e = new PopEvent();
-		}
-
-		/// <summary>
-		/// Activates/deactivates the input layer
-		/// </summary>
-		/// <param name="toggle"></param>
-		public void ToggleByEvent(bool toggle)
-		{
-			if (toggle)
-			{
-				PushByEvent();
-			}
-			else
-			{
-				PopByEvent();
-			}
+			pushEvent = new PushEvent(this);
 		}
 		#endregion
 	}
@@ -172,7 +123,7 @@ namespace Stratus.Inputs
 	{
 		public TActionMap map { get; }
 
-		public InputLayer(string label, TActionMap map) : base(label)
+		public InputLayer(string name, TActionMap map) : base(name)
 		{
 			this.map = map;
 		}
@@ -181,7 +132,7 @@ namespace Stratus.Inputs
 		{
 		}
 
-		public InputLayer(string label) : this(label, new TActionMap())
+		public InputLayer(string name) : this(name, new TActionMap())
 		{
 		}
 
