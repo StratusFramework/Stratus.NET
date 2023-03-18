@@ -73,10 +73,6 @@ namespace Stratus.Inputs
 			}
 		}
 		private bool _active;
-		/// <summary>
-		/// The input action map this layer is for
-		/// </summary>
-		public abstract string map { get; }
 		#endregion
 
 		#region Events
@@ -91,7 +87,7 @@ namespace Stratus.Inputs
 		#endregion
 
 		#region Virtual
-		public override string ToString() => $"{name} ({map})";
+		public override string ToString() => $"{name}";
 		protected abstract void OnActive(bool enabled);
 		public abstract bool HandleInput(object input);
 		#endregion
@@ -174,8 +170,12 @@ namespace Stratus.Inputs
 	public abstract class InputLayer<TInput, TActionMap> : InputLayer<TInput>
 		where TActionMap : IActionMapHandler, new()
 	{
-		public TActionMap actions { get; } = new TActionMap();
-		public override string map => actions.name;
+		public TActionMap map { get; }
+
+		public InputLayer(string label, TActionMap map) : base(label)
+		{
+			this.map = map;
+		}
 
 		public InputLayer() : this(typeof(TActionMap).Name, new TActionMap())
 		{
@@ -185,14 +185,10 @@ namespace Stratus.Inputs
 		{
 		}
 
-		public InputLayer(string label, TActionMap actions) : base(label)
-		{
-			this.actions = actions;
-		}
 
 		public override bool HandleInput(object context)
 		{
-			return actions.HandleInput(context);
+			return map.HandleInput(context);
 		}
 
 		protected override void OnActive(bool enabled)
