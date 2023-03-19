@@ -1,15 +1,7 @@
-﻿using Stratus;
-using Stratus.Events;
-using Stratus.Extensions;
-using Stratus.Interpolation;
+﻿using Stratus.Events;
 using Stratus.Logging;
-using Stratus.Reflection;
-using Stratus.Utilities;
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
 
 namespace Stratus.Inputs
 {

@@ -23,9 +23,9 @@ namespace Stratus.Models.Maps
 	public enum DefaultMapLayer
 	{
 		Terrain,
+		Wall,
 		Object,
 		Event,
-		Agent,
 	}
 
 	public class SquareGrid
@@ -240,7 +240,7 @@ namespace Stratus.Models.Maps
 			return (UObject)Get(layer, position);
 		}
 
-		public UObject Get<UObject>(Vector3Int position)
+		public UObject? Get<UObject>(Vector3Int position)
 			where UObject : TObject
 		{
 			Type t = typeof(UObject);
