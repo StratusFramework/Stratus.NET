@@ -86,12 +86,21 @@ namespace Stratus.Models.Maps
 		where TLayer : Enum
 		where TObject : class
 	{
-		#region Properties
-		public SquareGrid grid { get; }
-		public CellLayout cellLayout { get; }
-
+		#region Fields
+		private Dictionary<TLayer, Bictionary<Vector3Int, TObject>> objectsByLayer { get; }
+			= new Dictionary<TLayer, Bictionary<Vector3Int, TObject>>(); 
 		private Bictionary<TLayer, Type> typesByLayer = new Bictionary<TLayer, Type>();
-		public HashSet<TObject> objects { get; }
+		#endregion
+
+		#region Properties
+		/// <summary>
+		/// The underlying grid structure
+		/// </summary>
+		public SquareGrid grid { get; }
+		/// <summary>
+		/// The cell layout for this grid
+		/// </summary>
+		public CellLayout cellLayout { get; }
 		/// <summary>
 		/// All the available layers for this map
 		/// </summary>
@@ -100,9 +109,13 @@ namespace Stratus.Models.Maps
 		/// By default, the base layer is the first enumerated value.
 		/// </summary>
 		protected virtual TLayer baseLayer => layers[0];
+		/// <summary>
+		/// The total number of objects being tracked across all layers
+		/// </summary>
+		public int count => objectsByLayer.Sum(kvp => kvp.Value.Count);
+		#endregion
 
-		private Dictionary<TLayer, Bictionary<Vector3Int, TObject>> objectPositionsByLayer { get; }
-			= new Dictionary<TLayer, Bictionary<Vector3Int, TObject>>();
+		#region Static Properties
 		protected static readonly Type baseType = typeof(TObject);
 		#endregion
 
@@ -113,7 +126,7 @@ namespace Stratus.Models.Maps
 			this.grid = grid;
 			foreach (var layer in layers)
 			{
-				objectPositionsByLayer.Add(layer, new Bictionary<Vector3Int, TObject>());
+				objectsByLayer.Add(layer, new Bictionary<Vector3Int, TObject>());
 			}
 		}
 
@@ -152,7 +165,7 @@ namespace Stratus.Models.Maps
 			Clear(layer);
 			foreach (var position in grid.cells)
 			{
-				objectPositionsByLayer[layer].Add(position, ctor());
+				objectsByLayer[layer].Add(position, ctor());
 			}
 			return true;
 		}
@@ -174,7 +187,7 @@ namespace Stratus.Models.Maps
 				}
 				else
 				{
-					return new Result(false, $"{obj} is already present in the layer at {objectPositionsByLayer[layer][obj]}");
+					return new Result(false, $"{obj} is already present in the layer at {objectsByLayer[layer][obj]}");
 				}
 			}
 
@@ -183,7 +196,7 @@ namespace Stratus.Models.Maps
 				return new Result(false, $"{Get(layer, position)} is already present in the layer at {position}");
 			}
 
-			objectPositionsByLayer[layer].Add(position, obj);
+			objectsByLayer[layer].Add(position, obj);
 			return true;
 		}
 
@@ -201,17 +214,17 @@ namespace Stratus.Models.Maps
 				return new Result(false, $"{obj} is not present in the layer {layer}");
 			}
 
-			return objectPositionsByLayer[layer].Remove(obj);
+			return objectsByLayer[layer].Remove(obj);
 		}
 
 		public Result Contains(TLayer layer, TObject obj)
 		{
-			return objectPositionsByLayer[layer].Contains(obj);
+			return objectsByLayer[layer].Contains(obj);
 		}
 
 		public Result Contains(TLayer layer, Vector3Int position)
 		{
-			return objectPositionsByLayer[layer].Contains(position);
+			return objectsByLayer[layer].Contains(position);
 		}
 
 		public Vector3Int? GetPosition(TLayer layer, TObject obj)
@@ -221,7 +234,7 @@ namespace Stratus.Models.Maps
 				return null;
 			}
 
-			return objectPositionsByLayer[layer][obj];
+			return objectsByLayer[layer][obj];
 		}
 
 		public TObject Get(TLayer layer, Vector3Int position)
@@ -231,7 +244,7 @@ namespace Stratus.Models.Maps
 				return null;
 			}
 
-			return objectPositionsByLayer[layer][position];
+			return objectsByLayer[layer][position];
 		}
 
 		public UObject Get<UObject>(TLayer layer, Vector3Int position)
@@ -266,7 +279,7 @@ namespace Stratus.Models.Maps
 				return check;
 			}
 
-			foreach (var kvp in objectPositionsByLayer[layer])
+			foreach (var kvp in objectsByLayer[layer])
 			{
 				action((UObject)kvp.Value);
 			}
@@ -283,7 +296,7 @@ namespace Stratus.Models.Maps
 				return check;
 			}
 
-			foreach (var kvp in objectPositionsByLayer[layer])
+			foreach (var kvp in objectsByLayer[layer])
 			{
 				if (!action((UObject)kvp.Value))
 				{
@@ -296,12 +309,12 @@ namespace Stratus.Models.Maps
 
 		public int Count(TLayer layer)
 		{
-			return objectPositionsByLayer[layer].Count;
+			return objectsByLayer[layer].Count;
 		}
 
 		public void Clear(TLayer layer)
 		{
-			objectPositionsByLayer[layer].Clear();
+			objectsByLayer[layer].Clear();
 		}
 		#endregion
 
