@@ -184,10 +184,10 @@ namespace Stratus.Collections
 		/// <summary>
 		/// Sets an updated array to use for navigation
 		/// </summary>
-		/// <param name="array"></param>
-		public void Set(IList<T> array)
+		/// <param name="values"></param>
+		public void Set(IList<T> values)
 		{
-			this.values = array;
+			this.values = values;
 			currentIndex = 0;
 		}
 

@@ -42,23 +42,16 @@ namespace Stratus.Inputs
 		/// </summary>
 		public bool ignoreBlocking { get; set; }
 		/// <summary>
-		/// Whether this input layer is currently pushed. 
-		/// If this layer has been made the topmost: if it's enabled it will be made active,
-		/// otherwise inactive and will be removed.
-		/// </summary>
-		public bool pushed { get; set; }
-		/// <summary>
 		/// Whether this input layer has been made active
 		/// </summary>
 		public bool active
 		{
 			get => _active;
-			set
+			internal set
 			{
 				if (value != _active)
 				{
 					_active = value;
-					this.Log($"{this} has been made {(value ? "active" : "inactive")}");
 					onActive?.Invoke(value);
 					OnActive(value);
 				}

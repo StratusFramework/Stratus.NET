@@ -1,6 +1,7 @@
 ﻿using Stratus.Extensions;
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Stratus.Inputs
@@ -9,19 +10,24 @@ namespace Stratus.Inputs
 	/// Manages pushing/popping input layers in a customized manner for the system
 	/// </summary>
 	/// <typeparam name="TLayer"></typeparam>
-	public class InputStack<TLayer>
+	public class InputStack<TLayer> : IEnumerable<TLayer>
 		where TLayer : InputLayer
 	{
 		private Stack<TLayer> _layers = new Stack<TLayer>();
 		private Queue<TLayer> _queuedLayers = new Queue<TLayer>();
 
-		public TLayer activeLayer => _layers.Count > 0 ? _layers.Peek() : null;
-		public bool canPop => activeLayer != null && !activeLayer.pushed;
-		public int layerCount => _layers.Count;
-		public bool hasActiveLayers => layerCount > 0;
+		/// <summary>
+		/// The currently active layer
+		/// </summary>
+		public TLayer? current => _layers.Count > 0 ? _layers.Peek() : null;
+		public int count => _layers.Count;
+		public bool hasLayers => count > 0;
 		public bool hasQueuedLayers => _queuedLayers.IsValid();
 
-		public event Action<TLayer> onInputLayerChanged;
+		public event Action<TLayer> onLayerToggled;
+		public event Action<TLayer> onQueue;
+		public event Action<TLayer> onPush;
+		public event Action<TLayer> onPop;
 
 		public Result Push(TLayer layer)
 		{
@@ -30,46 +36,49 @@ namespace Stratus.Inputs
 
 		private Result Push(TLayer layer, bool update)
 		{
-			if (hasActiveLayers && !layer.ignoreBlocking)
+			if (hasLayers && !layer.ignoreBlocking)
 			{
 				// If the current layer is blocking, queue this layer for later
-				if (activeLayer.blocking)
+				if (current.blocking)
 				{
 					_queuedLayers.Enqueue(layer);
-					return new Result(false, $"Active layer {activeLayer.name} is blocking. Queuing...");
+					onQueue?.Invoke(layer);
+					return new Result(false, $"Active layer {current.name} is blocking. Queuing...");
 				}
-				activeLayer.active = false;
+				current.active = false;
 			}
 
-			layer.pushed = true;
 			if (update)
 			{
 				ActivateInputLayer(layer);
 			}
+
 			_layers.Push(layer);
+			onPush?.Invoke(layer);
+
 			return true;
 		}
+
 
 		public TLayer Pop()
 		{
 			TLayer layer = null;
 
-
 			// If there's layers remaining, remove the topmost
-			if (hasActiveLayers)
+			if (hasLayers)
 			{
 				layer = _layers.Pop();
+				onPop?.Invoke(layer);
 				layer.active = false;
-				layer.pushed = false;
 			}
 
 			bool queue = hasQueuedLayers &&
-				(!hasActiveLayers || hasActiveLayers && !activeLayer.blocking);
+				(!hasLayers || hasLayers && !current.blocking);
 
 			// If there's still layers left
 			if (queue)
 			{
-				// If there are queud layers
+				// If there are queued layers
 				// and the topmost is not blocking
 				if (hasQueuedLayers)
 				{
@@ -86,13 +95,10 @@ namespace Stratus.Inputs
 				}
 			}
 
-			// Update the current layer if its active
-			if (hasActiveLayers)
+			// Update the current layer if its not active
+			if (current != null && !current.active)
 			{
-				if (activeLayer.pushed)
-				{
-					ActivateInputLayer(activeLayer);
-				}
+				ActivateInputLayer(current);
 			}
 
 			return layer;
@@ -101,9 +107,18 @@ namespace Stratus.Inputs
 		private void ActivateInputLayer(TLayer inputLayer)
 		{
 			inputLayer.active = true;
-			onInputLayerChanged?.Invoke(inputLayer);
+			onLayerToggled?.Invoke(inputLayer);
 		}
 
+		public IEnumerator<TLayer> GetEnumerator()
+		{
+			return ((IEnumerable<TLayer>)this._layers).GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return ((IEnumerable)this._layers).GetEnumerator();
+		}
 	}
 
 }
