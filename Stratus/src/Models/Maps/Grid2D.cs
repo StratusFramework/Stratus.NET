@@ -461,7 +461,7 @@ namespace Stratus.Models.Maps
 		}
 	}
 
-	public abstract class Grid2D<TObject> : Grid2D<TObject, DefaultMapLayer>
+	public class Grid2D<TObject> : Grid2D<TObject, DefaultMapLayer>
 		where TObject : class
 	{
 		protected Grid2D(Vector3Int size, CellLayout layout) : base(size, layout)

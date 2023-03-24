@@ -3,6 +3,7 @@ using Stratus.Extensions;
 using System;
 using System.Collections.Generic;
 using Stratus.Models.Math;
+using System.Numerics;
 
 namespace Stratus.Collections
 {
@@ -277,6 +278,28 @@ namespace Stratus.Collections
 			else
 			{
 				recentlyChanged = false;
+			}
+
+			return current;
+		}
+
+		public T Navigate(Vector2 dir)
+		{
+			if (dir.X > 0)
+			{
+				return Navigate(Direction.Right);
+			}
+			else if (dir.X < 0)
+			{
+				return Navigate(Direction.Left);
+			}
+			else if (dir.Y > 0)
+			{
+				return Navigate(Direction.Up);
+			}
+			else if (dir.Y < 0)
+			{
+				return Navigate(Direction.Down);
 			}
 
 			return current;

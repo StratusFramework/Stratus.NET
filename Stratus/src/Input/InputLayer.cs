@@ -25,6 +25,12 @@ namespace Stratus.Inputs
 
 		public class PopEvent : Event
 		{
+			public InputLayer layer;
+
+			public PopEvent(InputLayer layer)
+			{
+				this.layer = layer;
+			}
 		}
 		#endregion
 
@@ -53,13 +59,11 @@ namespace Stratus.Inputs
 				{
 					_active = value;
 					onActive?.Invoke(value);
-					OnActive(value);
+					OnToggle(value);
 				}
 			}
 		}
 		private bool _active;
-
-		public PushEvent pushEvent { get; }
 		#endregion
 
 		#region Events
@@ -75,7 +79,7 @@ namespace Stratus.Inputs
 
 		#region Virtual
 		public override string ToString() => name;
-		protected abstract void OnActive(bool enabled);
+		protected abstract void OnToggle(bool enabled);
 		public abstract bool HandleInput(object input);
 		#endregion
 
@@ -83,9 +87,24 @@ namespace Stratus.Inputs
 		public InputLayer(string name)
 		{
 			this.name = name;
-			pushEvent = new PushEvent(this);
 		}
 		#endregion
+	}
+
+	public class BlockingInputLayer : InputLayer
+	{
+		public BlockingInputLayer(string name) : base(name)
+		{
+		}
+
+		public override bool HandleInput(object input)
+		{
+			return true;
+		}
+
+		protected override void OnToggle(bool enabled)
+		{
+		}
 	}
 
 	public abstract class InputLayer<TInput> : InputLayer
@@ -127,7 +146,7 @@ namespace Stratus.Inputs
 			return map.HandleInput(context);
 		}
 
-		protected override void OnActive(bool enabled)
+		protected override void OnToggle(bool enabled)
 		{
 		}
 	}
