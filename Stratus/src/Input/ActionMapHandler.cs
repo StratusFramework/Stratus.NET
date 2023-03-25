@@ -15,6 +15,7 @@ namespace Stratus.Inputs
 		/// </summary>
 		string name { get; }
 		bool HandleInput(object input);
+		bool valid { get; }
 	}
 
 	public enum InputActionType
@@ -33,6 +34,7 @@ namespace Stratus.Inputs
 
 	public abstract class ActionMapHandler : IActionMapHandler
 	{
+		public abstract bool valid { get; }
 		public abstract string name { get; }
 		public abstract bool HandleInput(object input);
 	}
@@ -70,6 +72,7 @@ namespace Stratus.Inputs
 
 		#region Properties
 		public bool initialized { get; private set; }
+		public override bool valid => actions.Count > 0;
 		public IReadOnlyDictionary<string, Binding> actions
 		{
 			get
@@ -114,12 +117,12 @@ namespace Stratus.Inputs
 			Bind(action.ToString(), onAction);
 		}
 
-		public Result TryBindAll<TAction>() where TAction : Enum
+		public Result TryBindAll<TAction>(object target) where TAction : Enum
 		{
 			var enumeratedValuesByName = EnumUtility.Values<TAction>().ToDictionary(v => v.ToString(),
 				StringComparer.InvariantCultureIgnoreCase);
 
-			var members = this.GetAllFieldsOrProperties()
+			var members = target.GetAllFieldsOrProperties()
 				.Where(m => typeof(Delegate).IsAssignableFrom(m.type)).ToArray();
 
 			if (members.IsNullOrEmpty())

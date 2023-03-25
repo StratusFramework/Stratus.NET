@@ -64,6 +64,10 @@ namespace Stratus.Inputs
 			}
 		}
 		private bool _active;
+		/// <summary>
+		/// Whethe this layer is in a valid state
+		/// </summary>
+		public abstract bool valid { get; }
 		#endregion
 
 		#region Events
@@ -97,6 +101,8 @@ namespace Stratus.Inputs
 		{
 		}
 
+		public override bool valid => true;
+
 		public override bool HandleInput(object input)
 		{
 			return true;
@@ -109,16 +115,30 @@ namespace Stratus.Inputs
 
 	public abstract class InputLayer<TInput> : InputLayer
 	{
+		public bool initialized { get; private set; } 
+		public abstract bool HandleInput(TInput input);
+
+		protected virtual void Initialize()
+		{
+		}
+
 		protected InputLayer(string name) : base(name)
 		{
 		}
 
 		public override bool HandleInput(object input)
-		{
+		{			
 			return HandleInput((TInput)input);
 		}
 
-		public abstract bool HandleInput(TInput input);
+		protected void TryInitialize()
+		{
+			if (!initialized)
+			{
+				Initialize();
+				initialized = true;
+			}
+		}
 	}
 	
 
@@ -126,6 +146,14 @@ namespace Stratus.Inputs
 		where TActionMap : IActionMapHandler, new()
 	{
 		public TActionMap map { get; }
+		public override bool valid
+		{
+			get
+			{
+				TryInitialize();
+				return map.valid;
+			}
+		}
 
 		public InputLayer(string name, TActionMap map) : base(name)
 		{
@@ -140,10 +168,9 @@ namespace Stratus.Inputs
 		{
 		}
 
-
-		public override bool HandleInput(object context)
+		public override bool HandleInput(TInput input)
 		{
-			return map.HandleInput(context);
+			return map.HandleInput(input);
 		}
 
 		protected override void OnToggle(bool enabled)

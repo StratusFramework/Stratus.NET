@@ -36,6 +36,11 @@ namespace Stratus.Inputs
 
 		private Result Push(TLayer layer, bool update)
 		{
+			//if (!layer.valid)
+			//{
+			//	return new Result(false, $"The layer {layer} is not in a valid staet");
+			//}
+
 			if (hasLayers && !layer.ignoreBlocking)
 			{
 				// If the current layer is blocking, queue this layer for later
@@ -56,7 +61,7 @@ namespace Stratus.Inputs
 			_layers.Push(layer);
 			onPush?.Invoke(layer);
 
-			return true;
+			return new Result(true, $"Pushed layer {layer}");
 		}
 
 
