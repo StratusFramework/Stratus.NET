@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Stratus.Extensions;
+
+using System;
 using System.Collections.Generic;
 
 namespace Stratus
@@ -28,5 +30,7 @@ namespace Stratus
 		public StratusSearchRange(IEnumerable<KeyValuePair<TPosition, TCost>> collection, IEqualityComparer<TPosition> comparer) : base(collection, comparer)
 		{
 		}
+
+		public override string ToString() => this.ToStringForKeyValuePairs();
 	}
 }

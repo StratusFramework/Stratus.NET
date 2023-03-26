@@ -347,5 +347,27 @@ namespace Stratus.Extensions
 			}
 			return result;
 		}
+
+		public static string ToStringForKeyValuePairs<TKey, TValue>(this Dictionary<TKey, TValue> dict)
+		{
+			var result = new StringBuilder();
+			int n = 0;
+			result.Append($"[{dict.Count}]");
+			foreach(var kvp in dict)
+			{
+				if (n > 0)
+				{
+					result.Append(";");
+				}
+				result.Append("<");
+				result.Append(kvp.Key);
+				result.Append(",");
+				result.Append(kvp.Value);
+				result.Append(">");
+				n++;
+
+			}
+			return result.ToString().Enclose(StratusStringEnclosure.Parenthesis);
+		}
 	}
 }

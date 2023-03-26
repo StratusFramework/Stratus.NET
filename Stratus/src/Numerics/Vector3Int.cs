@@ -47,4 +47,41 @@ namespace Stratus.Numerics
 		public static float Distance(Vector3Int a, Vector3Int b)
 			=> Vector3.Distance(a, b);
 	}
+	
+	public struct Vector2Int
+	{
+		public int x { get; set; }
+		public int y { get; set; }
+
+		public Vector2Int(Vector2 value)
+		{
+			x = (int)value.X;
+			y = (int)value.Y;
+		}
+
+		public Vector2Int(int x, int y)
+		{
+			this.x = x;
+			this.y = y;
+		}
+
+		public override string ToString()
+		{
+			return $"({x},{y})";
+		}
+
+		public static implicit operator Vector2Int(Vector2 value)
+		{
+			return new Vector2Int(value);
+		}
+
+		public static implicit operator Vector2(Vector2Int value)
+		{
+			return new Vector2(value.x, value.y);
+		}
+
+		public static float Distance(Vector2Int a, Vector2Int b)
+			=> Vector2.Distance(a, b);
+	}
+
 }

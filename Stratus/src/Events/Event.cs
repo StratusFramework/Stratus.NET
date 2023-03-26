@@ -83,4 +83,34 @@ namespace Stratus.Events
 		private static void ResetCache<T>(Type type) where T : Event, new() => eventCache[type] = (T)ObjectUtility.Instantiate(type); 
 		#endregion
 	}
+
+	/// <summary>
+	/// Used for templating two events based on the REQ-REP pattern
+	/// </summary>
+	/// <typeparam name="TIn"></typeparam>
+	/// <typeparam name="TOut"></typeparam>
+	public abstract class RequestResponseEvent<TIn, TOut>
+	{
+		public class Request : Event
+		{
+			public Request(TIn request)
+			{
+				this.input = request;
+			}
+
+			public TIn input { get; }
+		}
+
+		public class Response : Event
+		{
+			public Response(TIn input, TOut output)
+			{
+				this.input = input;
+				this.output = output;
+			}
+
+			public TIn input { get; }
+			public TOut output { get; }
+		}
+	}
 }
