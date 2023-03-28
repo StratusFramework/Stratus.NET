@@ -24,7 +24,7 @@ namespace Stratus.Models.Maps
 
 		public int minimum { get; }
 		public int maximum { get; }
-		public Func<Vector3Int, float> traversalCostFunction { get; set; }
-		public StratusTraversalPredicate<Vector3Int> traversableFunction { get; set; }
+		public Func<Vector2Int, float> traversalCostFunction { get; set; }
+		public StratusTraversalPredicate<Vector2Int> traversableFunction { get; set; }
 	}
 }

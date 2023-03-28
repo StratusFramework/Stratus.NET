@@ -8,17 +8,16 @@ using System.Numerics;
 
 namespace Stratus.Models.Maps
 {
+	public class GridSearch : StratusSearch<Vector2Int>
+	{
+		private GridSearch()
+		{
+		}
+	}
+
 	public abstract class GridUtility
 	{
-		public class GridSearch : StratusSearch<Vector3Int>
-		{
-			private GridSearch()
-			{
-			}
-		}
-
 		public static readonly HexagonalOddRowDirection[] oddRowDirections = (HexagonalOddRowDirection[])Enum.GetValues(typeof(HexagonalOddRowDirection));
-
 
 		public static float Lerp(float a, float b, float t)
 		{
@@ -126,14 +125,14 @@ namespace Stratus.Models.Maps
 			return distance;
 		}
 
-		public static float HexOffsetDistance(Vector3Int a, Vector3Int b)
+		public static float HexOffsetDistance(Vector2Int a, Vector2Int b)
 		{
-			var ac = OffsetToCube(a);
-			var bc = OffsetToCube(b);
+			var ac = OffsetToCube(a.ToVector3Int());
+			var bc = OffsetToCube(b.ToVector3Int());
 			return HexCubeDistance(ac, bc);
 		}
 
-		public static float RectangleDistance(Vector3Int a, Vector3Int b, bool diagonal)
+		public static float RectangleDistance(Vector2Int a, Vector2Int b, bool diagonal)
 		{
 			return diagonal ? EuclideanDistance(a, b) : ManhattanDistance(a, b);
 		}
@@ -141,9 +140,9 @@ namespace Stratus.Models.Maps
 		/// <summary>
 		/// The square root of the sum of the squares of the differences of the coordinates.
 		/// </summary>
-		public static float EuclideanDistance(Vector3Int a, Vector3Int b)
+		public static float EuclideanDistance(Vector2Int a, Vector2Int b)
 		{
-			return Vector3.Distance(a, b);
+			return Vector2.Distance(a, b);
 		}
 
 		/// <summary>
@@ -151,24 +150,24 @@ namespace Stratus.Models.Maps
 		/// That is, the number of cells you must travel vertically, plus the number of cells you 
 		/// must travel horizontally, much like a taxi driving through a grid of city streets.
 		/// </summary>
-		public static float ManhattanDistance(Vector3Int a, Vector3Int b)
+		public static float ManhattanDistance(Vector2Int a, Vector2Int b)
 		{
 			return System.Math.Abs(a.x - b.x) + System.Math.Abs(a.y - b.y);
 		}
 		#endregion
 
 		#region Neighbors
-		private static Vector3Int[][] oddRowDirectionValues = new Vector3Int[][]
+		private static Vector2Int[][] oddRowDirectionValues = new Vector2Int[][]
 		{
-			new Vector3Int[]
+			new Vector2Int[]
 			{
-				new Vector3Int(1, 0, 0), new Vector3Int(0, -1, 0), new Vector3Int(-1, -1, 0),
-				new Vector3Int(-1, 0, 0), new Vector3Int(-1, 1, 0), new Vector3Int(0, 1, 0)
+				new Vector2Int(1, 0), new Vector2Int(0, -1), new Vector2Int(-1, -1),
+				new Vector2Int(-1, 0), new Vector2Int(-1, 1), new Vector2Int(0, 1)
 			},
-			new Vector3Int[]
+			new Vector2Int[]
 			{
-				new Vector3Int(1, 0, 0), new Vector3Int(1, -1, 0), new Vector3Int(0, -1, 0),
-				new Vector3Int(-1, 0, 0), new Vector3Int(0, 1, 0), new Vector3Int(1, 1, 0)
+				new Vector2Int(1, 0), new Vector2Int(1, -1), new Vector2Int(0, -1),
+				new Vector2Int(-1, 0), new Vector2Int(0, 1), new Vector2Int(1, 1)
 			}
 		};
 
@@ -178,18 +177,18 @@ namespace Stratus.Models.Maps
 		/// <param name="hex"></param>
 		/// <param name="direction"></param>
 		/// <returns></returns>
-		public static Vector3Int FindNeighboringCellsOddRow(Vector3Int hex,
+		public static Vector2Int FindNeighboringCellsOddRow(Vector2Int hex,
 			HexagonalOddRowDirection direction)
 		{
 			int parity = hex.y & 1;
-			Vector3Int offset = oddRowDirectionValues[parity][(int)direction];
-			Vector3Int neighbor = new Vector3Int(hex.x + offset.x, hex.y + offset.y, 0);
+			Vector2Int offset = oddRowDirectionValues[parity][(int)direction];
+			Vector2Int neighbor = new Vector2Int(hex.x + offset.x, hex.y + offset.y);
 			return neighbor;
 		}
 
-		public static Vector3Int[] FindNeighboringCellsHexOffset(Vector3Int hex)
+		public static Vector2Int[] FindNeighboringCellsHexOffset(Vector2Int hex)
 		{
-			List<Vector3Int> result = new List<Vector3Int>();
+			List<Vector2Int> result = new List<Vector2Int>();
 			for (int i = 0; i < oddRowDirections.Length; ++i)
 			{
 				result.Add(FindNeighboringCellsOddRow(hex, oddRowDirections[i]));
@@ -197,19 +196,19 @@ namespace Stratus.Models.Maps
 			return result.ToArray();
 		}
 
-		public static Vector3Int[] FindNeighboringCellsRectangle(Vector3Int element)
+		public static Vector2Int[] FindNeighboringCellsRectangle(Vector2Int element)
 		{
-			List<Vector3Int> result = new List<Vector3Int>();
-			result.Add(new Vector3Int(element.x + 1, element.y, element.z));
-			result.Add(new Vector3Int(element.x - 1, element.y, element.z));
-			result.Add(new Vector3Int(element.x, element.y + 1, element.z));
-			result.Add(new Vector3Int(element.x, element.y - 1, element.z));
+			List<Vector2Int> result = new();
+			result.Add(new Vector2Int(element.x + 1, element.y));
+			result.Add(new Vector2Int(element.x - 1, element.y));
+			result.Add(new Vector2Int(element.x, element.y + 1));
+			result.Add(new Vector2Int(element.x, element.y - 1));
 			return result.ToArray();
 		}
 
-		public static Vector3Int[] FindNeighboringCells(Vector3Int element, CellLayout layout)
+		public static Vector2Int[] FindNeighboringCells(Vector2Int element, CellLayout layout)
 		{
-			Vector3Int[] result = null;
+			Vector2Int[] result = null;
 			switch (layout)
 			{
 				case CellLayout.Rectangle:
@@ -354,7 +353,7 @@ namespace Stratus.Models.Maps
 		/// <summary>
 		/// Returns the cell range given an origin
 		/// </summary>
-		public static GridRange GetRange(Vector3Int origin,
+		public static GridRange GetRange(Vector2Int origin,
 			GridSearchRangeArguments range,
 			CellLayout layout)
 		{
@@ -378,7 +377,7 @@ namespace Stratus.Models.Maps
 		/// <param name="n">The search range from the origin</param>
 		/// <param name="predicate">A predicate that validates whether a given cell is traversible</param>
 		/// <returns>A dictionary of all the elements in range along with the cost to traverse to them </returns>
-		public static GridRange GetRangeRectangle(Vector3Int origin, GridSearchRangeArguments args)
+		public static GridRange GetRangeRectangle(Vector2Int origin, GridSearchRangeArguments args)
 		{
 			GridSearch.RangeSearch search
 				= new GridSearch.RangeSearch()
@@ -402,8 +401,8 @@ namespace Stratus.Models.Maps
 		/// <param name="n"></param>
 		/// <param name="predicate"></param>
 		/// <returns></returns>
-		public static GridRange GetRangeHexOffset(Vector3Int origin, GridSearchRangeArguments args,
-			StratusTraversalPredicate<Vector3Int> predicate = null)
+		public static GridRange GetRangeHexOffset(Vector2Int origin, GridSearchRangeArguments args,
+			StratusTraversalPredicate<Vector2Int> predicate = null)
 		{
 			GridSearch.RangeSearch search
 			= new GridSearch.RangeSearch()
@@ -420,10 +419,10 @@ namespace Stratus.Models.Maps
 		#endregion
 
 		#region Path
-		public static Vector3Int[] FindPath(Vector3Int origin, Vector3Int target, CellLayout layout,
-			StratusTraversalPredicate<Vector3Int> traversablePredicate = null)
+		public static Vector2Int[] FindPath(Vector2Int origin, Vector2Int target, CellLayout layout,
+			StratusTraversalPredicate<Vector2Int> traversablePredicate = null)
 		{
-			Vector3Int[] result = null;
+			Vector2Int[] result = null;
 			switch (layout)
 			{
 				case CellLayout.Rectangle:
@@ -432,13 +431,12 @@ namespace Stratus.Models.Maps
 				case CellLayout.Hexagon:
 					result = FindHexOffsetPath(origin, target, traversablePredicate);
 					break;
-					break;
 			}
 			return result;
 		}
 
-		public static Vector3Int[] FindRectanglePath(Vector3Int origin, Vector3Int target,
-			StratusTraversalPredicate<Vector3Int> traversablePredicate = null)
+		public static Vector2Int[] FindRectanglePath(Vector2Int origin, Vector2Int target,
+			StratusTraversalPredicate<Vector2Int> traversablePredicate = null)
 		{
 			var pathSearch = new GridSearch.PathSearch()
 			{
@@ -451,8 +449,8 @@ namespace Stratus.Models.Maps
 			return pathSearch.Search();
 		}
 
-		public static Vector3Int[] FindHexOffsetPath(Vector3Int origin, Vector3Int target,
-			StratusTraversalPredicate<Vector3Int> traversablePredicate = null)
+		public static Vector2Int[] FindHexOffsetPath(Vector2Int origin, Vector2Int target,
+			StratusTraversalPredicate<Vector2Int> traversablePredicate = null)
 		{
 			var pathSearch = new GridSearch.PathSearch()
 			{

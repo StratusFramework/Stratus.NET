@@ -84,4 +84,10 @@ namespace Stratus.Numerics
 			=> Vector2.Distance(a, b);
 	}
 
+	public static class VectorIntExtensions
+	{
+		public static Vector3Int ToVector3Int(this Vector2Int value)
+			=> new Vector3Int(value.x, value.y);
+	}
+
 }

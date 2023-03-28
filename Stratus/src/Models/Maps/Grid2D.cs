@@ -17,80 +17,7 @@ namespace Stratus.Models.Maps
 	public interface IGrid2D
 	{
 		CellLayout cellLayout { get; }
-		Vector3Int[] SearchPath(Vector3Int start, Vector3Int end);
-	}
-
-	public enum DefaultMapLayer
-	{
-		/// <summary>
-		/// THe base layer (ground tile)
-		/// </summary>
-		Terrain,
-		/// <summary>
-		/// Walls and other obstacles that prevent default movement
-		/// </summary>
-		Wall,
-		/// <summary>
-		/// Static objects
-		/// </summary>
-		Object,
-		/// <summary>
-		/// Dynamic objects (such as characters in scene, etc)
-		/// </summary>
-		Actor,
-		/// <summary>
-		/// An event that is triggered when an actor steps into
-		/// </summary>
-		Event,
-	}
-
-	public class SquareGrid
-	{
-		public int xMax { get; private set; }
-		public int yMax { get; private set; }
-		public int xMin { get; private set; }
-		public int yMin { get; private set; }
-		public Vector3Int[] cells => _cells.Value;
-
-		private Lazy<Vector3Int[]> _cells;
-
-		public SquareGrid WithSize(int size)
-		{
-			return WithSize(new Vector3Int(size, size));
-		}
-
-		public SquareGrid WithSize(Vector3Int size)
-		{
-			xMin = yMin = 0;
-			yMax = size.y - 1;
-			xMax = size.x - 1;
-			UpdateCells();
-			return this;
-		}
-
-		private void UpdateCells()
-		{
-			_cells = new Lazy<Vector3Int[]>(() =>
-			{
-				List<Vector3Int> result = new List<Vector3Int>();
-				for (int x = xMin; x <= xMax; x++)
-				{
-					for (int y = yMin; y <= yMax; y++)
-					{
-						result.Add(new Vector3Int(x, y));
-					}
-				}
-				return result.ToArray();
-			});
-		}
-
-		public bool Contains(Vector3Int position) => Contains(position.x, position.y);
-
-		public bool Contains(int x, int y)
-		{
-			return (x >= xMin && x <= xMax)
-				&& (y >= yMin && y <= yMax);
-		}
+		Vector2Int[] SearchPath(Vector2Int start, Vector2Int end);
 	}
 
 	/// <summary>
@@ -103,8 +30,8 @@ namespace Stratus.Models.Maps
 		where TObject : class
 	{
 		#region Fields
-		private Dictionary<TLayer, Bictionary<Vector3Int, TObject>> objectsByLayer { get; }
-			= new Dictionary<TLayer, Bictionary<Vector3Int, TObject>>(); 
+		private Dictionary<TLayer, Bictionary<Vector2Int, TObject>> objectsByLayer { get; }
+			= new Dictionary<TLayer, Bictionary<Vector2Int, TObject>>(); 
 		private Bictionary<TLayer, Type> typesByLayer = new Bictionary<TLayer, Type>();
 		#endregion
 
@@ -142,18 +69,18 @@ namespace Stratus.Models.Maps
 			this.grid = grid;
 			foreach (var layer in layers)
 			{
-				objectsByLayer.Add(layer, new Bictionary<Vector3Int, TObject>());
+				objectsByLayer.Add(layer, new Bictionary<Vector2Int, TObject>());
 			}
 		}
 
-		public Grid2D(Vector3Int size, CellLayout layout)
+		public Grid2D(Vector2Int size, CellLayout layout)
 			: this(new SquareGrid().WithSize(size), layout)
 		{
 		}
 		#endregion
 
 		#region Accessors
-		public Result ContainsCell(Vector3Int position)
+		public Result ContainsCell(Vector2Int position)
 		{
 			if (!grid.Contains(position))
 			{
@@ -162,7 +89,7 @@ namespace Stratus.Models.Maps
 			return new Result(true, $"Map contains cell {position}");
 		}
 
-		public Result ContainsCell(int x, int y) => ContainsCell(new Vector3Int(x, y));
+		public Result ContainsCell(int x, int y) => ContainsCell(new Vector2Int(x, y));
 
 		/// <summary>
 		/// Fills all the cells of a given layer with the given objects
@@ -186,7 +113,7 @@ namespace Stratus.Models.Maps
 			return true;
 		}
 
-		public Result Set(TLayer layer, TObject obj, Vector3Int position, bool move = true)
+		public Result Set(TLayer layer, TObject obj, Vector2Int position, bool move = true)
 		{
 			// Check the type
 			var typeCheck = IsValid(layer, obj);
@@ -216,7 +143,7 @@ namespace Stratus.Models.Maps
 			return true;
 		}
 
-		public Result Set<UObject>(UObject obj, Vector3Int position, bool move = true)
+		public Result Set<UObject>(UObject obj, Vector2Int position, bool move = true)
 			where UObject : TObject
 		{
 			TLayer layer = GetLayer<UObject>();
@@ -238,12 +165,12 @@ namespace Stratus.Models.Maps
 			return objectsByLayer[layer].Contains(obj);
 		}
 
-		public Result Contains(TLayer layer, Vector3Int position)
+		public Result Contains(TLayer layer, Vector2Int position)
 		{
 			return objectsByLayer[layer].Contains(position);
 		}
 
-		public Vector3Int? GetPosition(TLayer layer, TObject obj)
+		public Vector2Int? GetPosition(TLayer layer, TObject obj)
 		{
 			if (!Contains(layer, obj))
 			{
@@ -253,7 +180,7 @@ namespace Stratus.Models.Maps
 			return objectsByLayer[layer][obj];
 		}
 
-		public TObject Get(TLayer layer, Vector3Int position)
+		public TObject Get(TLayer layer, Vector2Int position)
 		{
 			if (!Contains(layer, position))
 			{
@@ -263,13 +190,13 @@ namespace Stratus.Models.Maps
 			return objectsByLayer[layer][position];
 		}
 
-		public UObject Get<UObject>(TLayer layer, Vector3Int position)
+		public UObject Get<UObject>(TLayer layer, Vector2Int position)
 			where UObject : TObject
 		{
 			return (UObject)Get(layer, position);
 		}
 
-		public UObject? Get<UObject>(Vector3Int position)
+		public UObject? Get<UObject>(Vector2Int position)
 			where UObject : TObject
 		{
 			Type t = typeof(UObject);
@@ -281,7 +208,7 @@ namespace Stratus.Models.Maps
 			return (UObject)Get(typesByLayer[t], position);
 		}
 
-		public TObject[] GetAll(Vector3Int position)
+		public TObject[] GetAll(Vector2Int position)
 		{
 			return layers.Select(l => Get(l, position)).Where(o => o != null).ToArray();
 		}
@@ -358,7 +285,7 @@ namespace Stratus.Models.Maps
 		}
 		#endregion
 
-		public virtual TraversableStatus IsTraversible(Vector3Int position)
+		public virtual TraversableStatus IsTraversible(Vector2Int position)
 		{
 			if (!ContainsCell(position))
 			{
@@ -368,7 +295,7 @@ namespace Stratus.Models.Maps
 			return TraversableStatus.Valid;
 		}
 
-		public TObject[] GetObjectsInRange<UObject>(Vector3Int position, GridSearchRangeArguments args, TLayer layer)
+		public TObject[] GetObjectsInRange<UObject>(Vector2Int position, GridSearchRangeArguments args, TLayer layer)
 			where UObject : TObject
 		{
 			var range = GetRange(position, args);
@@ -379,7 +306,7 @@ namespace Stratus.Models.Maps
 			where UObject : TObject
 		{
 			TLayer layer = GetLayer<UObject>();
-			Vector3Int? position = GetPosition(layer, obj);
+			Vector2Int? position = GetPosition(layer, obj);
 			if (!position.HasValue)
 			{
 				return null;
@@ -398,7 +325,7 @@ namespace Stratus.Models.Maps
 		/// <summary>
 		/// Returns a given range starting from a cell
 		/// </summary>
-		public GridRange GetRange(Vector3Int center, GridSearchRangeArguments args)
+		public GridRange GetRange(Vector2Int center, GridSearchRangeArguments args)
 		{
 			GridRange values = null;
 			args.traversalCostFunction = GetTraversalCost;
@@ -419,7 +346,7 @@ namespace Stratus.Models.Maps
 			{
 				// Remove those whose is less than min range
 				GridRange filtered = new GridRange();
-				foreach (KeyValuePair<Vector3Int, float> kvp in values)
+				foreach (KeyValuePair<Vector2Int, float> kvp in values)
 				{
 					float cost = kvp.Value;
 					if (cost >= args.minimum)
@@ -435,7 +362,7 @@ namespace Stratus.Models.Maps
 
 		public GridRange GetRange(TLayer layer, TObject obj, GridSearchRangeArguments args)
 		{
-			Vector3Int? position = GetPosition(layer, obj);
+			Vector2Int? position = GetPosition(layer, obj);
 			if (!position.HasValue)
 			{
 				return null;
@@ -458,30 +385,22 @@ namespace Stratus.Models.Maps
 		}
 
 		public GridRange GetRange(TLayer layer, TObject obj, int range) => GetRange(layer, obj, new GridSearchRangeArguments(range));
-		public GridRange GetRange(Vector3Int center, int range) => GetRange(center, new GridSearchRangeArguments(range));
+		public GridRange GetRange(Vector2Int center, int range) => GetRange(center, new GridSearchRangeArguments(range));
 
 		/// <summary>
 		/// By default, the cost to travel to a given cell is 1. Override to account for difficult terrain and the like.
 		/// </summary>
 		/// <param name="position"></param>
 		/// <returns></returns>
-		public virtual float GetTraversalCost(Vector3Int position)
+		public virtual float GetTraversalCost(Vector2Int position)
 		{
 			return 1;
 		}
 
-		public Vector3Int[] SearchPath(Vector3Int start, Vector3Int end) => SearchPath(start, end, IsTraversible);
-		public Vector3Int[] SearchPath(Vector3Int start, Vector3Int end, StratusTraversalPredicate<Vector3Int> isTraversible)
+		public Vector2Int[] SearchPath(Vector2Int start, Vector2Int end) => SearchPath(start, end, IsTraversible);
+		public Vector2Int[] SearchPath(Vector2Int start, Vector2Int end, StratusTraversalPredicate<Vector2Int> isTraversible)
 		{
 			return GridUtility.FindPath(start, end, cellLayout, isTraversible);
-		}
-	}
-
-	public class Grid2D<TObject> : Grid2D<TObject, DefaultMapLayer>
-		where TObject : class
-	{
-		protected Grid2D(Vector3Int size, CellLayout layout) : base(size, layout)
-		{
 		}
 	}
 }
