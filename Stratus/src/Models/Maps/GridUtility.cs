@@ -1,6 +1,5 @@
 using Stratus.Models.Math;
 using Stratus.Numerics;
-using Stratus.Search;
 
 using System;
 using System.Collections.Generic;
@@ -8,13 +7,6 @@ using System.Numerics;
 
 namespace Stratus.Models.Maps
 {
-	public class GridSearch : StratusSearch<Vector2Int>
-	{
-		private GridSearch()
-		{
-		}
-	}
-
 	public abstract class GridUtility
 	{
 		public static readonly HexagonalOddRowDirection[] oddRowDirections = (HexagonalOddRowDirection[])Enum.GetValues(typeof(HexagonalOddRowDirection));
@@ -219,7 +211,7 @@ namespace Stratus.Models.Maps
 					break;
 			}
 			return result;
-		}	
+		}
 
 		public static T GetNeighbor<T>(T[,] neighbors, int row, int col, CardinalDirection direction, bool wrap = false)
 		{
@@ -347,121 +339,6 @@ namespace Stratus.Models.Maps
 		/// <param name="col"></param>
 		/// <returns></returns>
 		public static Vector2 RowColumnToCartesian(int row, int col) => new Vector2(col, -row);
-		#endregion
-
-		#region Ranges
-		/// <summary>
-		/// Returns the cell range given an origin
-		/// </summary>
-		public static GridRange GetRange(Vector2Int origin,
-			GridSearchRangeArguments range,
-			CellLayout layout)
-		{
-			GridRange result = null;
-			switch (layout)
-			{
-				case CellLayout.Rectangle:
-					result = GetRangeRectangle(origin, range);
-					break;
-				case CellLayout.Hexagon:
-					result = GetRangeHexOffset(origin, range);
-					break;
-			}
-			return result;
-		}
-
-		/// <summary>
-		/// Returns the cell range given an origin and a range
-		/// </summary>
-		/// <param name="origin">The origin, from which to search from</param>
-		/// <param name="n">The search range from the origin</param>
-		/// <param name="predicate">A predicate that validates whether a given cell is traversible</param>
-		/// <returns>A dictionary of all the elements in range along with the cost to traverse to them </returns>
-		public static GridRange GetRangeRectangle(Vector2Int origin, GridSearchRangeArguments args)
-		{
-			GridSearch.RangeSearch search
-				= new GridSearch.RangeSearch()
-				{
-					debug = false,
-					distanceFunction = ManhattanDistance,
-					traversalCostFunction = args.traversalCostFunction,
-					neighborFunction = FindNeighboringCellsRectangle,
-					traversableFunction = args.traversableFunction,
-					range = args.maximum,
-					startElement = origin
-				};
-
-			return new GridRange(search.SearchWithCosts());
-		}
-
-		/// <summary>
-		/// Returns the cell range for a hexagon
-		/// </summary>
-		/// <param name="origin"></param>
-		/// <param name="n"></param>
-		/// <param name="predicate"></param>
-		/// <returns></returns>
-		public static GridRange GetRangeHexOffset(Vector2Int origin, GridSearchRangeArguments args,
-			StratusTraversalPredicate<Vector2Int> predicate = null)
-		{
-			GridSearch.RangeSearch search
-			= new GridSearch.RangeSearch()
-			{
-				debug = false,
-				distanceFunction = HexOffsetDistance,
-				neighborFunction = FindNeighboringCellsHexOffset,
-				traversableFunction = predicate,
-				range = args.maximum,
-				startElement = origin
-			};
-			return new GridRange(search.SearchWithCosts());
-		}
-		#endregion
-
-		#region Path
-		public static Vector2Int[] FindPath(Vector2Int origin, Vector2Int target, CellLayout layout,
-			StratusTraversalPredicate<Vector2Int> traversablePredicate = null)
-		{
-			Vector2Int[] result = null;
-			switch (layout)
-			{
-				case CellLayout.Rectangle:
-					result = FindRectanglePath(origin, target, traversablePredicate);
-					break;
-				case CellLayout.Hexagon:
-					result = FindHexOffsetPath(origin, target, traversablePredicate);
-					break;
-			}
-			return result;
-		}
-
-		public static Vector2Int[] FindRectanglePath(Vector2Int origin, Vector2Int target,
-			StratusTraversalPredicate<Vector2Int> traversablePredicate = null)
-		{
-			var pathSearch = new GridSearch.PathSearch()
-			{
-				startElement = origin,
-				targetElement = target,
-				distanceFunction = ManhattanDistance,
-				neighborFunction = FindNeighboringCellsRectangle,
-				traversableFunction = traversablePredicate
-			};
-			return pathSearch.Search();
-		}
-
-		public static Vector2Int[] FindHexOffsetPath(Vector2Int origin, Vector2Int target,
-			StratusTraversalPredicate<Vector2Int> traversablePredicate = null)
-		{
-			var pathSearch = new GridSearch.PathSearch()
-			{
-				startElement = origin,
-				targetElement = target,
-				distanceFunction = HexOffsetDistance,
-				neighborFunction = FindNeighboringCellsHexOffset,
-				traversableFunction = traversablePredicate
-			};
-			return pathSearch.Search();
-		}
 		#endregion
 	}
 }

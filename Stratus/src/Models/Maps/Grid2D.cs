@@ -339,7 +339,7 @@ namespace Stratus.Models.Maps
 				return TraversableStatus.Valid;
 			};
 
-			values = GridUtility.GetRange(center, args, cellLayout);
+			values = GridSearch.GetRange(center, args, cellLayout);
 
 			// If the min range is not 0...
 			if (args.minimum > 0)
@@ -400,7 +400,7 @@ namespace Stratus.Models.Maps
 		public Vector2Int[] SearchPath(Vector2Int start, Vector2Int end) => SearchPath(start, end, IsTraversible);
 		public Vector2Int[] SearchPath(Vector2Int start, Vector2Int end, StratusTraversalPredicate<Vector2Int> isTraversible)
 		{
-			return GridUtility.FindPath(start, end, cellLayout, isTraversible);
+			return GridSearch.FindPath(start, end, cellLayout, isTraversible);
 		}
 	}
 }
