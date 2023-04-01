@@ -14,21 +14,23 @@ namespace Stratus.Models.Maps
 	/// </summary>
 	/// <typeparam name="TObject"></typeparam>
 	/// <typeparam name="TData"></typeparam>
-	public class CellReference<TObject, TData>
+	public class CellReference<TObject, TData> : IEquatable<CellReference<TObject, TData>>
+		where TObject : class
+		where TData : class
 	{
 		/// <summary>
 		/// For active objects on a tile
 		/// </summary>
-		public TObject node { get; }
+		public TObject? node { get; }
 		/// <summary>
 		/// For static tiles (painted from a tileset)
 		/// </summary>
-		public TData data { get; }
+		public TData? data { get; }
 		/// <summary>
 		/// Used in conjuntion with <see cref="data"/> to differentiate
 		/// since data is shared among all tiles of a given type
 		/// </summary>
-		public Vector2Int position { get; }
+		public Vector2Int? position { get; }
 
 		public CellReference(TData data, Vector2Int position)
 		{
@@ -43,8 +45,8 @@ namespace Stratus.Models.Maps
 
 		public bool Equals(CellReference<TObject, TData>? other)
 		{
-			return this.node.Equals(other.node) && this.data.Equals(other.data)
-				&& this.position == other.position;
+			return node == other.node && data == other.data
+				&& position == other.position;
 		}
 
 		public override bool Equals(object? obj) => Equals(obj as CellReference<TObject, TData>);
