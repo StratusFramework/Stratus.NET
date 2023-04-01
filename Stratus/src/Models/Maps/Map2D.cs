@@ -118,19 +118,24 @@ namespace Stratus.Models.Maps
 		{
 			if (!_grid.Contains(DefaultMapLayer.Terrain, pos))
 			{
-				StratusLog.Info($"No terrain at {pos} ({_grid.Count(DefaultMapLayer.Terrain)})");
+				//StratusLog.Info($"No terrain at {pos} ({_grid.Count(DefaultMapLayer.Terrain)})");
 				return TraversableStatus.Invalid;
 			}
 
 			if (_grid.Contains(DefaultMapLayer.Wall, pos))
 			{
-				StratusLog.Info($"Wall at {pos}");
+				//StratusLog.Info($"Wall at {pos}");
+				return TraversableStatus.Blocked;
+			}
+
+			if (_grid.Contains(DefaultMapLayer.Object, pos))
+			{
 				return TraversableStatus.Blocked;
 			}
 
 			if (_grid.Contains(DefaultMapLayer.Actor, pos))
 			{
-				StratusLog.Info($"Actor already at {pos}");
+				//StratusLog.Info($"Actor already at {pos}");
 				return TraversableStatus.Occupied;
 			}
 

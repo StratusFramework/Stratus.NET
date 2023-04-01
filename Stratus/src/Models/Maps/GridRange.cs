@@ -1,4 +1,5 @@
-﻿using Stratus.Numerics;
+﻿using Stratus.Extensions;
+using Stratus.Numerics;
 using Stratus.Search;
 
 using System;
@@ -41,6 +42,11 @@ namespace Stratus.Models
 		public GridPath(Vector2Int[] cells)
 		{
 			this.cells = cells;
+		}
+
+		public override string ToString()
+		{
+			return cells.ToStringJoin(",").Enclose(StratusStringEnclosure.SquareBracket);
 		}
 
 		public IEnumerator<Vector2Int> GetEnumerator()
