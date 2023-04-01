@@ -1,4 +1,6 @@
 using Stratus.Collections;
+using Stratus.Extensions;
+using Stratus.Logging;
 using Stratus.Numerics;
 using Stratus.Search;
 using Stratus.Utilities;
@@ -62,6 +64,10 @@ namespace Stratus.Models.Maps
 		protected static readonly Type baseType = typeof(TObject);
 		#endregion
 
+		#region Events
+		public event Action<string> onLog;
+		#endregion
+
 		#region Constructors
 		public Grid2D(SquareGrid grid, CellLayout layout)
 		{
@@ -113,6 +119,14 @@ namespace Stratus.Models.Maps
 			return true;
 		}
 
+		/// <summary>
+		/// Sets the given <typeparamref name="TObject"/> on the layer at the position
+		/// </summary>
+		/// <param name="layer"></param>
+		/// <param name="obj"></param>
+		/// <param name="position"></param>
+		/// <param name="move">Whether the object is being moved from a previous position</param>
+		/// <returns></returns>
 		public Result Set(TLayer layer, TObject obj, Vector2Int position, bool move = true)
 		{
 			// Check the type
@@ -140,7 +154,7 @@ namespace Stratus.Models.Maps
 			}
 
 			objectsByLayer[layer].Add(position, obj);
-			return true;
+			return new Result(true, $"Set {obj} onto {layer} at position {position}");
 		}
 
 		public Result Set<UObject>(UObject obj, Vector2Int position, bool move = true)
@@ -365,7 +379,8 @@ namespace Stratus.Models.Maps
 			Vector2Int? position = GetPosition(layer, obj);
 			if (!position.HasValue)
 			{
-				return null;
+				StratusLog.Warning($"Could not find range {obj}. Could not find its position within the layer {layer}. ({objectsByLayer[layer].Count} objects)");
+				return new GridRange();
 			}
 
 			args.traversableFunction += (pos) =>
@@ -398,7 +413,7 @@ namespace Stratus.Models.Maps
 		}
 
 		public Vector2Int[] SearchPath(Vector2Int start, Vector2Int end) => SearchPath(start, end, IsTraversible);
-		public Vector2Int[] SearchPath(Vector2Int start, Vector2Int end, StratusTraversalPredicate<Vector2Int> isTraversible)
+		public Vector2Int[] SearchPath(Vector2Int start, Vector2Int end, TraversalPredicate<Vector2Int> isTraversible)
 		{
 			return GridSearch.FindPath(start, end, cellLayout, isTraversible);
 		}

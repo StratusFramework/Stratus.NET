@@ -63,7 +63,7 @@ namespace Stratus.Models.Maps
 		/// <param name="predicate"></param>
 		/// <returns></returns>
 		public static GridRange GetRangeHexOffset(Vector2Int origin, GridSearchRangeArguments args,
-			StratusTraversalPredicate<Vector2Int> predicate = null)
+			TraversalPredicate<Vector2Int> predicate = null)
 		{
 			RangeSearch search = new RangeSearch()
 			{
@@ -80,7 +80,7 @@ namespace Stratus.Models.Maps
 
 		#region Path
 		public static Vector2Int[] FindPath(Vector2Int origin, Vector2Int target, CellLayout layout,
-			StratusTraversalPredicate<Vector2Int> traversablePredicate = null)
+			TraversalPredicate<Vector2Int> traversablePredicate = null)
 		{
 			Vector2Int[] result = null;
 			switch (layout)
@@ -96,7 +96,7 @@ namespace Stratus.Models.Maps
 		}
 
 		public static Vector2Int[] FindRectanglePath(Vector2Int origin, Vector2Int target,
-			StratusTraversalPredicate<Vector2Int> traversablePredicate = null)
+			TraversalPredicate<Vector2Int> traversablePredicate = null)
 		{
 			var pathSearch = new GridSearch.PathSearch()
 			{
@@ -110,7 +110,7 @@ namespace Stratus.Models.Maps
 		}
 
 		public static Vector2Int[] FindHexOffsetPath(Vector2Int origin, Vector2Int target,
-			StratusTraversalPredicate<Vector2Int> traversablePredicate = null)
+			TraversalPredicate<Vector2Int> traversablePredicate = null)
 		{
 			var pathSearch = new GridSearch.PathSearch()
 			{
@@ -145,6 +145,6 @@ namespace Stratus.Models.Maps
 		public int minimum { get; }
 		public int maximum { get; }
 		public Func<Vector2Int, float> traversalCostFunction { get; set; }
-		public StratusTraversalPredicate<Vector2Int> traversableFunction { get; set; }
+		public TraversalPredicate<Vector2Int> traversableFunction { get; set; }
 	}
 }

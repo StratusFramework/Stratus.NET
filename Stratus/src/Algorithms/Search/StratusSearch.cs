@@ -35,7 +35,7 @@ namespace Stratus.Search
 		Invalid
 	}
 
-	public delegate TraversableStatus StratusTraversalPredicate<TElement>(TElement element);
+	public delegate TraversableStatus TraversalPredicate<TElement>(TElement element);
 
 	/// <summary>
 	/// This planner uses A* to do a search for a valid path of actions that will lead
@@ -190,7 +190,7 @@ namespace Stratus.Search
 			/// <summary>
 			/// If provided, a function that checks whether the given element is traversable
 			/// </summary>
-			public StratusTraversalPredicate<TElement> traversableFunction { get; set; }
+			public TraversalPredicate<TElement> traversableFunction { get; set; }
 			/// <summary>
 			/// A function to gather the neighbors of a cell
 			/// </summary>
@@ -422,7 +422,7 @@ namespace Stratus.Search
 				if (arguments.traversableFunction != null)
 				{
 					TraversableStatus status = TraversableStatus.Valid;
-					foreach (StratusTraversalPredicate<TElement> func in arguments.traversableFunction.GetInvocationList())
+					foreach (TraversalPredicate<TElement> func in arguments.traversableFunction.GetInvocationList())
 					{
 						status = func(element);
 						if (status != TraversableStatus.Valid)

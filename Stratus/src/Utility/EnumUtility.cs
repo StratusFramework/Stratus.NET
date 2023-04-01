@@ -34,6 +34,11 @@ namespace Stratus.Utilities
 			return (T)Value(typeof(T), index);
 		}
 
+		public static T Value<T>(string name) where T : Enum
+		{
+			return (T)Enum.Parse(typeof(T), name);
+		}
+
 		public static Enum Value(Type enumType, int index)
 		{
 			return (Enum)ValuesArray(enumType).GetValue(index);

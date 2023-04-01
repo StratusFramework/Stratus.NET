@@ -47,7 +47,7 @@ namespace Stratus.Numerics
 		public static float Distance(Vector3Int a, Vector3Int b)
 			=> Vector3.Distance(a, b);
 	}
-	
+
 	public struct Vector2Int
 	{
 		public int x { get; set; }
@@ -82,6 +82,12 @@ namespace Stratus.Numerics
 
 		public static float Distance(Vector2Int a, Vector2Int b)
 			=> Vector2.Distance(a, b);
+
+		public static bool operator ==(Vector2Int a, Vector2Int b)
+			=> a.x == b.x && a.y == b.y;
+
+		public static bool operator !=(Vector2Int a, Vector2Int b)
+			=> a.x != b.x || a.y != b.y;
 	}
 
 	public static class VectorIntExtensions
