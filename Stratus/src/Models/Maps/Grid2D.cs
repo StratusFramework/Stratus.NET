@@ -19,7 +19,9 @@ namespace Stratus.Models.Maps
 	public interface IGrid2D
 	{
 		CellLayout cellLayout { get; }
-		Vector2Int[] SearchPath(Vector2Int start, Vector2Int end);
+		GridPath SearchPath(Vector2Int start, Vector2Int end);
+		Result Set(string layer, ICellReference reference, Vector2Int position);
+		Result Set(Enum layer, ICellReference reference, Vector2Int position) => Set(layer.ToString(), reference, position);
 	}
 
 	/// <summary>
@@ -29,11 +31,11 @@ namespace Stratus.Models.Maps
 	/// <typeparam name="TLayer"></typeparam>
 	public class Grid2D<TObject, TLayer> : GridBase<TObject>, IGrid2D
 		where TLayer : Enum
-		where TObject : class
+		where TObject : class, IObject2D
 	{
 		#region Fields
 		private Dictionary<TLayer, Bictionary<Vector2Int, TObject>> objectsByLayer { get; }
-			= new Dictionary<TLayer, Bictionary<Vector2Int, TObject>>(); 
+			= new Dictionary<TLayer, Bictionary<Vector2Int, TObject>>();
 		private Bictionary<TLayer, Type> typesByLayer = new Bictionary<TLayer, Type>();
 		#endregion
 
@@ -85,6 +87,13 @@ namespace Stratus.Models.Maps
 		}
 		#endregion
 
+		#region IGrid2D
+		public Result Set(string layer, ICellReference reference, Vector2Int position)
+		{
+			return Set(EnumUtility.Value<TLayer>(layer), (TObject)reference, position);
+		}
+		#endregion
+
 		#region Accessors
 		public Result ContainsCell(Vector2Int position)
 		{
@@ -127,7 +136,7 @@ namespace Stratus.Models.Maps
 		/// <param name="position"></param>
 		/// <param name="move">Whether the object is being moved from a previous position</param>
 		/// <returns></returns>
-		public Result Set(TLayer layer, TObject obj, Vector2Int position, bool move = true)
+		public Result Set(TLayer layer, TObject obj, Vector2Int position)
 		{
 			// Check the type
 			var typeCheck = IsValid(layer, obj);
@@ -138,14 +147,7 @@ namespace Stratus.Models.Maps
 
 			if (Contains(layer, obj))
 			{
-				if (move)
-				{
-					Remove(layer, obj);
-				}
-				else
-				{
-					return new Result(false, $"{obj} is already present in the layer at {objectsByLayer[layer][obj]}");
-				}
+				Remove(layer, obj);
 			}
 
 			if (Contains(layer, position))
@@ -157,11 +159,11 @@ namespace Stratus.Models.Maps
 			return new Result(true, $"Set {obj} onto {layer} at position {position}");
 		}
 
-		public Result Set<UObject>(UObject obj, Vector2Int position, bool move = true)
+		public Result Set<UObject>(UObject obj, Vector2Int position)
 			where UObject : TObject
 		{
 			TLayer layer = GetLayer<UObject>();
-			return Set(layer, obj, position, move);
+			return Set(layer, obj, position);
 		}
 
 		public Result Remove(TLayer layer, TObject obj)
@@ -412,8 +414,8 @@ namespace Stratus.Models.Maps
 			return 1;
 		}
 
-		public Vector2Int[] SearchPath(Vector2Int start, Vector2Int end) => SearchPath(start, end, IsTraversible);
-		public Vector2Int[] SearchPath(Vector2Int start, Vector2Int end, TraversalPredicate<Vector2Int> isTraversible)
+		public GridPath SearchPath(Vector2Int start, Vector2Int end) => SearchPath(start, end, IsTraversible);
+		public GridPath SearchPath(Vector2Int start, Vector2Int end, TraversalPredicate<Vector2Int> isTraversible)
 		{
 			return GridSearch.FindPath(start, end, cellLayout, isTraversible);
 		}

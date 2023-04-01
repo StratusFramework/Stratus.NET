@@ -79,10 +79,10 @@ namespace Stratus.Models.Maps
 		#endregion
 
 		#region Path
-		public static Vector2Int[] FindPath(Vector2Int origin, Vector2Int target, CellLayout layout,
+		public static GridPath FindPath(Vector2Int origin, Vector2Int target, CellLayout layout,
 			TraversalPredicate<Vector2Int> traversablePredicate = null)
 		{
-			Vector2Int[] result = null;
+			GridPath result = null;
 			switch (layout)
 			{
 				case CellLayout.Rectangle:
@@ -95,7 +95,7 @@ namespace Stratus.Models.Maps
 			return result;
 		}
 
-		public static Vector2Int[] FindRectanglePath(Vector2Int origin, Vector2Int target,
+		public static GridPath FindRectanglePath(Vector2Int origin, Vector2Int target,
 			TraversalPredicate<Vector2Int> traversablePredicate = null)
 		{
 			var pathSearch = new GridSearch.PathSearch()
@@ -106,10 +106,10 @@ namespace Stratus.Models.Maps
 				neighborFunction = GridUtility.FindNeighboringCellsRectangle,
 				traversableFunction = traversablePredicate
 			};
-			return pathSearch.Search();
+			return new GridPath(pathSearch.Search());
 		}
 
-		public static Vector2Int[] FindHexOffsetPath(Vector2Int origin, Vector2Int target,
+		public static GridPath FindHexOffsetPath(Vector2Int origin, Vector2Int target,
 			TraversalPredicate<Vector2Int> traversablePredicate = null)
 		{
 			var pathSearch = new GridSearch.PathSearch()
@@ -120,7 +120,7 @@ namespace Stratus.Models.Maps
 				neighborFunction = GridUtility.FindNeighboringCellsHexOffset,
 				traversableFunction = traversablePredicate
 			};
-			return pathSearch.Search();
+			return new GridPath(pathSearch.Search());
 		}
 		#endregion
 	}

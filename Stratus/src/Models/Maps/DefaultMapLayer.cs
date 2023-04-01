@@ -26,10 +26,10 @@ namespace Stratus.Models.Maps
 		Event,
 	}
 
-	public class Grid2D<TObject> : Grid2D<TObject, DefaultMapLayer>
-	where TObject : class
+	public class DefaultGrid<TObject> : Grid2D<TObject, DefaultMapLayer>
+		where TObject : class, IObject2D
 	{
-		protected Grid2D(Vector2Int size, CellLayout layout) : base(size, layout)
+		protected DefaultGrid(Vector2Int size, CellLayout layout) : base(size, layout)
 		{
 		}
 	}
