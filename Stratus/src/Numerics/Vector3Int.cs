@@ -88,6 +88,15 @@ namespace Stratus.Numerics
 
 		public static bool operator !=(Vector2Int a, Vector2Int b)
 			=> a.x != b.x || a.y != b.y;
+
+		public static Vector2Int operator *(Vector2Int a, int multiple)
+			=> new Vector2Int(a.x * multiple, a.y * multiple);
+
+		public static Vector2Int operator *(Vector2Int a, Vector2Int b )
+			=> new Vector2Int(a.x * b.x, a.y * b.y);
+
+		public static Vector2Int operator +(Vector2Int a, Vector2Int b)
+			=> new Vector2Int(a.x + b.x, a.y + b.y);
 	}
 
 	public static class VectorIntExtensions
