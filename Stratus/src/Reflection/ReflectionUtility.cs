@@ -317,8 +317,6 @@ namespace Stratus.Reflection
 			}
 		}
 
-
-
 		/// <summary>
 		/// Gets all the fields in obj of type T.
 		/// </summary>

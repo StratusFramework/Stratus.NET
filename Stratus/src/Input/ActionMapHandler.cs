@@ -117,8 +117,10 @@ namespace Stratus.Inputs
 			Bind(action.ToString(), onAction);
 		}
 
-		public Result TryBindAll<TAction>(object target) where TAction : Enum
+		public Result TryBindAll<TAction>(object target = null) where TAction : Enum
 		{
+			target = target ?? this;
+
 			var enumeratedValuesByName = EnumUtility.Values<TAction>().ToDictionary(v => v.ToString(),
 				StringComparer.InvariantCultureIgnoreCase);
 

@@ -73,6 +73,11 @@ namespace Stratus.Models
 
 		private Lazy<Vector2Int[]> _cells;
 
+		public SquareGrid(Vector2Int size)
+		{
+			WithSize(size);
+		}
+
 		public SquareGrid WithSize(int size)
 		{
 			return WithSize(new Vector2Int(size, size));

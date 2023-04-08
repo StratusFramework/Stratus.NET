@@ -20,6 +20,10 @@ namespace Stratus.Models.Maps
 	{
 		CellLayout cellLayout { get; }
 		GridPath SearchPath(Vector2Int start, Vector2Int end);
+		Result ContainsCell(Vector2Int position);
+		IObject2D Get(string layer, Vector2Int position);
+		IEnumerable<IObject2D> GetAll(string layer, IEnumerable<Vector2Int> positions)
+			=> positions.Select(p => Get(layer, p)).Where(o => o != null);
 		Result Set(string layer, ICellReference reference, Vector2Int position);
 		Result Set(Enum layer, ICellReference reference, Vector2Int position) => Set(layer.ToString(), reference, position);
 	}
@@ -82,7 +86,7 @@ namespace Stratus.Models.Maps
 		}
 
 		public Grid2D(Vector2Int size, CellLayout layout)
-			: this(new SquareGrid().WithSize(size), layout)
+			: this(new SquareGrid(size), layout)
 		{
 		}
 		#endregion
@@ -205,6 +209,9 @@ namespace Stratus.Models.Maps
 
 			return objectsByLayer[layer][position];
 		}
+		
+		public IObject2D Get(string layer, Vector2Int position)
+			=> Get(EnumUtility.Value<TLayer>(layer), position);
 
 		public UObject Get<UObject>(TLayer layer, Vector2Int position)
 			where UObject : TObject

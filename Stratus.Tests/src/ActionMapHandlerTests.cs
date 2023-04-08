@@ -42,7 +42,7 @@ namespace Stratus.Tests.Editor
 				}
 				else if (deleg is Action<Vector2> vec2Action)
 				{
-					Bind(name, input => vec2Action(Vector2.Zero));
+					Bind(name, InputActionType.Composite, input => vec2Action(Vector2.Zero));
 					return true;
 				}
 				return false;

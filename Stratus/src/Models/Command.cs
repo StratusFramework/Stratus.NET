@@ -17,6 +17,9 @@ namespace Stratus.Models
 		public virtual string name => GetType().Name.Replace(nameof(Command), string.Empty);
 		public bool executed { get; private set; }
 
+		public event Action onExecute;
+		public event Action onRevert;
+
 		protected abstract Result OnExecute();
 		protected abstract Result OnRevert();
 
@@ -27,7 +30,12 @@ namespace Stratus.Models
 				return false;
 			}
 
-			return OnExecute();
+			var result = OnExecute();
+			if (result)
+			{
+				onExecute?.Invoke();
+			}
+			return result;
 		}
 
 		public Result Revert()
@@ -37,7 +45,22 @@ namespace Stratus.Models
 				return false;
 			}
 
-			return OnRevert();
+			var result = OnRevert();
+			if (result)
+			{
+				onRevert?.Invoke();
+			}
+			return result;
+		}
+	}
+
+	public abstract class Command<T> : Command
+	{
+		public T target { get; }
+
+		protected Command(T target)
+		{
+			this.target = target;
 		}
 	}
 
