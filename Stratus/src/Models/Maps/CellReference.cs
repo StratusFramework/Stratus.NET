@@ -5,8 +5,9 @@ using System;
 
 namespace Stratus.Models.Maps
 {
-	public interface ICellReference : IObject2D
+	public interface ICellReference
 	{
+		IObject2D? obj { get; }
 	}
 
 	/// <summary>
@@ -34,9 +35,8 @@ namespace Stratus.Models.Maps
 		/// since data is shared among all tiles of a given type
 		/// </summary>
 		public Vector2Int? position { get; }
-
-		string IObject2D.name => obj.name ?? data.ToString();
-		Vector2Int IObject2D.cellPosition
+		public string name => obj.name ?? data.ToString();
+		public Vector2Int cellPosition
 		{
 			get
 			{
@@ -47,6 +47,8 @@ namespace Stratus.Models.Maps
 				return position.Value;
 			}
 		}
+
+		IObject2D? ICellReference.obj => obj;
 
 		public CellReference(TData data, Vector2Int position)
 		{

@@ -24,8 +24,8 @@ namespace Stratus.Models.Maps
 		IObject2D Get(string layer, Vector2Int position);
 		IEnumerable<IObject2D> GetAll(string layer, IEnumerable<Vector2Int> positions)
 			=> positions.Select(p => Get(layer, p)).Where(o => o != null);
-		Result Set(string layer, ICellReference reference, Vector2Int position);
-		Result Set(Enum layer, ICellReference reference, Vector2Int position) => Set(layer.ToString(), reference, position);
+		Result Set(string layer, IObject2D reference, Vector2Int position);
+		Result Set(Enum layer, IObject2D reference, Vector2Int position) => Set(layer.ToString(), reference, position);
 	}
 
 	/// <summary>
@@ -92,7 +92,7 @@ namespace Stratus.Models.Maps
 		#endregion
 
 		#region IGrid2D
-		public Result Set(string layer, ICellReference reference, Vector2Int position)
+		public Result Set(string layer, IObject2D reference, Vector2Int position)
 		{
 			return Set(EnumUtility.Value<TLayer>(layer), (TObject)reference, position);
 		}

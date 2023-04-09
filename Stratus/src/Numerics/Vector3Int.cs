@@ -97,6 +97,9 @@ namespace Stratus.Numerics
 
 		public static Vector2Int operator +(Vector2Int a, Vector2Int b)
 			=> new Vector2Int(a.x + b.x, a.y + b.y);
+
+		public static Vector2Int operator -(Vector2Int a, Vector2Int b)
+			=> new Vector2Int(a.x - b.x, a.y - b.y);
 	}
 
 	public static class VectorIntExtensions

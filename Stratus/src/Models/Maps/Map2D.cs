@@ -37,7 +37,7 @@ namespace Stratus.Models.Maps
 		where TData : class
 		where TLayer : Enum
 	{
-		public class Grid : Grid2D<CellReference<IObject2D, TData>, TLayer>
+		public class Grid : Grid2D<IObject2D, TLayer>
 		{
 			public Grid(Bounds2D grid, CellLayout layout) : base(grid, layout)
 			{
@@ -63,12 +63,12 @@ namespace Stratus.Models.Maps
 			where TObject : IObject2D
 		{
 			var info = _grid.Get(layer, position);
-			if (info == null || info.obj is not TObject)
+			if (info == null || info is not TObject)
 			{
 				return default;
 			}
 
-			return (TObject)info.obj;
+			return (TObject)info;
 		}
 
 		public bool TryGet<TObject>(Vector2Int position, TLayer layer, out TObject? obj)
@@ -77,17 +77,17 @@ namespace Stratus.Models.Maps
 			obj = default;
 
 			var reference = _grid.Get(layer, position);
-			if (reference == null || reference.obj == null)
+			if (reference == null || reference == null)
 			{
 				return false;
 			}
 
-			if (reference.obj is not TObject)
+			if (reference is not TObject)
 			{
 				return false;
 			}
 
-			obj = (TObject)reference.obj;
+			obj = (TObject)reference;
 			if (obj == null)
 			{
 				return false;
@@ -98,7 +98,7 @@ namespace Stratus.Models.Maps
 		public override GridRange GetRange(IActor2D actor)
 		{
 			return _grid.GetRange(actorLayer,
-				new CellReference<IObject2D, TData>(new ValueProvider<IObject2D>(actor)),
+				actor,
 				new GridSearchRangeArguments(0, actor.range)
 				{
 					traversableFunction = pos => CanTraverse(actor, pos)
