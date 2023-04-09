@@ -1,4 +1,5 @@
 using Stratus.Collections;
+using Stratus.Data;
 using Stratus.Extensions;
 
 using System;
@@ -97,7 +98,7 @@ namespace Stratus.Models
 		public class Initializer
 		{
 			public Func<TObject, IEnumerable<ValueSelector<TValue>>> evaluationFunction { get; private set; }
-			public StratusProvider<ValueSelector<TValue>[]> values { get; }
+			public ValueProvider<ValueSelector<TValue>[]> values { get; }
 
 			public Initializer(params ValueSelector<TValue>[] values)
 			{

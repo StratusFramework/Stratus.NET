@@ -1,4 +1,5 @@
-﻿using Stratus.Extensions;
+﻿using Stratus.Data;
+using Stratus.Extensions;
 
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace Stratus.Models.Graph
 		//------------------------------------------------------------------------/
 		// Fields
 		//------------------------------------------------------------------------/ 
-		private StratusProvider<IList<TElement>> provider;
+		private ValueProvider<IList<TElement>> provider;
 		private IList<TElement> elements => provider.value;
 		private int maxID;
 
@@ -48,7 +49,7 @@ namespace Stratus.Models.Graph
 		//------------------------------------------------------------------------/
 		// CTOR
 		//------------------------------------------------------------------------/ 
-		public TreeModel(StratusProvider<IList<TElement>> data)
+		public TreeModel(ValueProvider<IList<TElement>> data)
 		{
 			this.SetData(data);
 		}
@@ -60,7 +61,7 @@ namespace Stratus.Models.Graph
 		/// Sets the data for this tree model
 		/// </summary>
 		/// <param name="provider"></param>
-		public void SetData(StratusProvider<IList<TElement>> provider)
+		public void SetData(ValueProvider<IList<TElement>> provider)
 		{
 			if (provider == null)
 			{

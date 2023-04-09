@@ -1,10 +1,7 @@
-﻿using Stratus.Numerics;
+﻿using Stratus.Data;
+using Stratus.Numerics;
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Stratus.Models.Maps
 {
@@ -22,10 +19,12 @@ namespace Stratus.Models.Maps
 		where TObject : class, IObject2D
 		where TData : class
 	{
+		private IValueProvider<TObject> _obj;
+
 		/// <summary>
 		/// For active objects on a tile
 		/// </summary>
-		public TObject? actor { get; }
+		public TObject? obj => _obj != null ? _obj.value : null;
 		/// <summary>
 		/// For static tiles (painted from a tileset)
 		/// </summary>
@@ -36,14 +35,14 @@ namespace Stratus.Models.Maps
 		/// </summary>
 		public Vector2Int? position { get; }
 
-		string IObject2D.name => actor.name ?? data.ToString();
+		string IObject2D.name => obj.name ?? data.ToString();
 		Vector2Int IObject2D.cellPosition
 		{
 			get
 			{
-				if (actor != null)
+				if (obj != null)
 				{
-					return actor.cellPosition;
+					return obj.cellPosition;
 				}
 				return position.Value;
 			}
@@ -55,14 +54,19 @@ namespace Stratus.Models.Maps
 			this.position = position;
 		}
 
-		public CellReference(TObject actor)
+		public CellReference(IValueProvider<TObject> provider)
 		{
-			this.actor = actor;
+			this._obj = provider;
+		}
+
+		public CellReference(ValueProvider<TObject> provider)
+			: this((IValueProvider<TObject>)provider)
+		{
 		}
 
 		public bool Equals(CellReference<TObject, TData>? other)
 		{
-			return actor == other.actor && data == other.data
+			return obj == other.obj && data == other.data
 				&& position == other.position;
 		}
 
@@ -70,12 +74,12 @@ namespace Stratus.Models.Maps
 
 		public override int GetHashCode()
 		{
-			return actor?.GetHashCode() ?? data.GetHashCode();
+			return obj?.GetHashCode() ?? data.GetHashCode();
 		}
 
 		public override string ToString()
 		{
-			return actor != null ? actor.ToString() : data.ToString();
+			return obj != null ? obj.ToString() : data.ToString();
 		}
 	}
 }

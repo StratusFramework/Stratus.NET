@@ -63,7 +63,7 @@ namespace Stratus.Models
 	/// <summary>
 	/// The cells and bounds of a constructed 2D grid
 	/// </summary>
-	public class SquareGrid
+	public class Bounds2D
 	{
 		public int xMax { get; private set; }
 		public int yMax { get; private set; }
@@ -73,17 +73,17 @@ namespace Stratus.Models
 
 		private Lazy<Vector2Int[]> _cells;
 
-		public SquareGrid(Vector2Int size)
+		public Bounds2D(Vector2Int size)
 		{
 			WithSize(size);
 		}
 
-		public SquareGrid WithSize(int size)
+		public Bounds2D WithSize(int size)
 		{
 			return WithSize(new Vector2Int(size, size));
 		}
 
-		public SquareGrid WithSize(Vector2Int size)
+		public Bounds2D WithSize(Vector2Int size)
 		{
 			xMin = yMin = 0;
 			yMax = size.y - 1;

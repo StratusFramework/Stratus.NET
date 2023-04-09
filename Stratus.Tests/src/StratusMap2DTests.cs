@@ -56,7 +56,7 @@ namespace Stratus.Models.Tests
 
 		public class MockMap : Grid2D<MockObject, MockLayer>
 		{
-			public MockMap(Vector2Int size) : base(new SquareGrid(size), CellLayout.Rectangle)
+			public MockMap(Vector2Int size) : base(new Bounds2D(size), CellLayout.Rectangle)
 			{
 			}
 

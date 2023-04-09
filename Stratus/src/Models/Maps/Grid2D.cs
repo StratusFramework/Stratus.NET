@@ -47,7 +47,7 @@ namespace Stratus.Models.Maps
 		/// <summary>
 		/// The underlying grid structure
 		/// </summary>
-		public SquareGrid grid { get; }
+		public Bounds2D bounds { get; }
 		/// <summary>
 		/// The cell layout for this grid
 		/// </summary>
@@ -75,10 +75,10 @@ namespace Stratus.Models.Maps
 		#endregion
 
 		#region Constructors
-		public Grid2D(SquareGrid grid, CellLayout layout)
+		public Grid2D(Bounds2D grid, CellLayout layout)
 		{
 			this.cellLayout = layout;
-			this.grid = grid;
+			this.bounds = grid;
 			foreach (var layer in layers)
 			{
 				objectsByLayer.Add(layer, new Bictionary<Vector2Int, TObject>());
@@ -86,7 +86,7 @@ namespace Stratus.Models.Maps
 		}
 
 		public Grid2D(Vector2Int size, CellLayout layout)
-			: this(new SquareGrid(size), layout)
+			: this(new Bounds2D(size), layout)
 		{
 		}
 		#endregion
@@ -101,7 +101,7 @@ namespace Stratus.Models.Maps
 		#region Accessors
 		public Result ContainsCell(Vector2Int position)
 		{
-			if (!grid.Contains(position))
+			if (!bounds.Contains(position))
 			{
 				return new Result(false, $"Map does not contain cell {position}");
 			}
@@ -125,7 +125,7 @@ namespace Stratus.Models.Maps
 			}
 
 			Clear(layer);
-			foreach (var position in grid.cells)
+			foreach (var position in bounds.cells)
 			{
 				objectsByLayer[layer].Add(position, ctor());
 			}

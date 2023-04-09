@@ -1,18 +1,17 @@
-﻿using Stratus.Logging;
+﻿using Stratus.Data;
+using Stratus.Logging;
 using Stratus.Numerics;
 using Stratus.Search;
-using Stratus.Utilities;
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Stratus.Models.Maps
 {
-	public interface IMap2D
+	public interface ISpatialModel
+	{
+	}
+
+	public interface IMap2D : ISpatialModel
 	{
 		IGrid2D grid { get; }
 		GridRange GetRange(IActor2D actor);
@@ -34,50 +33,61 @@ namespace Stratus.Models.Maps
 	/// <typeparam name="TLayer">The layer definition</typeparam>
 	/// <typeparam name="TObject">The object type</typeparam>
 	/// <typeparam name="TData">The tile data type</typeparam>
-	public abstract class Map2D<TMap, TObject, TData, TLayer> : Map2D
-		where TMap : class
-		where TObject : class, IObject2D
+	public abstract class Map2D<TData, TLayer> : Map2D
 		where TData : class
 		where TLayer : Enum
 	{
-		protected Grid2D<CellReference<TObject, TData>, TLayer> _grid;
-
-		public abstract TLayer actorLayer { get; }
-		public override IGrid2D grid => _grid;
-		public TMap tileMap { get; private set; }
-
-		public Map2D(TMap tileMap)
+		public class Grid : Grid2D<CellReference<IObject2D, TData>, TLayer>
 		{
-			this.tileMap = tileMap;
-			Initialize();
+			public Grid(Bounds2D grid, CellLayout layout) : base(grid, layout)
+			{
+			}
+
+			public Grid(Vector2Int size, CellLayout layout) : base(size, layout)
+			{
+			}
 		}
 
-		public abstract void Initialize();
+		protected Grid _grid;
+		public abstract TLayer actorLayer { get; }
+		public override IGrid2D grid => _grid;
+
+		public Map2D(Func<Grid> ctor)
+		{
+			_grid = ctor();
+		}
+
 		protected abstract TraversableStatus CanTraverse(IActor2D actor, Vector2Int pos);
 
-		public TNode? Get<TNode>(Vector2Int position, TLayer layer)
-			where TNode : TObject
+		public TObject? Get<TObject>(Vector2Int position, TLayer layer)
+			where TObject : IObject2D
 		{
 			var info = _grid.Get(layer, position);
-			if (info == null)
+			if (info == null || info.obj is not TObject)
 			{
 				return default;
 			}
-			return (TNode)info.actor;
+
+			return (TObject)info.obj;
 		}
 
-		public bool TryGet<UObject>(Vector2Int position, TLayer layer, out UObject? obj)
-			where UObject : TObject
+		public bool TryGet<TObject>(Vector2Int position, TLayer layer, out TObject? obj)
+			where TObject : IObject2D
 		{
 			obj = default;
 
 			var reference = _grid.Get(layer, position);
-			if (reference == null || reference.actor == null)
+			if (reference == null || reference.obj == null)
 			{
 				return false;
 			}
 
-			obj = (UObject)reference.actor;
+			if (reference.obj is not TObject)
+			{
+				return false;
+			}
+
+			obj = (TObject)reference.obj;
 			if (obj == null)
 			{
 				return false;
@@ -88,7 +98,7 @@ namespace Stratus.Models.Maps
 		public override GridRange GetRange(IActor2D actor)
 		{
 			return _grid.GetRange(actorLayer,
-				new CellReference<TObject, TData>((TObject)actor),
+				new CellReference<IObject2D, TData>(new ValueProvider<IObject2D>(actor)),
 				new GridSearchRangeArguments(0, actor.range)
 				{
 					traversableFunction = pos => CanTraverse(actor, pos)
@@ -101,18 +111,17 @@ namespace Stratus.Models.Maps
 		}
 	}
 
-	public abstract class Map2D<TMap, TObject, TData>
-		: Map2D<TMap, TObject, TData, DefaultMapLayer>
+	public abstract class Map2D<TData>
+		: Map2D<TData, DefaultMapLayer>
 
-		where TMap : class
-		where TObject : class, IObject2D
 		where TData : class
 	{
-		public override DefaultMapLayer actorLayer => DefaultMapLayer.Actor;
-
-		protected Map2D(TMap tileMap) : base(tileMap)
+		protected Map2D(Func<Grid> ctor) : base(ctor)
 		{
 		}
+
+		public override DefaultMapLayer actorLayer => DefaultMapLayer.Actor;
+
 
 		protected override TraversableStatus CanTraverse(IActor2D actor, Vector2Int pos)
 		{
