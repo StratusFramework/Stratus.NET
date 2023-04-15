@@ -21,6 +21,7 @@ namespace Stratus.Models.Tests
 
 			public string name { get; }
 			public Vector2Int cellPosition { get; }
+			public abstract Layer layer { get; } 
 
 			public override string ToString()
 			{
@@ -32,6 +33,7 @@ namespace Stratus.Models.Tests
 		{
 			public int traversalCost { get; set; }
 			public int blocking { get; set; }
+			public override Layer layer { get; } = MockLayer.Terrain;
 
 			public MockTerrain(string name, int cost = 5) : base(name)
 			{
@@ -42,6 +44,8 @@ namespace Stratus.Models.Tests
 		public class MockActor : MockObject
 		{
 			public int speed = 5;
+
+			public override Layer layer { get; } = MockLayer.Actor;
 
 			public MockActor(string name) : base(name)
 			{
@@ -54,21 +58,11 @@ namespace Stratus.Models.Tests
 			Actor
 		}
 
-		public class MockMap : Grid2D<MockObject, MockLayer>
+		public class MockMap : Grid2D<DefaultMapLayer>
 		{
 			public MockMap(Vector2Int size) : base(new Bounds2D(size), CellLayout.Rectangle)
 			{
 			}
-
-			//public override float GetTraversalCost(Vector2Int position)
-			//{
-			//	var terrain = Get<MockTerrain>(MockLayer.Terrain, position);
-			//	if (terrain == null)
-			//	{
-			//		throw new Exception($"Terrain not set at {position}");
-			//	}
-			//	return terrain.traversalCost;
-			//}
 		}
 
 
@@ -106,13 +100,13 @@ namespace Stratus.Models.Tests
 			Vector2Int aStart = new Vector2Int(1, 1);
 			Vector2Int bStart = new Vector2Int(2, 2);
 
-			AssertSuccess(map.Set(MockLayer.Actor, a, aStart));
+			AssertSuccess(map.Set(a, aStart));
 			Assert.True(map.Contains(MockLayer.Actor, a));
 			Assert.True(map.Contains(MockLayer.Actor, aStart));
 			Assert.AreEqual(a, map.Get(MockLayer.Actor, aStart));
 
-			AssertFailure(map.Set(MockLayer.Actor, b, aStart));
-			AssertSuccess(map.Set(MockLayer.Actor, b, bStart));
+			AssertFailure(map.Set(b, aStart));
+			AssertSuccess(map.Set(b, bStart));
 			Assert.NotNull(map.Get(MockLayer.Actor, bStart));
 			Assert.AreEqual(b, map.Get(MockLayer.Actor, bStart));
 		}
@@ -123,7 +117,7 @@ namespace Stratus.Models.Tests
 			MockMap map = new MockMap(new Vector2Int(3, 3));
 			MockActor a = new MockActor("a");
 			Vector2Int aStart = new Vector2Int(1, 1);
-			AssertSuccess(map.Set(MockLayer.Actor, a, aStart));
+			AssertSuccess(map.Set(a, aStart));
 			AssertSuccess(map.Remove(MockLayer.Actor, a));
 			AssertFailure(map.Contains(MockLayer.Actor, a));
 		}
@@ -134,9 +128,9 @@ namespace Stratus.Models.Tests
 			MockMap map = new MockMap(new Vector2Int(3, 3));
 			MockActor a = new MockActor("a");
 			Vector2Int aStart = new Vector2Int(1, 1);
-			AssertSuccess(map.Set(MockLayer.Actor, a, aStart));
+			AssertSuccess(map.Set(a, aStart));
 			Vector2Int aEnd = new Vector2Int(2, 2);
-			AssertSuccess(map.Set(MockLayer.Actor, a, aEnd));
+			AssertSuccess(map.Set(a, aEnd));
 			Assert.False(map.Contains(MockLayer.Actor, aStart));
 			Assert.True(map.Contains(MockLayer.Actor, aEnd));
 		}
@@ -150,7 +144,7 @@ namespace Stratus.Models.Tests
 
 			// With the 3x3 grid and the agent at (1,1) with a speed of 1,
 			// the available cells should be 5, its start position and its 4 neighbors:
-			AssertSuccess(map.Set(MockLayer.Actor, a, aStart));
+			AssertSuccess(map.Set(a, aStart));
 			var aRange = map.GetRange(MockLayer.Actor, a, a.speed);
 			Assert.AreEqual(5, aRange.Count);
 			AssertContains(aStart, aRange);
@@ -163,7 +157,7 @@ namespace Stratus.Models.Tests
 			// since its in the top right corner of the map
 			MockActor b = new MockActor("b");
 			Vector2Int bStart = new Vector2Int(2, 2);
-			AssertSuccess(map.Set(MockLayer.Actor, b, bStart));
+			AssertSuccess(map.Set(b, bStart));
 			var bRange = map.GetRange(MockLayer.Actor, b, b.speed);
 			Assert.AreEqual(3, bRange.Count);
 			AssertContainsExactly(bRange, bStart, new Vector2Int(1, 2), new Vector2Int(2, 1));
@@ -184,7 +178,7 @@ namespace Stratus.Models.Tests
 			MockMap map = new MockMap(new Vector2Int(3, 3));
 			map.Associate<MockTerrain>(MockLayer.Terrain);
 			MockActor a = new MockActor("a");
-			AssertFailure(map.Set(MockLayer.Terrain, a, new Vector2Int(0, 0)));
+			AssertFailure(map.Set(a, new Vector2Int(0, 0)));
 		}
 
 		[Test]
@@ -194,12 +188,12 @@ namespace Stratus.Models.Tests
 
 			MockActor a = new MockActor("a");
 			Vector2Int aStart = new Vector2Int(1, 1);
-			AssertSuccess(map.Set(MockLayer.Actor, a, aStart));
+			AssertSuccess(map.Set(a, aStart));
 
 			// Place B right next to A
 			MockActor b = new MockActor("b");
 			Vector2Int bStart = new Vector2Int(2, 1);
-			AssertSuccess(map.Set(MockLayer.Actor, b, bStart));
+			AssertSuccess(map.Set(b, bStart));
 
 			var aRange = map.GetRange(MockLayer.Actor, a, a.speed);
 			AssertContainsExactly(aRange, 
@@ -216,7 +210,7 @@ namespace Stratus.Models.Tests
 
 			MockActor a = new MockActor("a");
 			Vector2Int aStart = new Vector2Int(1, 1);
-			AssertSuccess(map.Set(MockLayer.Actor, a, aStart));
+			AssertSuccess(map.Set(a, aStart));
 			Vector2Int badTerrainPos = new Vector2Int(2, 1);
 
 			// Initial range should be 1 + 4 surrounding tiles
@@ -240,7 +234,7 @@ namespace Stratus.Models.Tests
 
 			// If we move the agent to 0,0 and give them 15 speed,
 			// they should cover all cells except (2,2)
-			map.Set(MockLayer.Actor, a, new Vector2Int(0, 0));
+			map.Set(a, new Vector2Int(0, 0));
 			a.speed = 15;
 			terrain.traversalCost = 5;
 			aRange = map.GetRange(MockLayer.Actor, a, a.speed);
@@ -255,11 +249,11 @@ namespace Stratus.Models.Tests
 
 			MockActor a = new MockActor("a");
 			Vector2Int aStart = new Vector2Int(0, 0);
-			map.Set(MockLayer.Actor, a, aStart);
+			map.Set(a, aStart);
 
 			MockActor b = new MockActor("b");
 			Vector2Int bStart = new Vector2Int(1, 1);
-			map.Set(MockLayer.Actor, b, bStart);
+			map.Set(b, bStart);
 
 			// First, itself
 			MockObject[] objectsInRange = map.GetObjectsInRange(a, new GridSearchRangeArguments(a.speed));
@@ -277,7 +271,7 @@ namespace Stratus.Models.Tests
 
 			MockActor a = new MockActor("a");
 			Vector2Int aStart = new Vector2Int(0, 0);
-			map.Set(MockLayer.Actor, a, aStart);
+			map.Set(a, aStart);
 
 			Vector2Int aEnd = new Vector2Int(2, 0);
 			var path = map.SearchPath(aStart, aEnd).ToHashSet();

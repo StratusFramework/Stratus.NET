@@ -37,7 +37,7 @@ namespace Stratus.Models.Maps
 		where TData : class
 		where TLayer : Enum
 	{
-		public class Grid : Grid2D<IObject2D, TLayer>
+		public class Grid : Grid2D<TLayer>
 		{
 			public Grid(Bounds2D grid, CellLayout layout) : base(grid, layout)
 			{
@@ -48,7 +48,7 @@ namespace Stratus.Models.Maps
 			}
 		}
 
-		protected Grid _grid;
+		protected Grid2D _grid;
 		public abstract TLayer actorLayer { get; }
 		public override IGrid2D grid => _grid;
 
@@ -137,9 +137,9 @@ namespace Stratus.Models.Maps
 				return TraversableStatus.Blocked;
 			}
 
-			if (_grid.Contains(DefaultMapLayer.Object, pos))
+			if (grid.TryGet(DefaultMapLayer.Portal, pos, out IPortal2D portal))
 			{
-				return TraversableStatus.Blocked;
+				return portal.open ? TraversableStatus.Blocked : TraversableStatus.Valid;
 			}
 
 			if (_grid.Contains(DefaultMapLayer.Actor, pos))
@@ -149,23 +149,6 @@ namespace Stratus.Models.Maps
 			}
 
 			return TraversableStatus.Valid;
-		}
-	}
-
-	public abstract class TileMapReference
-	{
-		public abstract Vector2Int size { get; }
-		public abstract int layerCount { get; }
-	}
-
-	public abstract class TileMapReference<T> : TileMapReference
-		where T : class
-	{
-		public T tileMap { get; }
-
-		protected TileMapReference(T tileMap)
-		{
-			this.tileMap = tileMap;
 		}
 	}
 }

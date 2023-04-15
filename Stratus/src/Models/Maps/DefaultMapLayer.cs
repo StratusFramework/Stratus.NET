@@ -9,9 +9,13 @@ namespace Stratus.Models.Maps
 		/// </summary>
 		Terrain,
 		/// <summary>
-		/// Walls and other obstacles that prevent default movement
+		/// Walls and other static obstacles that prevent default movement
 		/// </summary>
 		Wall,
+		/// <summary>
+		/// Dynamic objects that block such as doors or gates
+		/// </summary>
+		Portal,
 		/// <summary>
 		/// Static objects
 		/// </summary>
@@ -26,8 +30,7 @@ namespace Stratus.Models.Maps
 		Event,
 	}
 
-	public class DefaultGrid<TObject> : Grid2D<TObject, DefaultMapLayer>
-		where TObject : class, IObject2D
+	public class DefaultGrid : Grid2D<DefaultMapLayer>
 	{
 		protected DefaultGrid(Vector2Int size, CellLayout layout) : base(size, layout)
 		{

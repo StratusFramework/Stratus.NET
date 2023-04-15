@@ -1,4 +1,5 @@
-﻿using Stratus.Numerics;
+﻿using Stratus.Data;
+using Stratus.Numerics;
 
 using System;
 
@@ -10,6 +11,10 @@ namespace Stratus.Models.Maps
 		/// The name of the object
 		/// </summary>
 		string name { get; }
+		/// <summary>
+		/// The layer the object is in
+		/// </summary>
+		Layer layer { get; }
 		/// <summary>
 		/// The current position on the grid
 		/// </summary>
@@ -24,13 +29,19 @@ namespace Stratus.Models.Maps
 
 	public class Object2D : IObject2D, IEquatable<Object2D>
 	{
-		public string name { get; }
-		public Vector2Int cellPosition { get; }
+		private ValueProvider<bool> _blocking;
+		private ValueProvider<Vector2Int> _cellPosition;
 
-		public Object2D(string name, Vector2Int cellPosition)
+		public string name { get; }
+		public Vector2Int cellPosition => _cellPosition.value;
+		public Layer layer { get; }
+		public bool blocking => _blocking != null ? _blocking.value : false;
+
+		public Object2D(string name, Layer layer, ValueProvider<Vector2Int> cellPosition)
 		{
 			this.name = name;
-			this.cellPosition = cellPosition;
+			this.layer = layer;
+			this._cellPosition = cellPosition;
 		}
 
 		public override string ToString()
@@ -42,31 +53,43 @@ namespace Stratus.Models.Maps
 		{
 			return name == other.name && cellPosition == other.cellPosition;
 		}
+
+		public void WithBlocking(ValueProvider<bool> provider)
+		{
+
+		}
 	}
 
-	public static class Vector2DExtensions
+	/// <summary>
+	/// A portal could be a door, gate, etc...
+	/// </summary>
+	public interface IPortal2D : IObject2D
 	{
-		public static CardinalDirection DirectionTo(this Vector2Int source, Vector2Int target)
-		{
-			var offset = target - source;
-			if (offset.x > 0)
-			{
-				return CardinalDirection.East;
-			}
-			else if (offset.x < 0)
-			{
-				return CardinalDirection.West;
-			}
-			else if (offset.y > 0)
-			{
-				return CardinalDirection.North;
-			}
-			else if (offset.y < 0)
-			{
-				return CardinalDirection.South;
-			}
+		bool open { get; set; }
+	}
 
-			throw new ArgumentException("No valid direction");
+	public enum PortalState
+	{
+		Open,
+		Closed
+	}
+
+	public class Portal2D : Object2D, IPortal2D
+	{
+		public bool open
+		{
+			get => _open.value;
+			set => _open.value = value;
 		}
+		private PropertyReference<bool> _open;
+		public PortalState state => open ? PortalState.Open : PortalState.Closed;
+
+		public Portal2D(string name, Layer layer, Vector2Int cellPosition,
+			PropertyReference<bool> open)
+			: base(name, layer, cellPosition)
+		{
+			_open = open;
+		}
+
 	}
 }
