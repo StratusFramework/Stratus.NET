@@ -1,9 +1,13 @@
 ﻿using Stratus.Data;
+using Stratus.Extensions;
 using Stratus.Logging;
+using Stratus.Models.Maps.Actions;
 using Stratus.Numerics;
 using Stratus.Search;
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Stratus.Models.Maps
 {
@@ -16,23 +20,19 @@ namespace Stratus.Models.Maps
 		IGrid2D grid { get; }
 		GridRange GetRange(IActor2D actor);
 		GridPath GetPath(IActor2D actor, Vector2Int position);
+		IEnumerable<ActorAction> GetActions(IActor2D actor);
 	}
 
 	public abstract class Map2D : IMap2D, IStratusLogger
 	{
 		public abstract IGrid2D grid { get; }
+		public CellLayout cellLayout { get; protected set; }
 
 		public abstract GridRange GetRange(IActor2D actor);
 		public abstract GridPath GetPath(IActor2D actor, Vector2Int position);
+		public abstract IEnumerable<ActorAction> GetActions(IActor2D actor);
 	}
 
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <typeparam name="TMap">The tilemap</typeparam>
-	/// <typeparam name="TLayer">The layer definition</typeparam>
-	/// <typeparam name="TObject">The object type</typeparam>
-	/// <typeparam name="TData">The tile data type</typeparam>
 	public abstract class Map2D<TData, TLayer> : Map2D
 		where TData : class
 		where TLayer : Enum
@@ -55,6 +55,7 @@ namespace Stratus.Models.Maps
 		public Map2D(Func<Grid> ctor)
 		{
 			_grid = ctor();
+			cellLayout = _grid.cellLayout;
 		}
 
 		protected abstract TraversableStatus CanTraverse(IActor2D actor, Vector2Int pos);
@@ -109,6 +110,19 @@ namespace Stratus.Models.Maps
 		{
 			return _grid.SearchPath(actor.cellPosition, position);
 		}
+
+		public override IEnumerable<ActorAction> GetActions(IActor2D actor)
+		{
+			// Move
+			GridRange range = GetRange(actor);
+			if (range.valid)
+			{
+				yield return new MoveActorAction(actor, range);
+			}
+
+			// Wait
+			yield return new WaitActorAction(actor);
+		}
 	}
 
 	public abstract class Map2D<TData>
@@ -125,13 +139,13 @@ namespace Stratus.Models.Maps
 
 		protected override TraversableStatus CanTraverse(IActor2D actor, Vector2Int pos)
 		{
-			if (!_grid.Contains(DefaultMapLayer.Terrain, pos))
+			if (!grid.Contains(DefaultMapLayer.Terrain, pos))
 			{
 				//StratusLog.Info($"No terrain at {pos} ({_grid.Count(DefaultMapLayer.Terrain)})");
 				return TraversableStatus.Invalid;
 			}
 
-			if (_grid.Contains(DefaultMapLayer.Wall, pos))
+			if (grid.Contains(DefaultMapLayer.Wall, pos))
 			{
 				//StratusLog.Info($"Wall at {pos}");
 				return TraversableStatus.Blocked;
@@ -139,7 +153,7 @@ namespace Stratus.Models.Maps
 
 			if (grid.TryGet(DefaultMapLayer.Portal, pos, out IPortal2D portal))
 			{
-				return portal.open ? TraversableStatus.Blocked : TraversableStatus.Valid;
+				return portal.open ? TraversableStatus.Valid : TraversableStatus.Blocked;
 			}
 
 			if (_grid.Contains(DefaultMapLayer.Actor, pos))
@@ -149,6 +163,32 @@ namespace Stratus.Models.Maps
 			}
 
 			return TraversableStatus.Valid;
+		}
+
+		public override IEnumerable<ActorAction> GetActions(IActor2D actor)
+		{
+			// Base
+			foreach (var action in base.GetActions(actor))
+			{
+				yield return action;
+			}
+
+			// Range 1
+			var offset_1 = actor.Offset(1, cellLayout);
+
+			// Portal
+			var portals = grid.GetAll<IPortal2D>(DefaultMapLayer.Portal, offset_1);
+			if (portals.Any())
+			{
+				yield return new PortalActorAction(actor, portals);
+			}
+
+			// Attack
+			var targets = grid.GetAll<IActor2D>(DefaultMapLayer.Actor, offset_1);
+			if (targets.Any())
+			{
+				yield return new AttackActorAction(actor, targets);
+			}
 		}
 	}
 }

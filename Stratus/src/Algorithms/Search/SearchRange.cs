@@ -7,6 +7,8 @@ namespace Stratus.Search
 {
 	public class SearchRange<TPosition, TCost> : Dictionary<TPosition, TCost>
 	{
+		public bool valid => Count > 0;
+
 		public SearchRange()
 		{
 		}

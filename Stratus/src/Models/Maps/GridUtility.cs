@@ -3,6 +3,7 @@ using Stratus.Numerics;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 
 namespace Stratus.Models.Maps
@@ -10,6 +11,28 @@ namespace Stratus.Models.Maps
 	public abstract class GridUtility
 	{
 		public static readonly HexagonalOddRowDirection[] oddRowDirections = (HexagonalOddRowDirection[])Enum.GetValues(typeof(HexagonalOddRowDirection));
+		
+		public static readonly Vector2Int[] squareOffsetTemplate = new Vector2Int[]
+		{
+			new Vector2Int(-1,0),
+			new Vector2Int(1,0),
+			new Vector2Int(0,1),
+			new Vector2Int(0,-1),
+		};
+
+		public static IEnumerable<Vector2Int> SquareOffset(int range, Vector2Int origin)
+			=> SquareOffset(range).Select(o => o + origin);
+
+		public static IEnumerable<Vector2Int> SquareOffset(int range)
+		{
+			for (int n = 1; n <= range; ++n)
+			{
+				foreach (var t in squareOffsetTemplate)
+				{
+					yield return t * n;
+				}
+			}
+		}
 
 		public static float Lerp(float a, float b, float t)
 		{

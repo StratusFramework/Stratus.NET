@@ -6,7 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Stratus.Models
+namespace Stratus.Models.Maps
 {
 	public class GridRange : SearchRange<Vector2Int, float>
 	{
@@ -34,7 +34,10 @@ namespace Stratus.Models
 		{
 		}
 	}
+}
 
+namespace Stratus.Models.Maps
+{
 	public class GridPath : IEnumerable<Vector2Int>
 	{
 		public Vector2Int[] cells { get; }
@@ -59,7 +62,10 @@ namespace Stratus.Models
 			return this.cells.GetEnumerator();
 		}
 	}
+}
 
+namespace Stratus.Models.Maps
+{
 	/// <summary>
 	/// The cells and bounds of a constructed 2D grid
 	/// </summary>
@@ -112,8 +118,8 @@ namespace Stratus.Models
 
 		public bool Contains(int x, int y)
 		{
-			return (x >= xMin && x <= xMax)
-				&& (y >= yMin && y <= yMax);
+			return x >= xMin && x <= xMax
+				&& y >= yMin && y <= yMax;
 		}
 	}
 }

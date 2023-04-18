@@ -20,6 +20,22 @@ namespace Stratus.Models.Maps
 		/// Invoked whenever the actor's position changes
 		/// </summary>
 		event Action<Vector2Int> onMoved;
+		/// <summary>
+		/// An offset from the actor's current position
+		/// </summary>
+		Vector2Int[] Offset(int range, CellLayout layout)
+		{
+			switch (layout)
+			{
+				case CellLayout.Rectangle:
+					return GridUtility.SquareOffset(range, cellPosition).ToArray();
+
+				case CellLayout.Hexagon:
+					throw new NotImplementedException("Offset not implemented for hexagon layout");
+			}
+			return new Vector2Int[0];
+		}
+
 	}
 
 	public abstract class Actor2DCommand : Command

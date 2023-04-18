@@ -15,6 +15,7 @@ namespace Stratus.Models.Maps
 		CellLayout cellLayout { get; }
 		GridPath SearchPath(Vector2Int start, Vector2Int end);
 		Result ContainsCell(Vector2Int position);
+		Result Contains(Layer layer, Vector2Int position);
 		IObject2D Get(Layer layer, Vector2Int position);
 		bool TryGet<TObject>(Layer layer, Vector2Int position, out TObject obj)
 			where TObject : IObject2D
@@ -30,8 +31,9 @@ namespace Stratus.Models.Maps
 		}
 		bool TryGet(Layer layer, Vector2Int position, out IObject2D obj)
 			=> TryGet<IObject2D>(layer, position, out obj);
-		IEnumerable<IObject2D> GetAll(Layer layer, IEnumerable<Vector2Int> positions)
-			=> positions.Select(p => Get(layer, p)).Where(o => o != null);
+		IEnumerable<TObject> GetAll<TObject>(Layer layer, IEnumerable<Vector2Int> positions)
+			where TObject : IObject2D
+			=> positions.Select(p => Get(layer, p)).Where(o => o != null).Cast<TObject>();
 		Result Set(IObject2D reference, Vector2Int position);
 	}
 
