@@ -266,9 +266,12 @@ namespace Stratus.Extensions
 		/// <param name="action">The action to perform.</param>
 		public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
 		{
-			foreach (T item in source)
+			if (source != null)
 			{
-				action(item);
+				foreach (T item in source)
+				{
+					action(item);
+				}
 			}
 		}
 

@@ -21,7 +21,7 @@ namespace Stratus.Models.Tests
 
 			public string name { get; }
 			public Vector2Int cellPosition { get; }
-			public abstract Layer layer { get; } 
+			public abstract Enumerated layer { get; } 
 
 			public override string ToString()
 			{
@@ -33,7 +33,7 @@ namespace Stratus.Models.Tests
 		{
 			public int traversalCost { get; set; }
 			public int blocking { get; set; }
-			public override Layer layer { get; } = MockLayer.Terrain;
+			public override Enumerated layer { get; } = MockLayer.Terrain;
 
 			public MockTerrain(string name, int cost = 5) : base(name)
 			{
@@ -45,7 +45,7 @@ namespace Stratus.Models.Tests
 		{
 			public int speed = 5;
 
-			public override Layer layer { get; } = MockLayer.Actor;
+			public override Enumerated layer { get; } = MockLayer.Actor;
 
 			public MockActor(string name) : base(name)
 			{

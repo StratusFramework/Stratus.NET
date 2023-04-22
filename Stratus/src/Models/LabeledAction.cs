@@ -38,7 +38,5 @@ namespace Stratus.Models
 		public T Data<T>() => (T)data;
 
 		public static implicit operator Action(LabeledAction action) => action.action;
-
-
 	}
 }

@@ -15,9 +15,15 @@ namespace Stratus.Models.Maps.Actions
 		}
 	}
 
-	public class TargetedActorAction<TObject> : ActorAction
+	public interface ITargetedAction
+	{
+		IObject2D[] targets { get; }
+	}
+
+	public class TargetedActorAction<TObject> : ActorAction, ITargetedAction
 	{
 		public TObject[] targets { get; }
+		IObject2D[] ITargetedAction.targets => targets.Cast<IObject2D>().ToArray();
 
 		public TargetedActorAction(IActor2D actor, IEnumerable<TObject> targets) : base(actor)
 		{

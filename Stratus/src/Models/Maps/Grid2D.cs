@@ -15,9 +15,9 @@ namespace Stratus.Models.Maps
 		CellLayout cellLayout { get; }
 		GridPath SearchPath(Vector2Int start, Vector2Int end);
 		Result ContainsCell(Vector2Int position);
-		Result Contains(Layer layer, Vector2Int position);
-		IObject2D Get(Layer layer, Vector2Int position);
-		bool TryGet<TObject>(Layer layer, Vector2Int position, out TObject obj)
+		Result Contains(Enumerated layer, Vector2Int position);
+		IObject2D Get(Enumerated layer, Vector2Int position);
+		bool TryGet<TObject>(Enumerated layer, Vector2Int position, out TObject obj)
 			where TObject : IObject2D
 		{
 			var _obj = Get(layer, position);
@@ -29,9 +29,9 @@ namespace Stratus.Models.Maps
 			obj = (TObject)_obj;
 			return true;
 		}
-		bool TryGet(Layer layer, Vector2Int position, out IObject2D obj)
+		bool TryGet(Enumerated layer, Vector2Int position, out IObject2D obj)
 			=> TryGet<IObject2D>(layer, position, out obj);
-		IEnumerable<TObject> GetAll<TObject>(Layer layer, IEnumerable<Vector2Int> positions)
+		IEnumerable<TObject> GetAll<TObject>(Enumerated layer, IEnumerable<Vector2Int> positions)
 			where TObject : IObject2D
 			=> positions.Select(p => Get(layer, p)).Where(o => o != null).Cast<TObject>();
 		Result Set(IObject2D reference, Vector2Int position);
@@ -41,13 +41,13 @@ namespace Stratus.Models.Maps
 	/// Runtime data structure for managing a 2D map, along with its possible layers
 	/// </summary>
 	/// <typeparam name="TObject"></typeparam>
-	/// <typeparam name="Layer"></typeparam>
+	/// <typeparam name="Enumerated"></typeparam>
 	public class Grid2D : IGrid2D
 	{
 		#region Fields
-		private Dictionary<Layer, Bictionary<Vector2Int, IObject2D>> objectsByLayer { get; }
-			= new Dictionary<Layer, Bictionary<Vector2Int, IObject2D>>();
-		private Bictionary<Layer, Type> typesByLayer = new Bictionary<Layer, Type>();
+		private Dictionary<Enumerated, Bictionary<Vector2Int, IObject2D>> objectsByLayer { get; }
+			= new Dictionary<Enumerated, Bictionary<Vector2Int, IObject2D>>();
+		private Bictionary<Enumerated, Type> typesByLayer = new Bictionary<Enumerated, Type>();
 		#endregion
 
 		#region Properties
@@ -62,11 +62,11 @@ namespace Stratus.Models.Maps
 		/// <summary>
 		/// All the available layers for this map
 		/// </summary>
-		public Layer[] layers { get; }
+		public Enumerated[] layers { get; }
 		/// <summary>
 		/// By default, the base layer is the first enumerated value.
 		/// </summary>
-		protected virtual Layer baseLayer => layers[0];
+		protected virtual Enumerated baseLayer => layers[0];
 		/// <summary>
 		/// The total number of objects being tracked across all layers
 		/// </summary>
@@ -82,7 +82,7 @@ namespace Stratus.Models.Maps
 		#endregion
 
 		#region Constructors
-		public Grid2D(Layer[] layers, Bounds2D grid, CellLayout layout)
+		public Grid2D(Enumerated[] layers, Bounds2D grid, CellLayout layout)
 		{
 			this.layers = layers;
 			this.cellLayout = layout;
@@ -93,7 +93,7 @@ namespace Stratus.Models.Maps
 			}
 		}
 
-		public Grid2D(Layer[] layers, Vector2Int size, CellLayout layout)
+		public Grid2D(Enumerated[] layers, Vector2Int size, CellLayout layout)
 			: this(layers, new Bounds2D(size), layout)
 		{
 		}
@@ -116,7 +116,7 @@ namespace Stratus.Models.Maps
 		/// </summary>
 		/// <returns></returns>
 		/// <remarks>The objects to be added must still be unique/remarks>
-		public Result Fill<UObject>(Layer layer, Func<UObject> ctor)
+		public Result Fill<UObject>(Enumerated layer, Func<UObject> ctor)
 			where UObject : IObject2D
 		{
 			var typeCheck = IsValid(layer, typeof(UObject));
@@ -144,7 +144,7 @@ namespace Stratus.Models.Maps
 		public Result Set(IObject2D obj, Vector2Int position)
 		{
 			// Check the type
-			Layer layer = obj.layer;
+			Enumerated layer = obj.layer;
 			var typeCheck = IsValid(layer, obj);
 			if (!typeCheck)
 			{
@@ -165,7 +165,7 @@ namespace Stratus.Models.Maps
 			return new Result(true, $"Set {obj} onto {layer} at position {position}");
 		}
 
-		public Result Remove(Layer layer, IObject2D obj)
+		public Result Remove(Enumerated layer, IObject2D obj)
 		{
 			if (!Contains(layer, obj))
 			{
@@ -175,17 +175,17 @@ namespace Stratus.Models.Maps
 			return objectsByLayer[layer].Remove(obj);
 		}
 
-		public Result Contains(Layer layer, IObject2D obj)
+		public Result Contains(Enumerated layer, IObject2D obj)
 		{
 			return objectsByLayer[layer].Contains(obj);
 		}
 
-		public Result Contains(Layer layer, Vector2Int position)
+		public Result Contains(Enumerated layer, Vector2Int position)
 		{
 			return objectsByLayer[layer].Contains(position);
 		}
 
-		public Vector2Int? GetPosition(Layer layer, IObject2D obj)
+		public Vector2Int? GetPosition(Enumerated layer, IObject2D obj)
 		{
 			if (!Contains(layer, obj))
 			{
@@ -195,7 +195,7 @@ namespace Stratus.Models.Maps
 			return objectsByLayer[layer][obj];
 		}
 
-		public IObject2D Get(Layer layer, Vector2Int position)
+		public IObject2D Get(Enumerated layer, Vector2Int position)
 		{
 			if (!Contains(layer, position))
 			{
@@ -205,7 +205,7 @@ namespace Stratus.Models.Maps
 			return objectsByLayer[layer][position];
 		}
 
-		public UObject Get<UObject>(Layer layer, Vector2Int position)
+		public UObject Get<UObject>(Enumerated layer, Vector2Int position)
 			where UObject : IObject2D
 		{
 			return (UObject)Get(layer, position);
@@ -228,7 +228,7 @@ namespace Stratus.Models.Maps
 			return layers.Select(l => Get(l, position)).Where(o => o != null).ToArray();
 		}
 
-		public Result ForEach<UObject>(Layer layer, Action<UObject> action)
+		public Result ForEach<UObject>(Enumerated layer, Action<UObject> action)
 			where UObject : IObject2D
 		{
 			bool check = IsValid(layer, typeof(UObject));
@@ -245,7 +245,7 @@ namespace Stratus.Models.Maps
 			return true;
 		}
 
-		public Result ForEach<UObject>(Layer layer, Predicate<UObject> action)
+		public Result ForEach<UObject>(Enumerated layer, Predicate<UObject> action)
 			where UObject : IObject2D
 		{
 			bool check = IsValid(layer, typeof(UObject));
@@ -265,32 +265,32 @@ namespace Stratus.Models.Maps
 			return true;
 		}
 
-		public int Count(Layer layer)
+		public int Count(Enumerated layer)
 		{
 			return objectsByLayer[layer].Count;
 		}
 
-		public void Clear(Layer layer)
+		public void Clear(Enumerated layer)
 		{
 			objectsByLayer[layer].Clear();
 		}
 		#endregion
 
 		#region Validation
-		public void Associate<UObject>(Layer layer)
+		public void Associate<UObject>(Enumerated layer)
 			where UObject : IObject2D
 		{
 			typesByLayer.Add(layer, typeof(UObject));
 		}
 
 		/// <returns>Whether that object is valid for the given layer</returns>
-		public Result IsValid(Layer layer, IObject2D obj)
+		public Result IsValid(Enumerated layer, IObject2D obj)
 		{
 			return IsValid(layer, obj.GetType());
 		}
 
 		/// <returns>Whether that type is valid for the given layer</returns>
-		public Result IsValid(Layer layer, Type type)
+		public Result IsValid(Enumerated layer, Type type)
 		{
 			if (!typesByLayer.Contains(layer) || typesByLayer[layer] == type)
 			{
@@ -310,7 +310,7 @@ namespace Stratus.Models.Maps
 			return TraversableStatus.Valid;
 		}
 
-		public UObject[] GetObjectsInRange<UObject>(Vector2Int position, GridSearchRangeArguments args, Layer layer)
+		public UObject[] GetObjectsInRange<UObject>(Vector2Int position, GridSearchRangeArguments args, Enumerated layer)
 			where UObject : IObject2D
 		{
 			var range = GetRange(position, args);
@@ -320,7 +320,7 @@ namespace Stratus.Models.Maps
 		public TObject[] GetObjectsInRange<TObject>(TObject obj, GridSearchRangeArguments args)
 			where TObject : IObject2D
 		{
-			Layer layer = obj.layer;
+			Enumerated layer = obj.layer;
 			Vector2Int? position = GetPosition(layer, obj);
 			if (!position.HasValue)
 			{
@@ -368,7 +368,7 @@ namespace Stratus.Models.Maps
 			return values;
 		}
 
-		public GridRange GetRange(Layer layer, IObject2D obj, GridSearchRangeArguments args)
+		public GridRange GetRange(Enumerated layer, IObject2D obj, GridSearchRangeArguments args)
 		{
 			Vector2Int? position = GetPosition(layer, obj);
 			if (!position.HasValue)
@@ -393,7 +393,7 @@ namespace Stratus.Models.Maps
 			return GetRange(position.Value, args);
 		}
 
-		public GridRange GetRange(Layer layer, IObject2D obj, int range) => GetRange(layer, obj, new GridSearchRangeArguments(range));
+		public GridRange GetRange(Enumerated layer, IObject2D obj, int range) => GetRange(layer, obj, new GridSearchRangeArguments(range));
 		public GridRange GetRange(Vector2Int center, int range) => GetRange(center, new GridSearchRangeArguments(range));
 
 		/// <summary>
@@ -418,11 +418,11 @@ namespace Stratus.Models.Maps
 	{
 		private static TLayer[] _layers => EnumUtility.Values<TLayer>().ToArray();
 
-		public Grid2D(Bounds2D grid, CellLayout layout) : base(Layer.Convert(_layers), grid, layout)
+		public Grid2D(Bounds2D grid, CellLayout layout) : base(Enumerated.Convert(_layers), grid, layout)
 		{
 		}
 
-		public Grid2D(Vector2Int size, CellLayout layout) : base(Layer.Convert(_layers), size, layout)
+		public Grid2D(Vector2Int size, CellLayout layout) : base(Enumerated.Convert(_layers), size, layout)
 		{
 		}
 	}
