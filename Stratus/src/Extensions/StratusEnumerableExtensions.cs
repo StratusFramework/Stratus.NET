@@ -1,6 +1,7 @@
 ﻿using Stratus.Extensions;
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -264,7 +265,7 @@ namespace Stratus.Extensions
 		/// </summary>
 		/// <param name="source">The source.</param>
 		/// <param name="action">The action to perform.</param>
-		public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
+		public static IEnumerable<T> ForEach<T>(this IEnumerable<T> source, Action<T> action)
 		{
 			if (source != null)
 			{
@@ -273,6 +274,7 @@ namespace Stratus.Extensions
 					action(item);
 				}
 			}
+			return source;
 		}
 
 		/// <summary>

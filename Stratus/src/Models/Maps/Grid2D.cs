@@ -12,6 +12,7 @@ namespace Stratus.Models.Maps
 {
 	public interface IGrid2D
 	{
+		IBounds2D bounds { get; }
 		CellLayout cellLayout { get; }
 		GridPath SearchPath(Vector2Int start, Vector2Int end);
 		Result ContainsCell(Vector2Int position);
@@ -34,6 +35,7 @@ namespace Stratus.Models.Maps
 		IEnumerable<TObject> GetAll<TObject>(Enumerated layer, IEnumerable<Vector2Int> positions)
 			where TObject : IObject2D
 			=> positions.Select(p => Get(layer, p)).Where(o => o != null).Cast<TObject>();
+		IEnumerable<Vector2Int> Cells(Enumerated layer);
 		Result Set(IObject2D reference, Vector2Int position);
 	}
 
@@ -71,6 +73,7 @@ namespace Stratus.Models.Maps
 		/// The total number of objects being tracked across all layers
 		/// </summary>
 		public int count => objectsByLayer.Sum(kvp => kvp.Value.Count);
+		IBounds2D IGrid2D.bounds => bounds;
 		#endregion
 
 		#region Static Properties
@@ -410,6 +413,11 @@ namespace Stratus.Models.Maps
 		public GridPath SearchPath(Vector2Int start, Vector2Int end, TraversalPredicate<Vector2Int> isTraversible)
 		{
 			return GridSearch.FindPath(start, end, cellLayout, isTraversible);
+		}
+
+		public IEnumerable<Vector2Int> Cells(Enumerated layer)
+		{
+			return objectsByLayer[layer].Select(kvp => kvp.Key);
 		}
 	}
 

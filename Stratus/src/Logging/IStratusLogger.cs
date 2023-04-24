@@ -109,6 +109,14 @@ namespace Stratus
 			instance.Value.LogException(ex);
 		}
 
+		public static void AssertNotNull(object value, string message)
+		{
+			if (value == null)
+			{
+				throw new NullReferenceException(message);
+			}
+		}
+
 		public static void Result(Result result)
 		{
 			if (result)

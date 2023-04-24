@@ -66,10 +66,19 @@ namespace Stratus.Models.Maps
 
 namespace Stratus.Models.Maps
 {
+	public interface IBounds2D
+	{
+		Vector2Int[] cells { get; }
+		int xMax { get; }
+		int yMax { get; }
+		int xMin { get; }
+		int yMin { get; }
+	}
+
 	/// <summary>
 	/// The cells and bounds of a constructed 2D grid
 	/// </summary>
-	public class Bounds2D
+	public class Bounds2D : IBounds2D
 	{
 		public int xMax { get; private set; }
 		public int yMax { get; private set; }
