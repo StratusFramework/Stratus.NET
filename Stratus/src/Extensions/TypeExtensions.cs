@@ -1,14 +1,15 @@
-﻿using System;
+﻿using Stratus.Extensions;
+using Stratus.Types;
+
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Linq;
-using Stratus.Extensions;
-using Stratus.Types;
 
 namespace Stratus.Extensions
 {
-	public static partial class StratusTypeExtensions
+	public static partial class TypeExtensions
 	{
 		#region Constants
 		/// <summary>

@@ -62,22 +62,4 @@ namespace Stratus.Data
 		public static implicit operator ValueProvider<T>(T value) => new ValueProvider<T>(value);
 		public static implicit operator ValueProvider<T>(Func<T> getValue) => new ValueProvider<T>(getValue);
 	}
-
-	public class PropertyReference<T>
-	{
-		public T value
-		{
-			get =>  get();
-			set => set(value);
-		}
-
-		private Func<T> get;
-		private Action<T> set;
-
-		public PropertyReference(Func<T> get, Action<T> set)
-		{
-			this.get = get;
-			this.set = set;
-		}
-	}
 }
