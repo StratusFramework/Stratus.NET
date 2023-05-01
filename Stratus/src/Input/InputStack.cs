@@ -14,20 +14,23 @@ namespace Stratus.Inputs
 		where TLayer : InputLayer
 	{
 		private Stack<TLayer> _layers = new Stack<TLayer>();
-		private Queue<TLayer> _queuedLayers = new Queue<TLayer>();
+		private Queue<TLayer> _layersToPush = new Queue<TLayer>();
+		private HashSet<TLayer> _layersToPop = new HashSet<TLayer>();
 
-		/// <summary>
-		/// The currently active layer
-		/// </summary>
 		public TLayer? current => _layers.Count > 0 ? _layers.Peek() : null;
 		public int count => _layers.Count;
 		public bool hasLayers => count > 0;
-		public bool hasQueuedLayers => _queuedLayers.IsValid();
+		public bool hasQueuedLayers => _layersToPush.IsValid();
 
 		public event Action<TLayer> onLayerToggled;
 		public event Action<TLayer> onQueue;
 		public event Action<TLayer> onPush;
 		public event Action<TLayer> onPop;
+
+		public override string ToString()
+		{
+			return $"{count} : {_layers.ToStringJoin().Enclose(StratusStringEnclosure.SquareBracket)}";
+		}
 
 		public Result Push(TLayer layer)
 		{
@@ -36,17 +39,12 @@ namespace Stratus.Inputs
 
 		private Result Push(TLayer layer, bool update)
 		{
-			//if (!layer.valid)
-			//{
-			//	return new Result(false, $"The layer {layer} is not in a valid staet");
-			//}
-
 			if (hasLayers && !layer.ignoreBlocking)
 			{
 				// If the current layer is blocking, queue this layer for later
 				if (current.blocking)
 				{
-					_queuedLayers.Enqueue(layer);
+					_layersToPush.Enqueue(layer);
 					onQueue?.Invoke(layer);
 					return new Result(false, $"Active layer {current.name} is blocking. Queuing...");
 				}
@@ -64,6 +62,16 @@ namespace Stratus.Inputs
 			return new Result(true, $"Pushed layer {layer}");
 		}
 
+		public TLayer? TryPop(TLayer layer)
+		{
+			if (current == layer)
+			{
+				return Pop();
+			}
+
+			_layersToPop.Add(layer);
+			return current;
+		}
 
 		public TLayer Pop()
 		{
@@ -87,9 +95,9 @@ namespace Stratus.Inputs
 				// and the topmost is not blocking
 				if (hasQueuedLayers)
 				{
-					while (_queuedLayers.IsValid())
+					while (_layersToPush.IsValid())
 					{
-						layer = _queuedLayers.Dequeue();
+						layer = _layersToPush.Dequeue();
 						bool blocking = layer.blocking;
 						Push(layer, !blocking);
 						if (blocking)
@@ -104,6 +112,12 @@ namespace Stratus.Inputs
 			if (current != null && !current.active)
 			{
 				ActivateInputLayer(current);
+			}
+
+			if (_layersToPop.Contains(current))
+			{
+				_layersToPop.Remove(current);
+				layer = Pop();
 			}
 
 			return layer;

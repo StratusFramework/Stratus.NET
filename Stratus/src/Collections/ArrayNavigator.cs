@@ -80,17 +80,17 @@ namespace Stratus.Collections
 		/// <summary>
 		/// The length of the array
 		/// </summary>
-		public int length => values.Count;
+		public int length => values.CountOrDefault();
+
+		/// <summary>
+		/// Whether its in a valid sate
+		/// </summary>
+		public bool valid => length > 0;
 
 		/// <summary>
 		/// Whether the underlying array is empty
 		/// </summary>
-		public bool notEmpty => this.length > 0;
-
-		/// <summary>
-		/// Whether the underlying array is empty
-		/// </summary>
-		public bool empty => this.length == 0;
+		public bool empty => length == 0;
 
 		/// <summary>
 		/// The current index
@@ -234,6 +234,12 @@ namespace Stratus.Collections
 
 			return current;
 
+		}
+
+		public void Clear()
+		{
+			values = null;
+			currentIndex = 0;
 		}
 
 		public bool ContainsIndex(int index) => values.ContainsIndex(index);

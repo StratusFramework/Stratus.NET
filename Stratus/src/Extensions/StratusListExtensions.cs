@@ -368,6 +368,11 @@ namespace Stratus.Extensions
 			return list[randomSelection];
 		}
 
+		public static int CountOrDefault<T>(this IList<T> list, int count = 0)
+		{
+			return list != null ? list.Count : count;
+		}
+
 	}
 
 }
