@@ -83,6 +83,24 @@ namespace Stratus
 				return null;
 			});
 
+		public static void Log(LogType type, string message)
+		{
+			switch (type)
+			{
+				case LogType.Info:
+					Info(message);
+					break;
+				case LogType.Warning:
+					Warning(message);
+					break;
+				case LogType.Error:
+					Error(message);
+					break;
+				default:
+					break;
+			}
+		}
+
 		public static void Info(string message)
 		{
 			instance.Value?.LogInfo(message);
