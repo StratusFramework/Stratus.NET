@@ -1,7 +1,4 @@
-﻿using Stratus.Logging;
-
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Stratus.Events
@@ -9,6 +6,8 @@ namespace Stratus.Events
 	public interface IEventSubscriber
 	{
 	}
+
+	public delegate void BroadcastEventFunction(Event e, Type typeOverride = null);
 
 	/// <summary>
 	/// The class which manages an event system for entities of type <typeparamref name="TObject"/>
