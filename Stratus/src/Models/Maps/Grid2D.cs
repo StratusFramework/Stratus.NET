@@ -35,6 +35,8 @@ namespace Stratus.Models.Maps
 		IEnumerable<TObject> GetAll<TObject>(Enumerated layer, IEnumerable<Vector2Int> positions)
 			where TObject : IObject2D
 			=> positions.Select(p => Get(layer, p)).Where(o => o != null).Cast<TObject>();
+		IEnumerable<TObject> GetAll<TObject>(Enumerated layer)
+			where TObject : IObject2D;
 		IEnumerable<Vector2Int> Cells(Enumerated layer);
 		Result Set(IObject2D reference, Vector2Int position);
 	}
@@ -418,6 +420,11 @@ namespace Stratus.Models.Maps
 		public IEnumerable<Vector2Int> Cells(Enumerated layer)
 		{
 			return objectsByLayer[layer].Select(kvp => kvp.Key);
+		}
+
+		public IEnumerable<TObject> GetAll<TObject>(Enumerated layer) where TObject : IObject2D
+		{
+			return objectsByLayer[layer].Select(kvp => kvp.Value).Cast<TObject>();
 		}
 	}
 
