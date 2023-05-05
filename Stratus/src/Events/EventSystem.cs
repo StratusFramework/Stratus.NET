@@ -9,6 +9,11 @@ namespace Stratus.Events
 
 	public delegate void BroadcastEventFunction(Event e, Type typeOverride = null);
 
+	public interface IEventBroadcaster
+	{
+		event BroadcastEventFunction onBroadcast;
+	}
+
 	/// <summary>
 	/// The class which manages an event system for entities of type <typeparamref name="TObject"/>
 	/// </summary>
