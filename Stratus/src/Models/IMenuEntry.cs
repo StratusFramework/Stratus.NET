@@ -81,6 +81,10 @@ namespace Stratus.Models.UI
 		private List<IMenuEntry> _items = new List<IMenuEntry>();
 		public override bool valid => _items.IsValid();
 		public IReadOnlyList<IMenuEntry> items => _items;
+		/// <summary>
+		/// Whether this menu can be closed through an input
+		/// </summary>
+		public bool closable { get; set; } = true;
 
 		public Menu(string name, Menu parent = null) : base(name)
 		{
@@ -124,6 +128,12 @@ namespace Stratus.Models.UI
 			{
 				Item(action);
 			}
+			return this;
+		}
+
+		public Menu NotClosable()
+		{
+			closable = false;
 			return this;
 		}
 	}
