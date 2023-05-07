@@ -1,10 +1,6 @@
 ﻿using Stratus.Events;
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Stratus.Models.States
 {
@@ -18,5 +14,11 @@ namespace Stratus.Models.States
 
 	public class ResumeEvent : Event
 	{
+	}
+
+	[Serializable]
+	public class PauseOptions
+	{
+		public bool timeScale = true;
 	}
 }

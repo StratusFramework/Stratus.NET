@@ -8,4 +8,12 @@
 		Delta,
 		FixedDelta,
 	}
+
+
+	public enum StratusVectorAxis
+	{
+		X,
+		Y,
+		Z
+	}
 }
