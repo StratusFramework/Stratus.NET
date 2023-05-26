@@ -3,6 +3,7 @@ using Stratus.Extensions;
 using Stratus.Logging;
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Stratus.Models.UI
@@ -75,7 +76,7 @@ namespace Stratus.Models.UI
 		}
 	}
 
-	public class Menu : MenuItemBase
+	public class Menu : MenuItemBase, IEnumerable<IMenuEntry>
 	{
 		public Menu? parent { get; }
 		private List<IMenuEntry> _items = new List<IMenuEntry>();
@@ -135,6 +136,16 @@ namespace Stratus.Models.UI
 		{
 			closable = false;
 			return this;
+		}
+
+		public IEnumerator<IMenuEntry> GetEnumerator()
+		{
+			return ((IEnumerable<IMenuEntry>)this._items).GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return ((IEnumerable)this._items).GetEnumerator();
 		}
 	}
 

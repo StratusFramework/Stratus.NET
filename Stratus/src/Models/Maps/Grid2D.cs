@@ -14,7 +14,9 @@ namespace Stratus.Models.Maps
 	{
 		IBounds2D bounds { get; }
 		CellLayout cellLayout { get; }
+
 		GridPath SearchPath(Vector2Int start, Vector2Int end);
+
 		Result ContainsCell(Vector2Int position);
 		Result Contains(Enumerated layer, Vector2Int position);
 		IObject2D Get(Enumerated layer, Vector2Int position);
@@ -37,8 +39,10 @@ namespace Stratus.Models.Maps
 			=> positions.Select(p => Get(layer, p)).Where(o => o != null).Cast<TObject>();
 		IEnumerable<TObject> GetAll<TObject>(Enumerated layer)
 			where TObject : IObject2D;
-		IEnumerable<Vector2Int> Cells(Enumerated layer);
 		Result Set(IObject2D reference, Vector2Int position);
+		Result Remove(Enumerated layer, IObject2D obj);
+
+		IEnumerable<Vector2Int> Cells(Enumerated layer);
 	}
 
 	/// <summary>
@@ -87,9 +91,9 @@ namespace Stratus.Models.Maps
 		#endregion
 
 		#region Constructors
-		public Grid2D(Enumerated[] layers, Bounds2D grid, CellLayout layout)
+		public Grid2D(IEnumerable<Enumerated> layers, Bounds2D grid, CellLayout layout)
 		{
-			this.layers = layers;
+			this.layers = layers.ToArray();
 			this.cellLayout = layout;
 			this.bounds = grid;
 			foreach (var layer in layers)
@@ -98,7 +102,7 @@ namespace Stratus.Models.Maps
 			}
 		}
 
-		public Grid2D(Enumerated[] layers, Vector2Int size, CellLayout layout)
+		public Grid2D(IEnumerable<Enumerated> layers, Vector2Int size, CellLayout layout)
 			: this(layers, new Bounds2D(size), layout)
 		{
 		}

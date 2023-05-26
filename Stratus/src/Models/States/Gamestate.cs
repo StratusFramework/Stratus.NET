@@ -2,11 +2,18 @@
 
 namespace Stratus.Models.States
 {
-	internal class Gamestate
+	public abstract class Gamestate
+	{
+
+	}
+
+	public class MainMenuEvent : Event
 	{
 	}
 
-	public class BackToMainMenuEvent : Event
+	public class NewGameEvent : Event
 	{
 	}
+
+	public class ContinueGameEvent : Event { }
 }

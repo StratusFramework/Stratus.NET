@@ -19,7 +19,7 @@ namespace Stratus.Models.Maps
 	{
 		IGrid2D grid { get; }
 		GridRange GetRange(IActor2D actor);
-		GridPath GetPath(IActor2D actor, Vector2Int position);
+		GridPath GetPath(Vector2Int origin, Vector2Int position);
 		IEnumerable<ActorAction> GetActions(IActor2D actor);
 	}
 
@@ -29,7 +29,8 @@ namespace Stratus.Models.Maps
 		public CellLayout cellLayout { get; protected set; }
 
 		public abstract GridRange GetRange(IActor2D actor);
-		public abstract GridPath GetPath(IActor2D actor, Vector2Int position);
+		public abstract GridPath GetPath(Vector2Int origin, Vector2Int position);
+		public GridPath GetPath(IActor2D actor, Vector2Int position) => GetPath(actor.cellPosition, position);
 		public abstract IEnumerable<ActorAction> GetActions(IActor2D actor);
 	}
 
@@ -106,9 +107,9 @@ namespace Stratus.Models.Maps
 				});
 		}
 
-		public override GridPath GetPath(IActor2D actor, Vector2Int position)
+		public override GridPath GetPath(Vector2Int origin, Vector2Int position)
 		{
-			return _grid.SearchPath(actor.cellPosition, position);
+			return _grid.SearchPath(origin, position);
 		}
 
 		public override IEnumerable<ActorAction> GetActions(IActor2D actor)
