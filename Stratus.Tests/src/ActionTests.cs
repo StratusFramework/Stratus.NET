@@ -1,7 +1,6 @@
 using NUnit.Framework;
 using System.Collections.Generic;
 using Stratus.Interpolation;
-using System.Linq;
 using Stratus.Extensions;
 using System;
 using System.Numerics;
