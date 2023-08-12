@@ -16,55 +16,48 @@ namespace Stratus.Logging
 		Warning,
 		Error
 	}
-}
 
-namespace Stratus.Logging
-{
 	public static class IStratusLoggerExtensions
 	{
 		/// <summary>
 		/// Prints the given message to the console
 		/// </summary>
 		/// <param name="value"></param>
-		public static void Log(this IStratusLogger logger, object value) => StratusLog.Info(value);
+		public static void Log(this IStratusLogger logger, object value) => StratusLog.Info(value, logger);
 
 		/// <summary>
 		/// Prints the given warning message to the console
 		/// </summary>
 		/// <param name="value"></param>
-		public static void LogWarning(this IStratusLogger logger, object value) => StratusLog.Warning(value);
+		public static void LogWarning(this IStratusLogger logger, object value) => StratusLog.Warning(value, logger);
 
 		/// <summary>
 		/// Prints the given error message to the console
 		/// </summary>
 		/// <param name="value"></param>
-		public static void LogError(this IStratusLogger logger, object value) => StratusLog.Error(value);
+		public static void LogError(this IStratusLogger logger, object value) => StratusLog.Error(value, logger);
 
 		/// <summary>
 		/// Prints the given exception to the console
 		/// </summary>
 		/// <param name="value"></param>
-		public static void LogException(this IStratusLogger logger, Exception e) => StratusLog.Exception(e);
+		public static void LogException(this IStratusLogger logger, Exception e) => StratusLog.Exception(e, logger);
 
 		/// <summary>
 		/// Prints the given operation result to the console
 		/// </summary>
 		/// <param name="value"></param>
-		public static void Log(this IStratusLogger logger, Result result) => StratusLog.Result(result);
+		public static void Log(this IStratusLogger logger, Result result) => StratusLog.Result(result, logger);
 	}
-}
 
-namespace Stratus.Logging
-{
 	public abstract class StratusLogger
 	{
 		public static Lazy<Type[]> types = new Lazy<Type[]>(() => TypeUtility.SubclassesOf<StratusLogger>());
 
-		public abstract void LogInfo(string message);
-		public abstract void LogWarning(string message);
-		public abstract void LogError(string message);
-		public abstract void LogException(Exception ex);
-
+		public abstract void LogInfo(string message, IStratusLogger logger = null);
+		public abstract void LogWarning(string message, IStratusLogger logger = null);
+		public abstract void LogError(string message, IStratusLogger logger = null);
+		public abstract void LogException(Exception ex, IStratusLogger logger = null);
 	}
 }
 
@@ -83,48 +76,63 @@ namespace Stratus
 				return null;
 			});
 
-		public static void Log(LogType type, string message)
+		public static void Log(LogType type, string message, IStratusLogger logger = null)
 		{
 			switch (type)
 			{
 				case LogType.Info:
-					Info(message);
+					Info(message, logger);
 					break;
 				case LogType.Warning:
-					Warning(message);
+					Warning(message, logger);
 					break;
 				case LogType.Error:
-					Error(message);
+					Error(message, logger);
 					break;
 				default:
 					break;
 			}
 		}
 
-		public static void Info(string message)
+		public static void Info(string message, IStratusLogger logger = null)
 		{
-			instance.Value?.LogInfo(message);
+			instance.Value?.LogInfo(message, logger);
 		}
 
-		public static void Info(object value) => Info(value.ToString());
+		public static void Info(object value, IStratusLogger logger = null)
+			=> Info(value.ToString(), logger);
 
-		public static void Warning(string message)
+		public static void Warning(string message, IStratusLogger logger = null)
 		{
-			instance.Value?.LogWarning(message);
+			instance.Value?.LogWarning(message, logger);
 		}
 
-		public static void Warning(object value) => Warning(value.ToString());
+		public static void Warning(object value, IStratusLogger logger = null)
+			=> Warning(value.ToString(), logger);
 
-		public static void Error(string message)
+		public static void Error(string message, IStratusLogger logger = null)
 		{
-			instance.Value?.LogError(message);
+			instance.Value?.LogError(message, logger);
 		}
 
-		public static void Error(object value) => Error(value.ToString());
+		public static void Error(object value, IStratusLogger logger = null)
+			=> Error(value.ToString(), logger);
 
-		public static void Exception(Exception ex)
+		public static void Exception(Exception ex, IStratusLogger logger = null)
 		{
-			instance.Value.LogException(ex);
+			instance.Value.LogException(ex, logger);
+		}
+
+		public static void Result(Result result, IStratusLogger logger = null)
+		{
+			if (result)
+			{
+				Info(result.message, logger);
+			}
+			else
+			{
+				Error(result.message, logger);
+			}
 		}
 
 		public static void AssertNotNull(object value, string message)
@@ -132,18 +140,6 @@ namespace Stratus
 			if (value == null)
 			{
 				throw new NullReferenceException(message);
-			}
-		}
-
-		public static void Result(Result result)
-		{
-			if (result)
-			{
-				Info(result.message);
-			}
-			else
-			{
-				Error(result.message);
 			}
 		}
 	}

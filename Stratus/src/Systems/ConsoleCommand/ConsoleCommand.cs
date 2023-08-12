@@ -3,7 +3,6 @@ using Stratus.Types;
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
@@ -21,32 +20,32 @@ namespace Stratus.Systems
 
 	public abstract class ConsoleCommand : IConsoleCommand
 	{
+		public struct Entry
+		{
+			public string text;
+			public EntryType type;
+			public string timestamp;
+
+			public Entry(string text, EntryType type)
+			{
+				this.text = text;
+				this.type = type;
+				this.timestamp = DateTime.Now.ToShortTimeString();
+			}
+		}
+
+		public enum EntryType
+		{
+			Submit,
+			Result,
+			Warning,
+			Error
+		}
+
 		#region Declarations
 		[Serializable]
 		public class History
 		{
-			public enum EntryType
-			{
-				Submit,
-				Result,
-				Warning,
-				Error
-			}
-
-			public struct Entry
-			{
-				public string text;
-				public EntryType type;
-				public string timestamp;
-
-				public Entry(string text, EntryType type)
-				{
-					this.text = text;
-					this.type = type;
-					this.timestamp = DateTime.Now.ToShortTimeString();
-				}
-			}
-
 			public List<string> commands = new List<string>();
 			public List<string> results = new List<string>();
 			public List<Entry> entries = new List<Entry>();
@@ -76,7 +75,7 @@ namespace Stratus.Systems
 			}
 		}
 
-		public delegate void EntryEvent(History.Entry e);
+		public delegate void EntryEvent(Entry e);
 		public delegate void SubmitEvent(string command);
 		#endregion
 
@@ -96,6 +95,7 @@ namespace Stratus.Systems
 		#endregion
 
 		#region Static Properties
+		public static IReadOnlyList<Entry> entries => history.entries;
 		public static Lazy<Type[]> handlerTypes = new Lazy<Type[]>(() => TypeUtility.GetInterfaces(typeof(IConsoleCommandProvider)));
 		public static Lazy<Dictionary<string, Type>> handlerTypesByName = new Lazy<Dictionary<string, Type>>(() => handlerTypes.Value.ToDictionary(t => t.Name));
 		public static Lazy<IEnumerable<IConsoleCommand>> commands = new Lazy<IEnumerable<IConsoleCommand>>(Generate);
@@ -115,9 +115,7 @@ namespace Stratus.Systems
 		public static event SubmitEvent onSubmit;
 		#endregion
 
-		//------------------------------------------------------------------------/
-		// Methods
-		//------------------------------------------------------------------------/
+		#region Interface
 		/// <summary>
 		/// Submits a command to be executed
 		/// </summary>
@@ -163,13 +161,13 @@ namespace Stratus.Systems
 				catch (Exception e)
 				{
 					string msg = $"Error executing the command '{commandName}':\n{e}";
-					RecordEntry(new History.Entry(msg, History.EntryType.Error));
+					RecordEntry(new Entry(msg, EntryType.Error));
 				}
 				return true;
 			}
 			else
 			{
-				RecordEntry(new History.Entry($"No command matching '{command}' could be found!", History.EntryType.Warning));
+				RecordEntry(new Entry($"No command matching '{command}' could be found!", EntryType.Warning));
 			}
 
 			return false;
@@ -180,48 +178,46 @@ namespace Stratus.Systems
 		{
 			history.Clear();
 		}
+		#endregion
 
-		//------------------------------------------------------------------------/
-		// Recording
-		//------------------------------------------------------------------------/
+		#region History
 		private static void RecordCommand(string command)
 		{
 			history.commands.Add(command);
 			onSubmit?.Invoke(command);
-			RecordEntry(new History.Entry(command, History.EntryType.Submit));
+			RecordEntry(new Entry(command, EntryType.Submit));
 		}
 
 		private static void RecordResult(string text, object result)
 		{
-			RecordCommand(text);
+			//RecordCommand(text);
 			history.results.Add(result.ToString());
-			RecordEntry(new History.Entry(result.ToString(), History.EntryType.Result));
+			RecordEntry(new Entry(result.ToString(), EntryType.Result));
 		}
 
-		private static void RecordEntry(History.Entry e)
+		private static void RecordEntry(Entry e)
 		{
 			history.entries.Add(e);
 			switch (e.type)
 			{
-				case History.EntryType.Submit:
+				case EntryType.Submit:
 					StratusLog.Info(e.text);
 					break;
-				case History.EntryType.Result:
+				case EntryType.Result:
 					StratusLog.Info(e.text);
 					break;
-				case History.EntryType.Warning:
+				case EntryType.Warning:
 					StratusLog.Warning(e.text);
 					break;
-				case History.EntryType.Error:
+				case EntryType.Error:
 					StratusLog.Error(e.text);
 					break;
 			}
 			onEntry?.Invoke(e);
 		}
+		#endregion
 
-		//------------------------------------------------------------------------/
-		// Procedures
-		//------------------------------------------------------------------------/
+		#region Generation
 		private static IEnumerable<IConsoleCommand> Generate()
 		{
 			foreach (Type handler in handlerTypes.Value)
@@ -348,7 +344,8 @@ namespace Stratus.Systems
 				}
 			}
 			return command;
-		}
+		} 
+		#endregion
 
 		public static object Parse(StratusConsoleCommandParameterInformation parameter, string arg)
 		{
