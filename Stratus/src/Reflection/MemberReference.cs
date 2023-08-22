@@ -9,12 +9,6 @@ namespace Stratus.Reflection
 	/// </summary>
 	public class MemberReference
 	{
-		public enum MemberType
-		{
-			Field,
-			Property
-		}
-
 		/// <summary>
 		/// The name for this mmeber
 		/// </summary>
@@ -24,48 +18,58 @@ namespace Stratus.Reflection
 		/// </summary>
 		public object target { get; private set; }
 		/// <summary>
-		/// Information about the variable if it's a field type
-		/// </summary>
-		public FieldInfo field { get; private set; }
-		/// <summary>
-		/// Information about the variable if it's a property type
-		/// </summary>
-		public PropertyInfo property { get; private set; }
-		/// <summary>
 		/// The type of this member
 		/// </summary>
 		public Type type { get; private set; }
 		/// <summary>
+		/// The member information
+		/// </summary>
+		public MemberInfo member { get; }
+		/// <summary>
+		/// Information about the variable if it's a field type
+		/// </summary>
+		public FieldInfo field { get; }
+		/// <summary>
+		/// Information about the variable if it's a property type
+		/// </summary>
+		public PropertyInfo property { get; }
+		/// <summary>
 		/// The type of member, whether a field or property
 		/// </summary>
-		public MemberType memberType { get; private set; }
+		public MemberTypes memberType { get; private set; }
 		/// <summary>
 		/// Returns the current value of this member
 		/// </summary>
 		public object value
 		{
-			get => Get();
-			set => Set(value);
+			get => get();
+			set => set(value);
 		}
+		private Func<object> get;
+		private Action<object> set;
 
 		public MemberReference(FieldInfo field, object target)
 		{
 			this.field = field;
+			this.member = field;
 			this.type = field.FieldType;
 			this.target = target;
 			this.name = field.Name;
+			memberType = MemberTypes.Field;
+			get = () => field.GetValue(target);
+			set = value => field.SetValue(target, value);
 		}
 
 		public MemberReference(PropertyInfo property, object target)
 		{
 			this.property = property;
+			this.member = property;
 			this.type = property.PropertyType;
 			this.target = target;
 			this.name = property.Name;
-		}
-
-		private MemberReference()
-		{
+			memberType = MemberTypes.Property;
+			get = () => property.GetValue(target);
+			set = value => property.SetValue(target, value);
 		}
 
 		/// <summary>
@@ -79,31 +83,27 @@ namespace Stratus.Reflection
 			// Use expressions to find the underlying owner object
 			var memberExpr = expression.Body as MemberExpression;
 			var inst = memberExpr.Expression;
-			var targetObj = Expression.Lambda<Func<object>>(inst).Compile()();
+			var target = Expression.Lambda<Func<object>>(inst).Compile()();
 			var variableName = memberExpr.Member.Name;
 
 			// Construct the member reference object
-			MemberReference memberReference = new MemberReference();
-			memberReference.name = variableName;
-			memberReference.target = targetObj;
+			MemberReference memberReference = null; // new MemberReference();
+			//memberReference.name = variableName;
+			//memberReference.target = target;
 
 			// Check if it's a property
-			var property = targetObj.GetType().GetProperty(variableName);
+			var property = target.GetType().GetProperty(variableName);
 			if (property != null)
 			{
-				memberReference.property = property;
-				memberReference.type = property.PropertyType;
-				memberReference.memberType = MemberType.Property;
+				memberReference = new MemberReference(property, target);
 				return memberReference;
 			}
 
 			// Check if it's a field
-			var field = targetObj.GetType().GetField(variableName);
+			var field = target.GetType().GetField(variableName);
 			if (field != null)
 			{
-				memberReference.field = field;
-				memberReference.type = field.FieldType;
-				memberReference.memberType = MemberType.Field;
+				memberReference = new MemberReference(field, target);
 				return memberReference;
 			}
 
@@ -111,29 +111,8 @@ namespace Stratus.Reflection
 			throw new ArgumentException("The given variable is neither a property or a field!");
 		}
 
-		public object Get()
-		{
-			switch (memberType)
-			{
-				case MemberType.Field:
-					return field.GetValue(target);
-				case MemberType.Property:
-					return property.GetValue(target, null);
-			}
-			throw new ArgumentException("The given member is neither a property or a field!");
-		}
-
-		public void Set(object value)
-		{
-			switch (memberType)
-			{
-				case MemberType.Field:
-					field.SetValue(target, value);
-					break;
-				case MemberType.Property:
-					property.SetValue(target, value);
-					break;
-			}
-		}
+		public object Get() => value;
+		public T Get<T>() => (T)value;
+		public void Set(object value) => this.value = value; 
 	}
 }

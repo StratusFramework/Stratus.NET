@@ -63,8 +63,6 @@ namespace Stratus.Reflection
 			return MemberReference.Construct(varExpr);
 		}
 
-		/// <summary>
-		/// Uses compiled expressions to instantiate types
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		public static class New<T>
