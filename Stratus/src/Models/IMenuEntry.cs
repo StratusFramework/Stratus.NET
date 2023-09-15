@@ -1,4 +1,5 @@
 ﻿using Stratus.Data;
+using Stratus.Events;
 using Stratus.Extensions;
 using Stratus.Logging;
 
@@ -20,6 +21,17 @@ namespace Stratus.Models.UI
 		Visible,
 		Disabled,
 		Hidden,
+	}
+
+	public class MenuStateEvent<T>
+	{
+		public class OpenEvent : Event
+		{
+		}
+
+		public class CloseEvent : Event 
+		{
+		}
 	}
 
 	/// <summary>

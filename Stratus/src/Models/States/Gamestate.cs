@@ -2,9 +2,12 @@
 
 namespace Stratus.Models.States
 {
-	public abstract class Gamestate
+	public interface IGameState
 	{
+	}
 
+	public abstract class GameState
+	{
 	}
 
 	public class MainMenuEvent : Event
@@ -16,4 +19,8 @@ namespace Stratus.Models.States
 	}
 
 	public class ContinueGameEvent : Event { }
+
+	public class EndGameEvent : Event
+	{
+	}
 }

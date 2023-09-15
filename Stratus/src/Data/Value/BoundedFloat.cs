@@ -113,7 +113,6 @@ namespace Stratus.Data
 		public bool hasConstraints => constraints != null;
 		#endregion
 
-
 		#region Events
 		/// <summary>
 		/// Invoked when this attribute reaches its maximum value
@@ -138,6 +137,9 @@ namespace Stratus.Data
 		#endregion
 
 		#region Virtual
+		/// <summary>
+		/// The current ratio of the parameter when compared to its maximum as a percentage
+		/// </summary>
 		public abstract float percentage { get; }
 		protected abstract T Add(T a, T b);
 		protected abstract T Substract(T a, T b);
@@ -277,9 +279,7 @@ namespace Stratus.Data
 	public class BoundedFloat : BoundedValue<float>
 	{
 		#region Properties
-		/// <summary>
-		/// The current ratio of the parameter when compared to its maximum as a percentage
-		/// </summary>
+
 		public override float percentage => value / maximum * 100.0f;
 		#endregion
 
@@ -298,4 +298,21 @@ namespace Stratus.Data
 		}
 		#endregion
 	}
+
+	/// <summary>
+	/// An integer that is constrained by a floor and a ceiling
+	/// </summary>
+	public class BoundedInteger : BoundedValue<int>
+	{
+		public override float percentage => value / maximum * 100.0f;
+
+		protected override int Abs(int a) => Math.Abs(a);
+		protected override int Add(int a, int b) => a + b;
+		protected override bool GreaterThan(int a, int b) => a > b;
+		protected override bool LessThan(int a, int b) => a < b;
+		protected override int Negate(int a) => -a;
+		protected override int Substract(int a, int b) => a - b;
+	}
+
+
 }

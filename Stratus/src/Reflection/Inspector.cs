@@ -1,4 +1,5 @@
 ﻿using Stratus.Extensions;
+using Stratus.Types;
 
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace Stratus.Reflection
 
 		public Node parent { get; private set; }
 		public IReadOnlyDictionary<string, Node> children => _children.Value;
+		public bool hasChildren => children.Count > 0;
 
 		private static readonly HashSet<Type> ignored = new HashSet<Type>()
 		{
@@ -33,7 +35,7 @@ namespace Stratus.Reflection
 		{
 			_children = new Lazy<Dictionary<string, Node>>(() =>
 			{
-				if (type.IsPrimitive || ignored.Contains(type) || type.IsArrayOrList())
+				if (type.IsPrimitive || ignored.Contains(type) || TypeUtility.IsCollection(type))
 				{
 					return new Dictionary<string, Node>();
 				}
@@ -48,8 +50,8 @@ namespace Stratus.Reflection
 		{
 			var members = ReflectionUtility.GetAllFieldsOrProperties(target);
 			var nodes = members.Select(m => m.memberType == MemberTypes.Property
-			? new Node(m.property, m.target)
-			: new Node(m.field, m.target));
+			? new Node(m.property, m.obj)
+			: new Node(m.field, m.obj));
 			return nodes;
 		}
 

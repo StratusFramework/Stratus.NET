@@ -1,4 +1,9 @@
+using Stratus.Collections;
+using Stratus.Types;
+
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -9,6 +14,7 @@ namespace Stratus.Reflection
 	/// </summary>
 	public class MemberReference
 	{
+		#region Properties
 		/// <summary>
 		/// The name for this mmeber
 		/// </summary>
@@ -16,7 +22,7 @@ namespace Stratus.Reflection
 		/// <summary>
 		/// The object instance on which this variable resides
 		/// </summary>
-		public object target { get; private set; }
+		public object obj { get; private set; }
 		/// <summary>
 		/// The type of this member
 		/// </summary>
@@ -47,17 +53,27 @@ namespace Stratus.Reflection
 		}
 		private Func<object> get;
 		private Action<object> set;
+		/// <summary>
+		/// Returns true if this member is an <see cref="ICollection"/>
+		/// </summary>
+		public bool isCollection { get; private set; }
+		/// <summary>
+		/// What type of <see cref="ICollection"/> this is
+		/// </summary>
+		public CollectionType collectionType => TypeUtility.Deduce(type);
+		#endregion
 
 		public MemberReference(FieldInfo field, object target)
 		{
 			this.field = field;
 			this.member = field;
 			this.type = field.FieldType;
-			this.target = target;
+			this.obj = target;
 			this.name = field.Name;
 			memberType = MemberTypes.Field;
 			get = () => field.GetValue(target);
 			set = value => field.SetValue(target, value);
+			Reflect();
 		}
 
 		public MemberReference(PropertyInfo property, object target)
@@ -65,11 +81,27 @@ namespace Stratus.Reflection
 			this.property = property;
 			this.member = property;
 			this.type = property.PropertyType;
-			this.target = target;
+			this.obj = target;
 			this.name = property.Name;
 			memberType = MemberTypes.Property;
-			get = () => property.GetValue(target);
+			get = () =>
+			{
+				try
+				{
+					return property.GetValue(target);
+				}
+				catch (Exception ex)
+				{
+					throw new Exception($"Failed to get value from property {name} of object {target}", ex);
+				}
+			};
 			set = value => property.SetValue(target, value);
+			Reflect();
+		}
+
+		private void Reflect()
+		{
+			isCollection = TypeUtility.IsCollection(type);
 		}
 
 		/// <summary>
@@ -88,8 +120,8 @@ namespace Stratus.Reflection
 
 			// Construct the member reference object
 			MemberReference memberReference = null; // new MemberReference();
-			//memberReference.name = variableName;
-			//memberReference.target = target;
+													//memberReference.name = variableName;
+													//memberReference.target = target;
 
 			// Check if it's a property
 			var property = target.GetType().GetProperty(variableName);
@@ -113,6 +145,8 @@ namespace Stratus.Reflection
 
 		public object Get() => value;
 		public T Get<T>() => (T)value;
-		public void Set(object value) => this.value = value; 
+		public void Set(object value) => this.value = value;
 	}
+
+
 }

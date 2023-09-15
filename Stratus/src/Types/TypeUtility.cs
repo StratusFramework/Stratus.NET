@@ -1,3 +1,4 @@
+using Stratus.Collections;
 using Stratus.Extensions;
 using Stratus.Reflection;
 
@@ -316,7 +317,48 @@ namespace Stratus.Types
 				return baseType.GenericTypeArguments[0] == typeArgument;
 			}).ToArray();
 		}
-		#endregion
+
+		private static readonly Type collectionType = typeof(ICollection);
+		private static readonly Type genericCollectionType = typeof(ICollection<>);
+
+		private static readonly Type listType = typeof(List<>);
+		private static readonly Type dictionaryType = typeof(Dictionary<,>);
+		private static readonly Type hashSetType = typeof(HashSet<>);
+
+		/// <summary>
+		/// Whether the given type implements <see cref="ICollection"/> or <see cref="ICollection{T}"/>
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public static bool IsCollection(Type type)
+		{
+			return type.GetInterfaces()
+				.Any(x => x == collectionType
+				|| (x.IsGenericType && x.GetGenericTypeDefinition() == genericCollectionType));
+		}
+
+		/// <summary>
+		/// Tries to deduce the <see cref="System.Collections"/> type
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public static CollectionType Deduce(Type type)
+		{
+			if (type.InheritsFrom(listType))
+			{
+				return CollectionType.List;
+			}
+			else if (type.InheritsFrom(dictionaryType))
+			{
+				return CollectionType.Dictionary;
+			}
+			else if (type.InheritsFrom(hashSetType))
+			{
+				return CollectionType.HashSet;
+			}
+
+			return CollectionType.Unsupported;
+		}
 
 		/// <summary>
 		/// Finds the element type of the given collection
@@ -327,6 +369,26 @@ namespace Stratus.Types
 			PropertyInfo propertyInfo = collection == null ? null : collection.GetType().GetProperty("Item");
 			return propertyInfo == null ? null : propertyInfo.PropertyType;
 		}
+
+		public static (Type keyType, Type valueType) GetKeyValueType(Type type)
+		{
+			var _interface = type.GetInterfaces()
+				.Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IDictionary<,>))
+				.First();
+
+			var args = _interface.GetGenericArguments();
+			var keyType = args[0];
+			var valueType = args[1];
+			return (keyType, valueType);
+		}
+
+		public static (Type keyType, Type valueType) GetKeyValueType(this IDictionary dictionary)
+		{
+			var type = dictionary.GetType();
+			return GetKeyValueType(type);
+
+		}
+		#endregion
 
 		public static Type GetPrivateType(string name, Type source)
 		{
@@ -340,6 +402,17 @@ namespace Stratus.Types
 		}
 
 		public static TypeInformation TypeInfo<T>() => new TypeInformation(typeof(T));
+	}
+
+	/// <summary>
+	/// What type of <see cref="ICollection"/> from <see cref="System.Collections"/> 
+	/// </summary>
+	public enum CollectionType
+	{
+		Unsupported,
+		List,
+		Dictionary,
+		HashSet,
 	}
 
 }
