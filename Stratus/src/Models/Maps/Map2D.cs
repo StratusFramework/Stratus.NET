@@ -1,6 +1,4 @@
-﻿using Stratus.Data;
-using Stratus.Extensions;
-using Stratus.Logging;
+﻿using Stratus.Logging;
 using Stratus.Models.Maps.Actions;
 using Stratus.Numerics;
 using Stratus.Search;
