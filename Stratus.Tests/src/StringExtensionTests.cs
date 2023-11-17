@@ -155,5 +155,12 @@ namespace Stratus.Tests
 			string[] actual = input.SplitNewlines(options);
 			Assert.AreEqual(expected, actual);
 		}
+
+		[TestCase("pancakelord", "pancake", "lord")]
+		[TestCase(" space ", "space", "  ")]
+		public void Removes(string input, string substr, string expected)
+		{
+			Assert.That(input.Remove(substr), Is.EqualTo(expected));
+		}
 	}
 }

@@ -419,5 +419,14 @@ namespace Stratus.Extensions
 		{
 			return string.Join(newlineString, str);
 		}		
+
+		/// <summary>
+		/// Removes the given substring.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="substring"></param>
+		/// <returns></returns>
+		public static string Remove(this string input, string substring)
+			=> input.Replace(substring, string.Empty);
 	}
 }
