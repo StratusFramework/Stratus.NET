@@ -21,6 +21,17 @@ namespace Stratus.Extensions
 		}
 
 		/// <summary>
+		/// Returns true if the collection is empty
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="collection">The list.</param>
+		/// <returns>True if the list is empty, false otherwise</returns>
+		public static T? PeekOrDefault<T>(this Stack<T> collection)
+		{
+			return collection.Count > 0 ? collection.Peek() : default;
+		}
+
+		/// <summary>
 		/// Returns true if the collection is not empty
 		/// </summary>
 		/// <typeparam name="T"></typeparam>

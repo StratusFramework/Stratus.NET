@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Stratus.Extensions
 {
-	public static class StratusEnumerableExtensions
+	public static class EnumerableExtensions
 	{
 		/// <summary>
 		/// Given a sequence, returns an array of each elements <see cref="object.ToString"/>'s method
