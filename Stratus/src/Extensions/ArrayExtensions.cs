@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Stratus.Extensions
 {
-	public static class StratusArrayExtensions
+	public static class ArrayExtensions
 	{
 		/// <summary>
 		/// Finds the index of the given element in the array

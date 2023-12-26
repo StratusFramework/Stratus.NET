@@ -7,7 +7,7 @@ using Stratus;
 
 namespace Stratus.Extensions
 {
-	public static class StratusCollectionExtensions
+	public static class CollectionExtensions
 	{
 		/// <summary>
 		/// Returns true if the collection is empty

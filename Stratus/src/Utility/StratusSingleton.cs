@@ -1,6 +1,7 @@
 ﻿using Stratus.Extensions;
 using Stratus.Logging;
 using Stratus.Reflection;
+using Stratus.Types;
 
 using System;
 
@@ -26,14 +27,14 @@ namespace Stratus.Utilities
 						return null;
 					}
 
-					if (isPlayerOnly && EngineBridge.isPlaying())
+					if (isPlayerOnly && EngineBridge.isPlaying)
 					{
 						StratusLog.Warning($"Will not instantiate singleton of type {typeof(T).Name} outside of playmode");
 						return null;
 					}
 
 					// Instantiate the nested object
-					_instance = (T)Activator.CreateInstance(typeof(T));
+					_instance = ObjectUtility.Instantiate<T>();
 				}
 
 				return _instance;

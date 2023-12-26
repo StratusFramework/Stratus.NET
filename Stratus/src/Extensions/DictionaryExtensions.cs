@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Stratus.Extensions
 {
-	public static class StratusDictionaryExtensions
+	public static class DictionaryExtensions
 	{
 		/// <summary>
 		/// Adds the given key-value pair if the key if not already present.
@@ -25,6 +25,22 @@ namespace Stratus.Extensions
 				return true;
 			}
 			return false;
+		}
+
+		/// <summary>
+		/// Adds an element <typeparamref name="TValue"/> to the list under the given <typeparamref name="TKey"/> key.
+		/// If the list is not present, it will first add it.
+		/// </summary>
+		/// <typeparam name="TKey"></typeparam>
+		/// <typeparam name="TValue"></typeparam>
+		/// <param name="dictionary"></param>
+		public static void AddToList<TKey, TValue>(this Dictionary<TKey, List<TValue>> dictionary, TKey key, TValue value)
+		{
+			if (!dictionary.ContainsKey(key))
+			{
+				dictionary.Add(key, new());
+			}
+			dictionary[key].Add(value);
 		}
 
 		/// <summary>
@@ -190,9 +206,7 @@ namespace Stratus.Extensions
 		/// <summary>
 		/// Invokes the given action on every element of the list if the key is present within the dictionary
 		/// </summary>
-		public static void TryInvoke<Key, Value>(this Dictionary<Key, List<Value>> dictionary,
-			Key key,
-			Action<Value> action)
+		public static void TryInvoke<Key, Value>(this Dictionary<Key, List<Value>> dictionary, Key key, Action<Value> action)
 		{
 			if (dictionary.ContainsKey(key))
 			{
@@ -206,9 +220,7 @@ namespace Stratus.Extensions
 		/// <summary>
 		/// Invokes the given action on the value within the dictionary if present
 		/// </summary>
-		public static void TryInvoke<Key, Value>(this Dictionary<Key, Value> dictionary,
-			Key key,
-			Action<Value> action)
+		public static void TryInvoke<Key, Value>(this Dictionary<Key, Value> dictionary, Key key, Action<Value> action)
 		{
 			if (dictionary.ContainsKey(key))
 			{
@@ -220,9 +232,7 @@ namespace Stratus.Extensions
 		/// Invokes the given function on the value within the dictionary if present.
 		/// If not, will return the default value.
 		/// </summary>
-		public static ReturnValue TryInvoke<Key, Value, ReturnValue>(this Dictionary<Key, Value> dictionary,
-			Key key,
-			Func<Value, ReturnValue> func)
+		public static ReturnValue TryInvoke<Key, Value, ReturnValue>(this Dictionary<Key, Value> dictionary, Key key, Func<Value, ReturnValue> func)
 		{
 			if (dictionary.ContainsKey(key))
 			{
@@ -335,7 +345,7 @@ namespace Stratus.Extensions
 			}
 		}
 
-		public static Dictionary<Key2, Value2> ToDictionaryFrom<Key, Value, Key2, Value2>(this Dictionary<Key, Value> original, 
+		public static Dictionary<Key2, Value2> ToDictionaryFrom<Key, Value, Key2, Value2>(this Dictionary<Key, Value> original,
 			Func<KeyValuePair<Key, Value>, (Key2 key, Value2 value)> selector)
 		{
 			Dictionary<Key2, Value2> result = new Dictionary<Key2, Value2>();
@@ -353,7 +363,7 @@ namespace Stratus.Extensions
 			var result = new StringBuilder();
 			int n = 0;
 			result.Append($"[{dict.Count}]");
-			foreach(var kvp in dict)
+			foreach (var kvp in dict)
 			{
 				if (n > 0)
 				{

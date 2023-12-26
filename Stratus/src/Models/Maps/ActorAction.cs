@@ -8,8 +8,6 @@ namespace Stratus.Models.Maps.Actions
 		public IActor2D actor { get; }
 		public virtual string name => GetType().Name.Replace(nameof(ActorAction), string.Empty);
 
-
-
 		public ActorAction(IActor2D actor)
 		{
 			this.actor = actor;
@@ -49,21 +47,21 @@ namespace Stratus.Models.Maps.Actions
 	}
 
 	#region Move
-	public class MoveActorAction : ActorAction
+	public class MoveActor2DAction : ActorAction
 	{
 		public Vector2Int sourcePosition;
 		public Vector2Int targetPosition;
 		public GridRange range { get; }
 
-		public MoveActorAction(IActor2D actor, GridRange range) : base(actor)
+		public MoveActor2DAction(IActor2D actor, GridRange range) : base(actor)
 		{
 			this.range = range;
 		}
 	}
 
-	public class MoveActorEvent : ActionEvent<MoveActorAction>
+	public class MoveActor2DEvent : ActionEvent<MoveActor2DAction>
 	{
-		public MoveActorEvent(MoveActorAction action) : base(action)
+		public MoveActor2DEvent(MoveActor2DAction action) : base(action)
 		{
 		}
 	} 

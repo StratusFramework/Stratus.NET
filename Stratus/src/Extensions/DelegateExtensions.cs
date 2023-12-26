@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Stratus.Extensions
 {
-    public static class StratusDelegateExtensions
+    public static class DelegateExtensions
     {
         public static Predicate<T> ToPredicate<T>(this Func<T, bool> func)
         {
@@ -94,6 +94,15 @@ namespace Stratus.Extensions
                 }
                 return true;
             };
+        }
+
+        /// <summary>
+        /// Invokes the delegates with the given arguments, removing any delegates that are invalid
+        /// </summary>
+        public static void InvokeNotNull(this List<Delegate> list, params object[] args)
+        {
+            list.RemoveAll(d => d.Method == null || d.Target == null);
+            list.ForEach(d => d.DynamicInvoke(args));
         }
     }
 }

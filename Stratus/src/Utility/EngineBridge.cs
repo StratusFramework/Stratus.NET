@@ -7,6 +7,12 @@ namespace Stratus.Utilities
 	/// </summary>
 	public static class EngineBridge
 	{
-		public static Func<bool> isPlaying;
+		public static bool isPlaying => _isPlaying != null ? _isPlaying() : false;
+		private static Func<bool> _isPlaying;
+
+		public static void SetPlayingCallback(Func<bool> callback)
+		{
+			_isPlaying = callback;
+		}
 	}
 }

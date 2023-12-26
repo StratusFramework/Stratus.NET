@@ -1,22 +1,18 @@
 ﻿using Stratus.Data;
 using Stratus.Numerics;
-
+using Stratus.Models.Actors;
 using System;
 
 namespace Stratus.Models.Maps
 {
-	public interface IObject2D
+    public interface IObject2D : IObject
 	{
-		/// <summary>
-		/// The name of the object
-		/// </summary>
-		string name { get; }
 		/// <summary>
 		/// The layer the object is in
 		/// </summary>
 		Enumerated layer { get; }
 		/// <summary>
-		/// The current position on the grid
+		/// The current cell position on the grid
 		/// </summary>
 		Vector2Int cellPosition { get; }
 		/// <summary>

@@ -78,12 +78,12 @@ namespace Stratus.Models.UI
 			this.action = action;
 		}
 
-		public MenuItem(string name, Action action) : base(name)
+		public MenuItem(string name, Action action, bool close) : base(name)
 		{
 			this.action = () =>
 			{
 				action();
-				return true;
+				return close;
 			};
 		}
 	}
@@ -94,10 +94,11 @@ namespace Stratus.Models.UI
 		private List<IMenuEntry> _items = new List<IMenuEntry>();
 		public override bool valid => _items.IsValid();
 		public IReadOnlyList<IMenuEntry> items => _items;
+
 		/// <summary>
 		/// Whether this menu can be closed through an input
 		/// </summary>
-		public bool closable { get; set; } = true;
+		public bool exitOnCancel { get; set; } = true;
 
 		public Menu(string name, Menu parent = null) : base(name)
 		{
@@ -123,15 +124,15 @@ namespace Stratus.Models.UI
 			return Add(menu);
 		}
 
-		public Menu Item(string name, Action action)
+		public Menu Item(string name, Action action, bool close = true)
 		{
-			var menu = new MenuItem(name, action);
+			var menu = new MenuItem(name, action, close);
 			return Add(menu);
 		}
 
-		public Menu Item(LabeledAction action)
+		public Menu Item(LabeledAction action, bool close = true)
 		{
-			var menu = new MenuItem(action.label, action.action);
+			var menu = new MenuItem(action.label, action.action, close);
 			return Add(menu);
 		}
 
@@ -146,7 +147,7 @@ namespace Stratus.Models.UI
 
 		public Menu NotClosable()
 		{
-			closable = false;
+			exitOnCancel = false;
 			return this;
 		}
 

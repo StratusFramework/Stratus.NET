@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Stratus.Extensions
 {
-	public static class StratusIntegerExtensions
+	public static class IntegerExtensions
 	{
 		/// <summary>
 		/// Performs the action the specified number of times

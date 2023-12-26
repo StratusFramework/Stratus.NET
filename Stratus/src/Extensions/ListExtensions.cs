@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Stratus.Extensions
 {
-	public static class StratusListExtensions
+	public static class ListExtensions
 	{
 		/// <summary>
 		/// Removes all null values from this list

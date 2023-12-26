@@ -46,7 +46,7 @@ namespace Stratus.Extensions
 		AngleBracket
 	}
 
-	public static class StratusStringExtensions 
+	public static class StringExtensions 
     {
 		private static StringBuilder stringBuilder = new StringBuilder();
 		public static readonly string[] newlineSeparators = new string[]

@@ -113,4 +113,19 @@ namespace Stratus.Events
 			public TOut output { get; }
 		}
 	}
+
+	/// <summary>
+	/// THe lifetime of a callback
+	/// </summary>
+	public enum CallbackLifetime
+	{
+		/// <summary>
+		/// Callback should always be invoked
+		/// </summary>
+		Permanent,
+		/// <summary>
+		/// Callback should be invoked once then discarded
+		/// </summary>
+		Once
+	}
 }

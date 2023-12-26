@@ -4,7 +4,7 @@ using System;
 
 namespace Stratus.Extensions
 {
-    public static class StratusFloatExtensions
+    public static class FloatExtensions
     {
 		/// <summary>
 		/// Converts this value to its percentage (dividing by 100)

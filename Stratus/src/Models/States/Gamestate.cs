@@ -1,116 +1,69 @@
 ﻿using Stratus.Events;
 using Stratus.Extensions;
-using Stratus.Types;
+using Stratus.Inputs;
+using Stratus.Utilities;
 
 using System;
 using System.Collections.Generic;
 
 namespace Stratus.Models.States
 {
-	public interface IGameState
-	{
-		string name { get; }
-		event Action<StateTransition> onTransition;
-	}
-
-	public enum StateTransition
-	{
-		Push,
-		Pop,
-
-		Enabled,
-		Disabled
-	}
-
 	/// <summary>
 	/// The game states usually dictate the input and scenes we are on
 	/// </summary>
-	public abstract class GameState : IGameState
+	public abstract class GameState : IState
 	{
 		#region Instance
-		public virtual string name
-		{
-			get => GetType().Name.Remove("State");
-		}
-
-		public event Action<StateTransition> onTransition;
+		public virtual string name => GetType().Name.Remove("State");
 
 		protected GameState()
 		{
 		}
 		#endregion
 
-		#region Static Interface
-		private static TypeInstancer<GameState> instancer
-			= new TypeInstancer<GameState>();
-
-		private static Stack<GameState> states = new Stack<GameState>();
-		public static GameState? current => states.PeekOrDefault();
-
-		public static event Action<GameState, StateTransition> onChange;
-
-		public static TState Push<TState>()
-			where TState : GameState, new()
-			=> (TState)Push(instancer.Get(typeof(TState)));
-
-		private static GameState Push(GameState next)
-		{
-			if (current == next)
-			{
-				return current;
-			}
-
-			NotifyForCurrent(StateTransition.Disabled);
-			states.Push(next);
-			NotifyForCurrent(StateTransition.Enabled);
-			return current;
-		}
-
-		public static void Pop()
-		{
-			NotifyForCurrent(StateTransition.Disabled);
-			states.Pop();
-			NotifyForCurrent(StateTransition.Enabled);
-		}
-
-		private static void NotifyForCurrent(StateTransition transition)
-		{
-			if (current != null)
-			{
-				current.onTransition?.Invoke(transition);
-				onChange?.Invoke(current, transition);
-			}
-		}
-
-		public static void Return<TGameState>()
-			where TGameState : GameState
-		{
-			while (states.Count > 0
-				&& !(current is TGameState))
-			{
-				Pop();
-			}
-		}
-
-		public static void Enabled<TState>(Action action) where TState : GameState
-			=> When<TState>(StateTransition.Enabled, action);
-
-		public static void Disabled<TState>(Action action) where TState : GameState
-			=> When<TState>(StateTransition.Disabled, action);
-
-		public static void When<TState>(StateTransition transition, Action action)
-			where TState : GameState
-		{
-			onChange += (s, t) =>
-			{
-				if (s is TState &&
-					t.Equals(transition))
-				{
-					action();
-				}
-			};
-		}
+		#region Virtual
+		public virtual void Enter() { }
+		public virtual void Exit() { }
 		#endregion
+	}
+
+	/// <summary>
+	/// The default state machine singleton provided by the framework.
+	/// In this model the state is managed by a stack.
+	/// </summary>
+	/// <remarks>Implements the interface directly through the instance</remarks>
+	public class StateStack : StratusSingleton<StateStack<GameState>>
+	{
+		public GameState? current => instance.current;
+
+		public static void Enter<UState>(Action<UState> configure = null) 
+			where UState : GameState => instance.Enter(configure);
+		public static void Exit() => instance.Exit();
+
+		public static void Entered<UState>(object subscriber, Action action) where UState : GameState
+			 => instance.Entered<UState>(subscriber, action);
+		public static void Exited<UState>(object subscriber, Action action) where UState : GameState
+			=> instance.Exited<UState>(subscriber, action);
+
+		public static void Return<UState>() where UState : GameState
+			=> instance.Return<UState>();
+
+		public static void Changed(Action<GameState, StateTransition> callback)
+			=> instance.Changed(callback);
+
+		protected override void OnInitialize()
+		{
+		}
+	}
+
+	/// <summary>
+	/// A gamestate that uses input
+	/// </summary>
+	/// <typeparam name="TInputLayer"></typeparam>
+	public abstract class InputGameState<TInputLayer> : GameState
+		where TInputLayer : InputLayer, new()
+	{
+		public TInputLayer inputLayer { get; private set; } = new();
 	}
 
 	/// <summary>
@@ -130,7 +83,7 @@ namespace Stratus.Models.States
 	/// <summary>
 	/// Start a new game
 	/// </summary>
-	public class NewGameEvent : Event
+	public class StartGameEvent : Event
 	{
 	}
 

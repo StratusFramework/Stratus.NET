@@ -14,27 +14,40 @@ namespace Stratus.Events
 		event BroadcastEventFunction onBroadcast;
 	}
 
+	public interface IEventSystem
+	{
+	}
+
+	/// <summary>
+	/// A list of <see cref="Delegate"/>
+	/// </summary>
+	internal class DelegateList : List<Delegate>
+	{
+	}
+
+	/// <summary>
+	/// The key being the <see cref="Event"/> type name
+	/// </summary>
+	internal class DelegateMap : Dictionary<string, DelegateList>
+	{
+	}
+
+	/// <summary>
+	/// Represents the subscription of a delegate with a subscriber
+	/// </summary>
+	public record DelegateBinding(object subscriber, Delegate action);
+
+	// TODO: Add interface methods somehow..
 	/// <summary>
 	/// The class which manages an event system for entities of type <typeparamref name="TObject"/>
 	/// </summary>
-	public class EventSystem<TObject>
+	public class EventSystem<TObject> : IEventSystem
 	{
 		#region Declarations
-		internal class EventDelegateList : List<Delegate>
-		{
-		}
-
-		/// <summary>
-		/// The key being the <see cref="Event"/> type name
-		/// </summary>
-		internal class EventDelegateMap : Dictionary<string, EventDelegateList>
-		{
-		}
-
 		/// <summary>
 		/// The key being the subscriber
 		/// </summary>
-		internal class ObjectDispatchMap : Dictionary<TObject, EventDelegateMap>
+		internal class ObjectDispatchMap : Dictionary<TObject, DelegateMap>
 		{
 		}
 
@@ -76,7 +89,7 @@ namespace Stratus.Events
 		/// <summary>
 		/// Events that are broadcasted are invoked here
 		/// </summary>
-		private EventDelegateMap broadcastMap { get; set; } = new EventDelegateMap();
+		private DelegateMap broadcastMap { get; set; } = new DelegateMap();
 		/// <summary>
 		/// A list of all event types that are being watched for at the moment.
 		/// </summary>
@@ -88,7 +101,7 @@ namespace Stratus.Events
 		protected virtual string GetKey(Type type) => type.ToString();
 		protected virtual void OnConnect(TObject obj)
 		{
-			instance.objectDispatchMap.Add(obj, new EventDelegateMap());
+			instance.objectDispatchMap.Add(obj, new DelegateMap());
 		}
 		#endregion
 
@@ -129,7 +142,7 @@ namespace Stratus.Events
 			// If this objects dispatch map has no delegates for this event type yet, create it
 			if (!instance.objectDispatchMap[subscriber].ContainsKey(key))
 			{
-				instance.objectDispatchMap[subscriber].Add(key, new EventDelegateList());
+				instance.objectDispatchMap[subscriber].Add(key, new DelegateList());
 			}
 
 			// If the delegate is already present, do not add it
@@ -159,7 +172,7 @@ namespace Stratus.Events
 			string key = instance.GetKey(type);
 			if (!instance.broadcastMap.ContainsKey(key))
 			{
-				instance.broadcastMap.Add(key, new EventDelegateList());
+				instance.broadcastMap.Add(key, new DelegateList());
 			}
 			if (instance.broadcastMap[key].Contains(callback))
 			{
@@ -187,7 +200,7 @@ namespace Stratus.Events
 				return;
 			}
 
-			EventDelegateList delegateList = instance.broadcastMap[key];
+			DelegateList delegateList = instance.broadcastMap[key];
 			Invoke(e, watching, delegateList);
 		}
 
@@ -240,7 +253,7 @@ namespace Stratus.Events
 			}
 
 			// Invoke the method for every delegate
-			EventDelegateList delegateList = instance.objectDispatchMap[target][key];
+			DelegateList delegateList = instance.objectDispatchMap[target][key];
 			Invoke(e, watching, delegateList);
 		}
 
@@ -315,9 +328,9 @@ namespace Stratus.Events
 		#endregion
 
 		#region Implementation
-		private static void Invoke(Event e, bool watching, EventDelegateList delegateList)
+		private static void Invoke(Event e, bool watching, DelegateList delegateList)
 		{
-			EventDelegateList delegatesToRemove = null;
+			DelegateList delegatesToRemove = null;
 			foreach (Delegate deleg in delegateList)
 			{
 				// If we are watching events of this type
@@ -331,7 +344,7 @@ namespace Stratus.Events
 				{
 					if (delegatesToRemove == null)
 					{
-						delegatesToRemove = new EventDelegateList();
+						delegatesToRemove = new DelegateList();
 					}
 
 					delegatesToRemove.Add(deleg);

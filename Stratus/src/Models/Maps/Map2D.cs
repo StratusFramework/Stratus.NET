@@ -116,7 +116,7 @@ namespace Stratus.Models.Maps
 			GridRange range = GetRange(actor);
 			if (range.valid)
 			{
-				yield return new MoveActorAction(actor, range);
+				yield return new MoveActor2DAction(actor, range);
 			}
 
 			// Wait

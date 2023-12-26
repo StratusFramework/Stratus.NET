@@ -11,7 +11,7 @@ using Stratus.Reflection;
 
 namespace Stratus.Extensions
 {
-	public static partial class StratusMemberInfoExtensions
+	public static partial class MemberInfoExtensions
 	{
 		/// <summary>
 		/// Returns true if the given member has the attribute
