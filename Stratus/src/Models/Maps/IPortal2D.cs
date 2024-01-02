@@ -1,5 +1,5 @@
-﻿using Stratus.Data;
-using Stratus.Numerics;
+﻿using Stratus.Numerics;
+using Stratus.Reflection;
 
 using System;
 
@@ -33,14 +33,14 @@ namespace Stratus.Models.Maps
 			}
 
 		}
-		private PropertyReference<bool> _open;
+		private ObjectReference<bool> _open;
 
 		public event Action<bool> onToggle;
 
 		public PortalState state => open ? PortalState.Open : PortalState.Closed;
 
 		public Portal2D(string name, Enumerated layer, Vector2Int cellPosition,
-			PropertyReference<bool> open)
+			ObjectReference<bool> open)
 			: base(name, layer, cellPosition)
 		{
 			_open = open;

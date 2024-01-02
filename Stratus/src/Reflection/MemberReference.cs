@@ -1,9 +1,7 @@
-using Stratus.Collections;
 using Stratus.Types;
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -63,6 +61,7 @@ namespace Stratus.Reflection
 		public CollectionType collectionType => TypeUtility.Deduce(type);
 		#endregion
 
+		#region Constructors
 		public MemberReference(FieldInfo field, object target)
 		{
 			this.field = field;
@@ -97,7 +96,7 @@ namespace Stratus.Reflection
 			};
 			set = value => property.SetValue(target, value);
 			Reflect();
-		}
+		} 
 
 		private void Reflect()
 		{
@@ -142,10 +141,13 @@ namespace Stratus.Reflection
 			// Invalid
 			throw new ArgumentException("The given variable is neither a property or a field!");
 		}
+		#endregion
 
+		#region Accessors
 		public object Get() => value;
 		public T Get<T>() => (T)value;
-		public void Set(object value) => this.value = value;
+		public void Set(object value) => this.value = value; 
+		#endregion
 	}
 
 

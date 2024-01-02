@@ -108,4 +108,10 @@ namespace Stratus.Numerics
 			=> new Vector3Int(value.x, value.y);
 	}
 
+	public enum VectorAxis
+	{
+		X,
+		Y,
+		Z
+	}
 }

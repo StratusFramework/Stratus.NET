@@ -1,6 +1,6 @@
 ﻿namespace Stratus.Models
 {
-	public enum StratusOrientation
+	public enum Orientation
 	{
 		Horizontal,
 		Vertical

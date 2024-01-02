@@ -1,38 +1,36 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using Stratus.Extensions;
+using Stratus.Logging;
+using Stratus.Serialization;
+
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
-using Stratus.Extensions;
-using Stratus.Utilities;
-using Stratus.Serialization;
-using Stratus.Logging;
 
 namespace Stratus.Reflection
 {
 	/// <summary>
 	/// Edits System.Object types in a completely generic way
 	/// </summary>
-	public class StratusSerializedObject : IStratusLogger
+	public class SerializedObject : IStratusLogger
 	{
-		//------------------------------------------------------------------------/
-		// Properties
-		//------------------------------------------------------------------------/
+		#region Properties
 		public Type type { get; private set; }
 		public object target { get; private set; }
-		public StratusSerializedField[] fields { get; private set; }
-		public Dictionary<string, StratusSerializedField> fieldsByname { get; private set; } = new Dictionary<string, StratusSerializedField>();
+		public SerializedField[] fields { get; private set; }
+		public Dictionary<string, SerializedField> fieldsByname { get; private set; } = new Dictionary<string, SerializedField>();
 		public bool debug { get; set; }
+		#endregion
 
-		//------------------------------------------------------------------------/
-		// CTOR
-		//------------------------------------------------------------------------/
-		public StratusSerializedObject(object target)
+		#region Constructors
+		public SerializedObject(object target)
 		{
 			this.target = target;
 			this.type = target.GetType();
 			this.GenerateFields();
-		}
+		} 
+		#endregion
 
 		public override string ToString()
 		{
@@ -65,12 +63,12 @@ namespace Stratus.Reflection
 		private void GenerateFields()
 		{
 			FieldInfo[] fields = this.type.GetSerializedFields();
-			List<StratusSerializedField> serializedFields = new List<StratusSerializedField>();
+			List<SerializedField> serializedFields = new List<SerializedField>();
 
 			// Backwards since we want the top-most declared classes first
 			foreach (FieldInfo field in fields.Reverse())
 			{
-				StratusSerializedField property = new StratusSerializedField(field, this.target);
+				SerializedField property = new SerializedField(field, this.target);
 				this.fieldsByname.Add(property.name, property);
 				serializedFields.Add(property);
 			}

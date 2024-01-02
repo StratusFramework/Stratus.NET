@@ -2,7 +2,7 @@
 
 namespace Stratus.Data
 {
-	public enum StratusProviderSource
+	public enum ProviderSource
 	{
 		Invalid,
 		Reference,
@@ -16,16 +16,16 @@ namespace Stratus.Data
 
 	public class ValueProvider<T> : IValueProvider<T>
 	{
-		public StratusProviderSource source { get; private set; }
+		public ProviderSource source { get; private set; }
 		public T value
 		{
 			get
 			{
 				switch (source)
 				{
-					case StratusProviderSource.Reference:
+					case ProviderSource.Reference:
 						return _getter();
-					case StratusProviderSource.Value:
+					case ProviderSource.Value:
 						return _value;
 				}
 				throw new Exception("No value source was set");
@@ -35,28 +35,28 @@ namespace Stratus.Data
 		private T _value;
 		private Func<T> _getter;
 
-		public bool valid => source != StratusProviderSource.Invalid;
+		public bool valid => source != ProviderSource.Invalid;
 
 		public ValueProvider(Func<T> getter)
 		{
 			if (getter == null)
 			{
-				source = StratusProviderSource.Invalid;
+				source = ProviderSource.Invalid;
 				return;
 			}
 			_getter = getter;
-			source = StratusProviderSource.Reference;
+			source = ProviderSource.Reference;
 		}
 
 		public ValueProvider(T value)
 		{
 			if (value == null)
 			{
-				source = StratusProviderSource.Invalid;
+				source = ProviderSource.Invalid;
 				return;
 			}
 			_value = value;
-			source = StratusProviderSource.Value;
+			source = ProviderSource.Value;
 		}
 
 		public static implicit operator ValueProvider<T>(T value) => new ValueProvider<T>(value);

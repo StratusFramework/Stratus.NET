@@ -16,8 +16,7 @@ namespace Stratus.Models.States
 		Exit
 	}
 
-	public interface IStateMachine<TState>
-	where TState : class, IState
+	public interface IStateMachine<TState> where TState : class, IState
 	{
 		/// <summary>
 		/// The current state
@@ -33,7 +32,10 @@ namespace Stratus.Models.States
 		/// Exit the current state
 		/// </summary>
 		void Exit();
-
+		/// <summary>
+		/// Returns the instantiated state
+		/// </summary>
+		UState Get<UState>() where UState : TState;
 		/// <summary>
 		/// Set a callback to be invoked when the given state <typeparamref name="UState"/> is entered
 		/// </summary>

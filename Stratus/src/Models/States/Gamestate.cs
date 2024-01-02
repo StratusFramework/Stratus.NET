@@ -1,6 +1,7 @@
 ﻿using Stratus.Events;
 using Stratus.Extensions;
 using Stratus.Inputs;
+using Stratus.Models.UI;
 using Stratus.Utilities;
 
 using System;
@@ -36,6 +37,7 @@ namespace Stratus.Models.States
 	{
 		public GameState? current => instance.current;
 
+		public static UState Get<UState>() where UState : GameState => instance.Get<UState>();
 		public static void Enter<UState>(Action<UState> configure = null) 
 			where UState : GameState => instance.Enter(configure);
 		public static void Exit() => instance.Exit();
@@ -71,6 +73,15 @@ namespace Stratus.Models.States
 	/// </summary>
 	public class MainMenuState : GameState
 	{
+	}
+
+	/// <summary>
+	/// The main menu for managing the game's options
+	/// </summary>
+	/// <remarks>This can be configured at runtime before it is entered, in order to add new menus and items</remarks>
+	public class OptionsMenuState : GameState
+	{
+		public Menu menu { get; } = new Menu("Options");
 	}
 
 	/// <summary>

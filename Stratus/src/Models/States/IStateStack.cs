@@ -29,7 +29,6 @@ namespace Stratus.Models.States
 		where TState : class, IState
 	{
 		private TypeInstancer<TState> instancer = new TypeInstancer<TState>();
-		private UState Get<UState>() where UState : TState => instancer.Get<UState>();
 		private Stack<TState> states = new Stack<TState>();
 		public TState? current => states.PeekOrDefault();
 
@@ -37,6 +36,8 @@ namespace Stratus.Models.States
 		private Dictionary<Type, List<DelegateBinding>> enteredCallbacks = new();
 		private Dictionary<Type, List<DelegateBinding>> exitedCallbacks = new();
 		private event Action<TState, StateTransition> onTransition;
+
+		public UState Get<UState>() where UState : TState => instancer.Get<UState>();
 
 		public void Enter<UState>(Action<UState> configure = null) where UState : TState
 		{

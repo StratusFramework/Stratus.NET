@@ -8,14 +8,13 @@ using Stratus.Extensions;
 
 namespace Stratus.Reflection
 {
+
 	/// <summary>
 	/// Manages a property serialized in a custom way
 	/// </summary>
-	public class StratusSerializedField
+	public class SerializedField
 	{
-		//------------------------------------------------------------------------/
-		// Properties
-		//------------------------------------------------------------------------/
+		#region Properties
 		/// <summary>
 		/// The reference to the field
 		/// </summary>
@@ -31,7 +30,7 @@ namespace Stratus.Reflection
 		/// <summary>
 		/// Enumerated type of the field
 		/// </summary>
-		public StratusSerializedFieldType fieldType { get; private set; }
+		public InferredType fieldType { get; private set; }
 		/// <summary>
 		/// The name of the field
 		/// </summary>
@@ -43,11 +42,11 @@ namespace Stratus.Reflection
 		/// <summary>
 		/// The name of subfields for this field
 		/// </summary>
-		public Dictionary<string, StratusSerializedField> childrenByName { get; private set; }
+		public Dictionary<string, SerializedField> childrenByName { get; private set; }
 		/// <summary>
 		/// Children fields for this field
 		/// </summary>
-		public StratusSerializedField[] children { get; private set; }
+		public SerializedField[] children { get; private set; }
 		/// <summary>
 		/// Whether this field has children subfields
 		/// </summary>
@@ -107,27 +106,26 @@ namespace Stratus.Reflection
 		}
 		private Dictionary<Type, Attribute> _attributesByType;
 
-		//------------------------------------------------------------------------/
-		// Events
-		//------------------------------------------------------------------------/
+		#endregion
+
+		#region Events
 		/// <summary>
 		/// Invoked whenever the value changes
 		/// </summary>
 		public event Action<object> onValueChanged;
+		#endregion
 
-		//------------------------------------------------------------------------/
-		// CTOR
-		//------------------------------------------------------------------------/
-		public StratusSerializedField(FieldInfo field, object target)
+		#region Constructor
+		public SerializedField(FieldInfo field, object target)
 		{
 			this.field = field;
 			this.type = this.field.FieldType;
-			this.fieldType = SerializedFieldTypeExtensions.Deduce(this.field);
+			this.fieldType = InferredTypeExtensions.Infer(this.field);
 			this.target = target;
 			this.isPrimitive = this.type.IsPrimitive;
 
 			// Enum
-			if (this.fieldType == StratusSerializedFieldType.Enum)
+			if (this.fieldType == InferredType.Enum)
 			{
 				this.enumValueNames = Enum.GetNames(this.type);
 			}
@@ -152,7 +150,7 @@ namespace Stratus.Reflection
 			}
 			else
 			{
-				if (!isPrimitive && this.fieldType != StratusSerializedFieldType.Enum)
+				if (!isPrimitive && this.fieldType != InferredType.Enum)
 				{
 					this.children = GetChildFields(this);
 					this.childrenByName = this.children.ToDictionary((sf) => sf.name);
@@ -162,12 +160,13 @@ namespace Stratus.Reflection
 
 			// Get the display name
 			this.displayName = field.GetNiceName();
-		}
+		} 
 
 		public override string ToString()
 		{
 			return $"({type.GetNiceName()}) {field.Name}";
 		}
+		#endregion
 
 		public string PrintHierarchy(int depth)
 		{
@@ -197,12 +196,12 @@ namespace Stratus.Reflection
 		//------------------------------------------------------------------------/
 		// Procedures
 		//------------------------------------------------------------------------/
-		private static StratusSerializedField[] GetChildFields(StratusSerializedField parent)
+		private static SerializedField[] GetChildFields(SerializedField parent)
 		{
-			List<StratusSerializedField> children = new List<StratusSerializedField>();
+			List<SerializedField> children = new List<SerializedField>();
 			foreach (var childField in parent.field.FieldType.GetSerializedFields())
 			{
-				children.Add(new StratusSerializedField(childField, parent.value));
+				children.Add(new SerializedField(childField, parent.value));
 			}
 			return children.ToArray();
 		}
@@ -226,79 +225,7 @@ namespace Stratus.Reflection
 		{
 			asList.Clear();
 		}
-
 	}
 
-	public enum StratusSerializedFieldType
-	{
-		Boolean,
-		Integer,
-		Float,
-		String,
-		Enum,
-		Vector2,
-		Vector3,
-		Vector4,
-		LayerMask,
-		Color,
-		Rect,
-		ObjectReference,
-		Generic,
-		Unsupported
-	}
-
-	public static class SerializedFieldTypeExtensions
-	{
-		private static Bictionary<Type, StratusSerializedFieldType> serializedFieldTypeMap { get; set; }
-			= new Bictionary<Type, StratusSerializedFieldType>()
-			{
-				{ typeof(bool), StratusSerializedFieldType.Boolean },
-				{ typeof(int), StratusSerializedFieldType.Integer},
-				{ typeof(float), StratusSerializedFieldType.Float },
-				{ typeof(string), StratusSerializedFieldType.String },
-				{ typeof(Enum), StratusSerializedFieldType.Enum},
-				//{ typeof(Vector2), StratusSerializedFieldType.Vector2 },
-				//{ typeof(Vector3), StratusSerializedFieldType.Vector3},
-				//{ typeof(Vector4), StratusSerializedFieldType.Vector4},
-				//{ typeof(Color), StratusSerializedFieldType.Color },
-				//{ typeof(Rect), StratusSerializedFieldType.Rect},
-				//{typeof(LayerMask), StratusSerializedFieldType.LayerMask },
-			};
-
-		public static Type ToType(this StratusSerializedFieldType serializedFieldType)
-		{
-			return serializedFieldTypeMap.reverse[serializedFieldType];
-		}
-
-		public static StratusSerializedFieldType ToType(this Type type)
-		{
-			return serializedFieldTypeMap.forward[type];
-		}
-
-		public static StratusSerializedFieldType Deduce(FieldInfo field)
-		{
-			Type type = field.FieldType;
-			StratusSerializedFieldType serializedFieldType = StratusSerializedFieldType.Generic;
-
-			if (type.IsEnum)
-			{
-				serializedFieldType = StratusSerializedFieldType.Enum;
-			}
-			else if (serializedFieldTypeMap.forward.Contains(type))
-			{
-				serializedFieldType = serializedFieldTypeMap.forward[type];
-			}
-			//else if (type.IsSubclassOf(typeof(UnityEngine.Object)))
-			//{
-			//	serializedFieldType = StratusSerializedFieldType.ObjectReference;
-			//}
-
-			return serializedFieldType;
-		}
-	}
-
-
-
-
-
+	
 }
