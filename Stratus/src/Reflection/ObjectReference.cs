@@ -40,6 +40,16 @@ namespace Stratus.Reflection
 		{
 			return new ObjectReference<TEnum>(get, set);
 		}
+
+		public static ObjectReference<float> Float(Func<float> get, Action<float> set)
+		{
+			return new ObjectReference<float>(get, set);
+		}
+
+		public static ObjectReference<T> Create<T>(Func<T> get, Action<T> set)
+		{
+			return new ObjectReference<T>(get, set);
+		}
 	}
 
 	public class ObjectReference<T> : ObjectReference

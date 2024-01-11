@@ -2,15 +2,15 @@
 
 using System;
 
-namespace Stratus.Data
+namespace Stratus.Numerics
 {
 	/// <summary>
 	/// Base class for numeric range fields
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	public abstract class NumericRange<T> where T : struct
+	public abstract record NumericRange<T>(T minimum, T maximum)
+		where T : struct
 	{
-		public T minimum, maximum;
 		public abstract T randomInRange { get; }
 	}
 
@@ -18,8 +18,13 @@ namespace Stratus.Data
 	/// Represents a range consisting of two floating point values
 	/// </summary>
 	[Serializable]
-	public class FloatRange : NumericRange<float>
+	public record FloatRange : NumericRange<float>
 	{
+		public FloatRange(float minimum, float maximum) 
+			: base(minimum, maximum)
+		{
+		}
+
 		public override float randomInRange => RandomUtility.Range(minimum, maximum);
 	}
 
@@ -27,8 +32,13 @@ namespace Stratus.Data
 	/// Represents a range consisting of two integer values
 	/// </summary>
 	[Serializable]
-	public class StratusIntegerRange : NumericRange<int>
+	public record IntegerRange : NumericRange<int>
 	{
+		public IntegerRange(int minimum, int maximum) 
+			: base(minimum, maximum)
+		{
+		}
+
 		public override int randomInRange => RandomUtility.Range(minimum, maximum);
 	}
 

@@ -1,9 +1,4 @@
-﻿using Stratus.Data;
-using Stratus.Events;
-
-using System;
-
-namespace Stratus.Models.UI
+﻿namespace Stratus.Models.UI
 {
 	public interface IMenuEntry
 	{
@@ -24,6 +19,4 @@ namespace Stratus.Models.UI
 	/// </summary>
 	/// <returns>True if the menu can be closed</returns>
 	public delegate bool MenuAction();
-
-
 }

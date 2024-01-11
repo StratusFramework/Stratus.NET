@@ -13,7 +13,7 @@ namespace Stratus.Models.UI
 
 		public abstract bool valid { get; }
 
-		protected MenuItemBase(string name)
+		protected MenuItemBase(Enumerated name)
 		{
 			this.name = name;
 		}

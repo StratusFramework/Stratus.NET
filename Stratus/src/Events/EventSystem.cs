@@ -385,4 +385,11 @@ namespace Stratus.Events
 		}
 		#endregion
 	}
+
+	/// <summary>
+	/// The default event system supported by the framework
+	/// </summary>
+	public sealed class EventSystem : EventSystem<object>
+	{
+	}
 }

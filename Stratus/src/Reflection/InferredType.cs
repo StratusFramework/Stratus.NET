@@ -31,6 +31,10 @@ namespace Stratus.Reflection
 		/// </summary>
 		Float,
 		/// <summary>
+		/// <see cref="System.Double"/>
+		/// </summary>
+		Double,
+		/// <summary>
 		/// <see cref="System.String"/>
 		/// </summary>
 		String,
@@ -64,6 +68,7 @@ namespace Stratus.Reflection
 				{ typeof(bool), InferredType.Boolean },
 				{ typeof(int), InferredType.Integer},
 				{ typeof(float), InferredType.Float },
+				{ typeof(double), InferredType.Double },
 				{ typeof(string), InferredType.String },
 				{ typeof(Enum), InferredType.Enum},
 				{ typeof(Vector2), InferredType.Vector2},

@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace Stratus.Models
 {
+	/// <summary>
+	/// Provides an implicit conversion from <see cref="Enum"/> to <see cref="string"/>
+	/// </summary>
 	public class Enumerated
 	{
 		public string name { get; }
@@ -40,10 +43,9 @@ namespace Stratus.Models
 
 		public static implicit operator string(Enumerated value) => value.name;
 		public static implicit operator Enumerated(string name) => new Enumerated(name);
-		public static implicit operator Enumerated(Enum value) => new Enumerated(value);		
+		public static implicit operator Enumerated(Enum value) => new Enumerated(value);
 
-		public static Enumerated[] Convert<TEnum>(IEnumerable<TEnum> values)
-			where TEnum : Enum
+		public static Enumerated[] Convert<TEnum>(IEnumerable<TEnum> values) where TEnum : Enum
 			=> values.Select(v => new Enumerated(v.ToString())).ToArray();
 	}
 }

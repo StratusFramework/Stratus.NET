@@ -4,14 +4,16 @@ using System;
 
 namespace Stratus.Models.States
 {
-	public static class Pause
-	{
-	}
-
+	/// <summary>
+	/// Pause the game
+	/// </summary>
 	public class PauseEvent : Event
 	{
 	}
 
+	/// <summary>
+	/// Resume the game
+	/// </summary>
 	public class ResumeEvent : Event
 	{
 	}

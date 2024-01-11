@@ -9,16 +9,20 @@ namespace Stratus.Models.UI
 	public class Menu : MenuItemBase, IEnumerable<IMenuEntry>
 	{
 		public Menu? parent { get; }
-		private List<IMenuEntry> _items = new List<IMenuEntry>();
-		public override bool valid => _items.IsValid();
+
 		public IReadOnlyList<IMenuEntry> items => _items;
+		private List<IMenuEntry> _items = new List<IMenuEntry>();
+
+		public override bool valid => _items.IsValid();
+		public IMenuEntry? this[string name] => _items.Find(e => e.name == name);
+		public IMenuEntry this[int index] => _items[index];
 
 		/// <summary>
 		/// Whether this menu can be closed through an input
 		/// </summary>
 		public bool exitOnCancel { get; set; } = true;
 
-		public Menu(string name, Menu parent = null) : base(name)
+		public Menu(Enumerated name, Menu parent = null) : base(name)
 		{
 			this.parent = parent;
 		}
@@ -29,36 +33,36 @@ namespace Stratus.Models.UI
 			return this;
 		}
 
-		public Menu SubMenu(string name, Action<Menu> onMenu)
+		public Menu Child(Enumerated name, Action<Menu> onMenu)
 		{
 			var menu = new Menu(name, this);
 			onMenu?.Invoke(menu);
 			return Entry(menu);
 		}
 
-		public Menu Item(string name, MenuAction action)
+		public Menu Action(Enumerated name, MenuAction action)
 		{
 			var menu = new MenuItem(name, action);
 			return Entry(menu);
 		}
 
-		public Menu Item(string name, Action action, bool close = true)
+		public Menu Action(Enumerated name, Action action, bool close = true)
 		{
 			var menu = new MenuItem(name, action, close);
 			return Entry(menu);
 		}
 
-		public Menu Item(LabeledAction action, bool close = true)
+		public Menu Action(LabeledAction action, bool close = true)
 		{
 			var menu = new MenuItem(action.label, action.action, close);
 			return Entry(menu);
 		}
 
-		public Menu Items(IEnumerable<LabeledAction> actions)
+		public Menu Actions(IEnumerable<LabeledAction> actions)
 		{
 			foreach(var action in actions)
 			{
-				Item(action);
+				Action(action);
 			}
 			return this;
 		}
@@ -68,7 +72,7 @@ namespace Stratus.Models.UI
 		/// </summary>
 		public Menu Close(string name = "Close")
 		{
-			return Item(name, null, true);
+			return Action(name, null, true);
 		}
 
 		public Menu NotClosable()
