@@ -115,7 +115,7 @@ namespace Stratus.Models
 
 	}
 
-	public abstract class CommandEvent<TCommand> : Events.Event
+	public abstract record CommandEvent<TCommand> : Events.Event
 		where TCommand : Command
 	{
 		public TCommand command { get; }

@@ -16,7 +16,7 @@ namespace Stratus.Models.Maps.Actions
 		public TActor As<TActor>() where TActor : IActor2D => (TActor)actor;
 	}
 
-	public class ActionEvent<TAction> : Event
+	public record ActionEvent<TAction> : Event
 		where TAction : ActorAction
 	{
 		public TAction action { get; }
@@ -32,14 +32,14 @@ namespace Stratus.Models.Maps.Actions
 		}
 	}
 
-	public class PreviewActionEvent : ActionEvent<ActorAction>
+	public record PreviewActionEvent : ActionEvent<ActorAction>
 	{
 		public PreviewActionEvent(ActorAction action) : base(action)
 		{
 		}
 	}
 
-	public class CancelPreviewActionEvent : ActionEvent<ActorAction>
+	public record CancelPreviewActionEvent : ActionEvent<ActorAction>
 	{
 		public CancelPreviewActionEvent(ActorAction action) : base(action)
 		{
@@ -59,7 +59,7 @@ namespace Stratus.Models.Maps.Actions
 		}
 	}
 
-	public class MoveActor2DEvent : ActionEvent<MoveActor2DAction>
+	public record MoveActor2DEvent : ActionEvent<MoveActor2DAction>
 	{
 		public MoveActor2DEvent(MoveActor2DAction action) : base(action)
 		{

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Stratus.Events
 {
-	public interface IEventSubscriber
-	{
-	}
 
 	public delegate void BroadcastEventFunction(Event e, Type typeOverride = null);
 
@@ -51,12 +49,19 @@ namespace Stratus.Events
 		{
 		}
 
-		public class LoggingSetup
+		public class Configuration
 		{
-			public bool construction = false;
-			public bool register = false;
-			public bool connect = true;
-			public bool dispatch = false;
+			public bool logRegister { get; set; } = false;
+			public bool logConnect { get; set; } = true;
+			public bool logDispatch { get; set; } = false;
+			public bool logBroadcast { get; set; } = false;
+			public bool logAll
+			{
+				set
+				{
+					logBroadcast = logConnect = logRegister = logDispatch = value;
+				}
+			}
 		}
 		#endregion
 
@@ -79,7 +84,7 @@ namespace Stratus.Events
 		/// <summary>
 		/// Whether we are doing tracing for debugging purposes.
 		/// </summary>
-		public static LoggingSetup logging { get; } = new LoggingSetup();
+		public static Configuration configuration { get; } = new Configuration();
 		/// <summary>
 		/// A map of all targets connected to the event system and a map of delegates that are connected to them.
 		/// Whenever an event of a given type is sent to the GameObject, we invoke it on all delegates for a given type
@@ -151,6 +156,11 @@ namespace Stratus.Events
 				return;
 			}
 
+			if (configuration.logConnect)
+			{
+				StratusLog.Info($"Connecting to dispatch of event of type {type} onto {subscriber}");
+			}
+
 			// Add the component's delegate onto the gameobject
 			instance.objectDispatchMap[subscriber][key].Add(callback);
 		}
@@ -178,6 +188,10 @@ namespace Stratus.Events
 			{
 				return;
 			}
+			if (configuration.logConnect)
+			{
+				StratusLog.Info($"Connecting to broadcast of event of type {type}");
+			}
 			instance.broadcastMap[key].Add(callback);
 		}
 
@@ -201,6 +215,10 @@ namespace Stratus.Events
 			}
 
 			DelegateList delegateList = instance.broadcastMap[key];
+			if (configuration.logBroadcast)
+			{
+				StratusLog.Info($"Broadcasting event of type {e}");
+			}
 			Invoke(e, watching, delegateList);
 		}
 
@@ -250,6 +268,11 @@ namespace Stratus.Events
 			if (instance.eventWatchList.Contains(key))
 			{
 				watching = true;
+			}
+
+			if (configuration.logDispatch)
+			{
+				StratusLog.Info($"Dispatching event of type {e} to {target}");
 			}
 
 			// Invoke the method for every delegate

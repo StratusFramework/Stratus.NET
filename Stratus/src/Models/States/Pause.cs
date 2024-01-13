@@ -7,14 +7,14 @@ namespace Stratus.Models.States
 	/// <summary>
 	/// Pause the game
 	/// </summary>
-	public class PauseEvent : Event
+	public record PauseEvent : Event
 	{
 	}
 
 	/// <summary>
 	/// Resume the game
 	/// </summary>
-	public class ResumeEvent : Event
+	public record ResumeEvent : Event
 	{
 	}
 

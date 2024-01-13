@@ -9,7 +9,7 @@ namespace Stratus.Interpolation
 	public class ActionScheduler<T>
 	{
 		#region Declaration
-		public class Instance
+		public record Instance
 		{
 			public T target;
 			public ActionContainer container;
@@ -23,22 +23,32 @@ namespace Stratus.Interpolation
 		#endregion
 
 		#region Properties
-		private List<Instance> activeActions { get; } = new List<Instance>();
+		private List<Instance> _actions { get; } = new List<Instance>();
 		private Dictionary<T, Instance> actionInstanceMap { get; } = new Dictionary<T, Instance>();
+		public bool empty => _actions.Count == 0;
 		#endregion
 
 		#region Events
 		public event System.Action<T> onConnect;
 		public event System.Action<T> onDisconnect;
+		public event System.Action<Instance> onUpdate;
 		#endregion
 
 		#region Interface
+		public void Update(double dt) => Update((float)dt);
+
 		public void Update(float dt)
 		{
-			Instance[] currentActions = activeActions.ToArray();
-			for (int i = 0; i < currentActions.Length; ++i)
+			if (empty)
 			{
-				currentActions[i].container.Update(dt);
+				return;
+			}
+
+			Instance[] actions = _actions.ToArray();
+			for (int i = 0; i < actions.Length; ++i)
+			{
+				onUpdate?.Invoke(actions[i]);
+				actions[i].container.Update(dt);
 			}
 		}
 
@@ -64,7 +74,7 @@ namespace Stratus.Interpolation
 			ActionContainer owner = new ActionContainer();
 			Instance container = new Instance(target, owner);
 
-			this.activeActions.Add(container);
+			this._actions.Add(container);
 			this.actionInstanceMap.Add(target, container);
 			onConnect?.Invoke(target);
 			return owner;
@@ -80,7 +90,7 @@ namespace Stratus.Interpolation
 
 			Instance container = this.actionInstanceMap[target];
 			onDisconnect.Invoke(target);
-			this.activeActions.Remove(container);
+			this._actions.Remove(container);
 			this.actionInstanceMap.Remove(target);
 		}
 		#endregion

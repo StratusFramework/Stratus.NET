@@ -1,3 +1,5 @@
+using System;
+
 namespace Stratus.Interpolation
 {
 	/// <summary>
@@ -5,11 +7,9 @@ namespace Stratus.Interpolation
 	/// </summary>
 	public class ActionCall : ActionBase
 	{
-		public delegate void Delegate();
+		private Action action;
 
-		private Delegate action;
-
-		public ActionCall(Delegate action)
+		public ActionCall(Action action)
 		{
 			this.action = action;
 		}
@@ -38,6 +38,15 @@ namespace Stratus.Interpolation
 		}
 	}
 
+	public static class ActionCallExtensions
+	{
+		public static ActionSet Call(this ActionSet set, Action action)
+		{
+			var act = new ActionCall(action);
+			set.Add(act);
+			return set;
+		}
+	}
 
 	/// <summary>
 	/// Invokes a function immediately

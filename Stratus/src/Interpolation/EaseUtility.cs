@@ -38,9 +38,7 @@ namespace Stratus.Interpolation
 	/// </summary>
 	public static class EaseUtility
 	{
-		//--------------------------------------------------------------------------------------------/
-		// Declarations
-		//--------------------------------------------------------------------------------------------/
+		#region Declarations
 		/// <summary>
 		/// The easing function to be used
 		/// </summary>
@@ -70,18 +68,17 @@ namespace Stratus.Interpolation
 			public abstract T ComputeDifference();
 			public abstract T ComputeCurrentValue(float t);
 		}
+		#endregion
 
-		//--------------------------------------------------------------------------------------------/
-		// Properties
-		//--------------------------------------------------------------------------------------------/
+		#region Properties
 		private static Dictionary<Ease, EaseFunction> easingFunctions { get; set; } = new Dictionary<Ease, EaseFunction>();
 		public static float tMinimum { get; } = 0f;
 		public static float tMax { get; } = 1f;
 		private static Dictionary<float, Dictionary<float, float>> exponentCache { get; set; } = new Dictionary<float, Dictionary<float, float>>();
 
-		//--------------------------------------------------------------------------------------------/
-		// CTOR
-		//--------------------------------------------------------------------------------------------/
+		#endregion
+
+		#region Initializer
 		static EaseUtility()
 		{
 			easingFunctions.Add(Ease.Linear, Linear);
@@ -102,15 +99,13 @@ namespace Stratus.Interpolation
 			easingFunctions.Add(Ease.SineInOut, SineInOut);
 			easingFunctions.Add(Ease.Smoothstep, Smoothstep);
 		}
+		#endregion
 
-		//--------------------------------------------------------------------------------------------/
-		// Ease Functions
-		//--------------------------------------------------------------------------------------------/
+		#region Interpolation Functions
 		// Many of these were found on this repository, by Fonserbc
 		// https://gist.github.com/Fonserbc/3d31a25e87fdaa541ddf
 
 		// Linear
-
 		public static float Linear(float t)
 		{
 			return t;
@@ -233,10 +228,9 @@ namespace Stratus.Interpolation
 		{
 			return t * t * (3 - 2 * t);
 		}
+		#endregion
 
-		//--------------------------------------------------------------------------------------------/
-		// Functions: Calculate t
-		//--------------------------------------------------------------------------------------------/
+		#region Calculations
 		/// <summary>
 		/// Recalculates the given t value based on the ease selected
 		/// </summary>
@@ -321,7 +315,8 @@ namespace Stratus.Interpolation
 
 			return exponentCache[value][exponent];
 
-		}
+		} 
+		#endregion
 
 	}
 

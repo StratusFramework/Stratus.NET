@@ -13,7 +13,7 @@ namespace Stratus.Models.Maps
 	{
 	}
 
-	public class SetCursorEvent : Event
+	public record SetCursorEvent : Event
 	{
 		public SetCursorEvent(Vector2Int position)
 		{
@@ -23,7 +23,7 @@ namespace Stratus.Models.Maps
 		public Vector2Int position { get; }
 	}
 
-	public class MoveCursorEvent : Event
+	public record MoveCursorEvent : Event
 	{
 		public Vector2Int direction { get; }
 		public GridRange range { get; }
@@ -39,7 +39,7 @@ namespace Stratus.Models.Maps
 		}
 	}
 
-	public class CursorMovedEvent : Event
+	public record CursorMovedEvent : Event
 	{
 		public Vector2Int position { get; }
 
@@ -49,7 +49,7 @@ namespace Stratus.Models.Maps
 		}
 	}
 
-	public class SelectCursorEvent : Event
+	public record SelectCursorEvent : Event
 	{
 		public SelectCursorEvent()
 		{

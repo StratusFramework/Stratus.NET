@@ -1,8 +1,6 @@
 using Stratus.Types;
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -39,15 +37,14 @@ namespace Stratus.Interpolation
 		/// <param name="duration">How long to set the value</param>
 		/// <param name="ease">The interpolation algorithm to use</param>
 		/// <returns></returns>
-		public static ActionProperty Instantiate<T>(Expression<Func<T>> varExpr, T value, float duration, Ease ease)
+		public static ActionProperty Construct<T>(Expression<Func<T>> varExpr, T value, float duration, Ease ease)
 		{
 			MemberExpression memberExpr = varExpr.Body as MemberExpression;
 			Expression inst = memberExpr.Expression;
 			string variableName = memberExpr.Member.Name;
 			object targetObj = Expression.Lambda<Func<object>>(inst).Compile()();
 
-			// Construct an action then branch depending on whether the member to be
-			// interpolated is a property or a field
+			// Construct an action then branch depending on whether the member to be interpolated is a property or a field
 			ActionProperty action = null;
 			Type actionType;
 
@@ -67,15 +64,38 @@ namespace Stratus.Interpolation
 			}
 
 			action = implementations.Instantiate(actionType, targetObj, property, value, duration, ease);
+			if (action == null)
+			{
+				throw new NotImplementedException($"No implementation of {nameof(ActionProperty<T>)} was found");
+			}
 			return action;
+		}
+	}
+
+	public static class ActionPropertyExtensions
+	{
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="set"></param>
+		/// <param name="varExpr"></param>
+		/// <param name="value"></param>
+		/// <param name="duration"></param>
+		/// <param name="ease"></param>
+		/// <returns></returns>
+		/// <remarks>An implementation of <see cref="ActionProperty{T}"/> will be needed!</remarks>
+		public static ActionSet Property<T>(this ActionSet set, Expression<Func<T>> varExpr, T value, float duration, Ease ease)
+		{
+			ActionProperty action = ActionProperty.Construct<T>(varExpr, value, duration, ease);
+			set.Add(action);
+			return set;
 		}
 	}
 
 	public abstract class ActionProperty<T> : ActionProperty
 	{
-		//----------------------------------------------------------------------/
-		// Fields
-		//----------------------------------------------------------------------/
+		#region Fields
 		protected T difference;
 		protected T initialValue;
 		protected T endValue;
@@ -84,10 +104,9 @@ namespace Stratus.Interpolation
 		protected object target;
 		protected PropertyInfo property;
 		protected FieldInfo field;
+		#endregion
 
-		//----------------------------------------------------------------------/
-		// CTOR
-		//----------------------------------------------------------------------/
+		#region Constructors
 		public ActionProperty(object target, MemberInfo member, T endValue, float duration, Ease ease)
 			: base(duration, ease)
 		{
@@ -104,7 +123,14 @@ namespace Stratus.Interpolation
 			base.duration = duration;
 			this.easeType = ease;
 		}
+		#endregion
 
+		#region Virtual
+		public abstract void ComputeDifference();
+		public abstract T ComputeCurrentValue(float easeVal); 
+		#endregion
+
+		#region Interface
 		/// <summary>
 		/// Interpolates the given Property/Field.
 		/// </summary>
@@ -202,9 +228,7 @@ namespace Stratus.Interpolation
 			{
 				this.field.SetValue(this.target, val);
 			}
-		}
-
-		public abstract void ComputeDifference();
-		public abstract T ComputeCurrentValue(float easeVal);
+		} 
+		#endregion
 	}
 }

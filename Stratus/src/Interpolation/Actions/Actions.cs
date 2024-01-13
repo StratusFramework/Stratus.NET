@@ -25,8 +25,7 @@ namespace Stratus.Interpolation
 			string variableName = memberExpr.Member.Name;
 			object targetObj = Expression.Lambda<Func<object>>(inst).Compile()();
 
-			// Construct an action then branch depending on whether the member to be
-			// interpolated is a property or a field
+			// Construct an action then branch depending on whether the member to be interpolated is a property or a field
 			ActionBase action = null;
 
 			// Property

@@ -22,16 +22,16 @@ namespace Stratus.Tests
         {
         }
 
-		public class EntityEvent : Event
+		public record EntityEvent : Event
 		{
 		}
 
-        private class MockEventFoo : EntityEvent
+        private record MockEventFoo : EntityEvent
 		{
             public int value;
         }
 
-		private class MockEventBar : EntityEvent
+		private record MockEventBar : EntityEvent
 		{
 			public int value;
 		}

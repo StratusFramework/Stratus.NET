@@ -5,7 +5,7 @@ using System.Numerics;
 
 namespace Stratus.Models.Maps
 {
-	public class NavigateGridEvent : Event
+	public record NavigateGridEvent : Event
 	{
 		public Vector2Int direction { get; }
 

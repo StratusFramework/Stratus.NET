@@ -26,6 +26,7 @@ namespace Stratus.Interpolation
 					break;
 				}
 
+				Log($"Updating {action}");
 				// Every action consumes time from the time slice given (dt)
 				timeLeft -= action.Update(dt);
 				// If the action was completed (Meaning there is time remaining
@@ -37,9 +38,15 @@ namespace Stratus.Interpolation
 			}
 
 			// Sweep all inactive actions
-			this.Sweep();
+			Sweep();
 
 			return dt - timeLeft;
 		}
+	}
+
+	public static class ActionSequenceExtensions
+	{
+		public static ActionSequence Sequence(this ActionSet set)
+			=> set.Add(new ActionSequence());
 	}
 }

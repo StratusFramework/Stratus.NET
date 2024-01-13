@@ -44,5 +44,15 @@ namespace Stratus.Interpolation
 		}
 	}
 
+	public static class ActionDelayExtensions
+	{
+		public static ActionSet Delay(this ActionSet set, float duration)
+		{
+			var delay = new ActionDelay(duration);
+			set.Add(delay);
+			return set;
+		}
+	}
+
 }
 

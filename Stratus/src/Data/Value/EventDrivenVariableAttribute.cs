@@ -9,16 +9,16 @@ namespace Stratus.Models.Values
 	/// <typeparam name="T"></typeparam>
 	public abstract class EventDrivenVariableAttribute<T> : BoundedFloat
 	{
-		public abstract class BaseEvent : Event
+		public abstract record BaseEvent : Event
 		{
 			public float value { get; set; }
 		}
 
-		public class IncreaseEvent : BaseEvent
+		public record IncreaseEvent : BaseEvent
 		{
 		}
 
-		public class DecreaseEvent : BaseEvent
+		public record DecreaseEvent : BaseEvent
 		{
 		}
 

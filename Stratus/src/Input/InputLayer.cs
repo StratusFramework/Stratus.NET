@@ -13,7 +13,7 @@ namespace Stratus.Inputs
 	public abstract class InputLayer : IStratusLogger
 	{
 		#region Declarations
-		public class PushEvent : Event
+		public record PushEvent : Event
 		{
 			public InputLayer layer;
 
@@ -23,7 +23,7 @@ namespace Stratus.Inputs
 			}
 		}
 
-		public class PopEvent : Event
+		public record PopEvent : Event
 		{
 			public InputLayer layer;
 

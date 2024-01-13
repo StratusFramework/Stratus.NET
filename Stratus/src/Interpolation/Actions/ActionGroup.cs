@@ -15,7 +15,7 @@ namespace Stratus.Interpolation
 		/// <returns>How much time was consumed while updating.</returns>
 		public override float Update(float dt)
 		{
-			this.Migrate();
+			Migrate();
 
 			float mostTimeElapsed = 0.0f;
 
@@ -37,7 +37,7 @@ namespace Stratus.Interpolation
 			}
 
 			// Sweep inactive actions
-			this.Sweep();
+			Sweep();
 
 			return mostTimeElapsed;
 		}

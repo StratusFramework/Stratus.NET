@@ -25,7 +25,7 @@ namespace Stratus.Models.Audio
 		VoiceOver
 	}
 
-	public abstract class AudioEvent : Event
+	public abstract record AudioEvent : Event
 	{
 		/// <summary>
 		/// The channel being targeted
@@ -47,7 +47,7 @@ namespace Stratus.Models.Audio
 	/// <summary>
 	/// Play the given audio track
 	/// </summary>
-	public class PlayAudioEvent : AudioEvent
+	public record PlayAudioEvent : AudioEvent
 	{
 		/// <summary>
 		/// The name of the track to play
@@ -64,7 +64,7 @@ namespace Stratus.Models.Audio
 	/// <summary>
 	/// Stops playback on the given channel
 	/// </summary>
-	public class StopAudioEvent : AudioEvent
+	public record StopAudioEvent : AudioEvent
 	{
 		public StopAudioEvent(DefaultAudioChannel channel) : base(channel)
 		{

@@ -7,6 +7,11 @@ namespace Stratus.Interpolation
 	{
 		#region Properties
 		/// <summary>
+		/// An optional name for this action
+		/// </summary>
+		/// <remarks>Primarily given for debugging purposes</remarks>
+		public string? name { get; set; }
+		/// <summary>
 		/// A private identifier for this action.
 		/// </summary>
 		public int id { get; private set; }
@@ -26,6 +31,7 @@ namespace Stratus.Interpolation
 		/// <summary>
 		/// Whether the action has finished running.
 		/// </summary>
+		/// <remarks>This usually acts as a marker for it to be removed.</remarks>
 		public bool isFinished = false;
 		/// <summary>
 		/// Whether we are logging actions
@@ -53,11 +59,17 @@ namespace Stratus.Interpolation
 		public ActionBase()
 		{
 			this.id = created++;
+			name = GetType().Name;
 		}
 
 		~ActionBase()
 		{
 			destroyed++;
+		}
+
+		public override string ToString()
+		{
+			return $"{name}({id})";
 		}
 		#endregion
 

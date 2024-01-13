@@ -83,7 +83,7 @@ namespace Stratus.Tests
 		{
 			const float duration = 1f;
 			const Ease ease = Ease.Linear;
-			ActionProperty property = ActionProperty.Instantiate(() => target.intValue, 7, duration, ease);
+			ActionProperty property = ActionProperty.Construct(() => target.intValue, 7, duration, ease);
 			Assert.NotNull(property);
 			Assert.AreEqual(typeof(ActionPropertyInteger), property.GetType());
 		}
@@ -93,7 +93,7 @@ namespace Stratus.Tests
 		{
 			const float duration = 1f;
 			const Ease ease = Ease.Linear;
-			ActionProperty property = ActionProperty.Instantiate(() => target.floatValue, 7f, duration, ease);
+			ActionProperty property = ActionProperty.Construct(() => target.floatValue, 7f, duration, ease);
 			Assert.NotNull(property);
 			Assert.AreEqual(typeof(ActionPropertyFloat), property.GetType());
 		}

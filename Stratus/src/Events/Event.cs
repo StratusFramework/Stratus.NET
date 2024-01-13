@@ -12,7 +12,7 @@ namespace Stratus.Events
 	/// your own custom events.
 	/// </summary>
 	[Serializable]
-	public class Event
+	public record Event
 	{
 		#region Declarations
 		/// <summary>
@@ -89,9 +89,9 @@ namespace Stratus.Events
 	/// </summary>
 	/// <typeparam name="TIn"></typeparam>
 	/// <typeparam name="TOut"></typeparam>
-	public abstract class RequestResponseEvent<TIn, TOut>
+	public abstract record RequestResponseEvent<TIn, TOut>
 	{
-		public class Request : Event
+		public record Request : Event
 		{
 			public Request(TIn request)
 			{
@@ -101,7 +101,7 @@ namespace Stratus.Events
 			public TIn input { get; }
 		}
 
-		public class Response : Event
+		public record Response : Event
 		{
 			public Response(TIn input, TOut output)
 			{
