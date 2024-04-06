@@ -1,4 +1,5 @@
 ﻿using Stratus.Events;
+using Stratus.Interpolation;
 
 using System;
 
@@ -7,16 +8,8 @@ namespace Stratus.Models.UI
 	/// <summary>
 	/// An event that handles a screen transition
 	/// </summary>
-	public abstract record ScreenTransitionEvent : Event
+	public abstract record ScreenTransitionEvent(float duration, Action onFinished) : Event
 	{
-		public float duration { get; }
-		public Action onFinished { get; }
-
-		public ScreenTransitionEvent(float duration, Action onFinished)
-		{
-			this.duration = duration;
-			this.onFinished = onFinished;
-		}
 	}
 
 	/// <summary>
@@ -31,22 +24,36 @@ namespace Stratus.Models.UI
 	}
 
 	/// <summary>
-	/// Fade in FROM black.
+	/// Fade in from black.
 	/// </summary>
 	public record FadeInEvent : FadeEvent
 	{
-		public FadeInEvent(float duration, Action onFinished) : base(duration, onFinished)
+		public FadeInEvent(float duration, Action onFinished = null) : base(duration, onFinished)
 		{
 		}
 	}
 
 	/// <summary>
-	/// Fade out TO black.
+	/// Fade out to black.
 	/// </summary>
 	public record FadeOutEvent : FadeEvent
 	{
-		public FadeOutEvent(float duration, Action onFinished) : base(duration, onFinished)
+		public FadeOutEvent(float duration, Action onFinished = null) : base(duration, onFinished)
 		{
 		}
+	}
+
+	/// <summary>
+	/// Performs a <see cref="FadeOutEvent"/>, executes a given action followed by a <see cref="FadeInEvent"/>
+	/// </summary>
+	public record FadeOutInEvent(float fadeOutDuration, Action transition, float fadeInDuration) : Event
+	{
+	}
+
+	public interface IFadeEventHandler
+	{
+		void FadeIn(FadeInEvent e);
+		void FadeOut(FadeOutEvent e);
+		void FadeOutIn(FadeOutInEvent e);
 	}
 }

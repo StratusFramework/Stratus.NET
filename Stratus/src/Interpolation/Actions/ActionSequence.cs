@@ -43,10 +43,4 @@ namespace Stratus.Interpolation
 			return dt - timeLeft;
 		}
 	}
-
-	public static class ActionSequenceExtensions
-	{
-		public static ActionSequence Sequence(this ActionSet set)
-			=> set.Add(new ActionSequence());
-	}
 }

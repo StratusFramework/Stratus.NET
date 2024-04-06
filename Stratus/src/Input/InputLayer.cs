@@ -10,6 +10,10 @@ namespace Stratus.Inputs
 		bool pushInputLayer { get; }
 	}
 
+	public record ToggleInputEvent(bool toggle) : Event
+	{
+	}
+
 	public abstract class InputLayer : IStratusLogger
 	{
 		#region Declarations
@@ -95,6 +99,9 @@ namespace Stratus.Inputs
 		#endregion
 	}
 
+	/// <summary>
+	/// An input layer without any input, which can be used for blocking input
+	/// </summary>
 	public class BlockingInputLayer : InputLayer
 	{
 		public BlockingInputLayer(string name) : base(name)
