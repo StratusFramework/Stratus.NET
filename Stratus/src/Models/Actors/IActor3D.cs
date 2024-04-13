@@ -1,14 +1,11 @@
 ﻿using Stratus.Events;
+using Stratus.Models.Maps;
 
 using System.Numerics;
 
 namespace Stratus.Models.Actors
 {
-	public interface IActor3D
+	public interface IActor3D : IObject3D
 	{
-		/// <summary>
-		/// The current position of the actor
-		/// </summary>
-		Vector3 position { get; }
 	}
 }

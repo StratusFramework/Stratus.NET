@@ -1,4 +1,5 @@
-﻿using Stratus.Numerics;
+﻿using Stratus.Models.Actors;
+using Stratus.Numerics;
 using Stratus.Reflection;
 
 using System;
@@ -6,11 +7,20 @@ using System;
 namespace Stratus.Models.Maps
 {
 	/// <summary>
-	/// A portal could be a door, gate, etc...
+	/// A portal could be a door, gate, and so on.
 	/// </summary>
-	public interface IPortal2D : IObject2D
+	public interface IPortal : IObject
 	{
+		/// <summary>
+		/// Whether the portal is open
+		/// </summary>
 		bool open { get; set; }
+
+		/// <summary>
+		/// Whether the portal can be interacted with
+		/// </summary>
+		bool locked { get; }
+
 		void Toggle();
 		event Action<bool> onToggle;
 	}
@@ -19,6 +29,10 @@ namespace Stratus.Models.Maps
 	{
 		Open,
 		Closed
+	}
+
+	public interface IPortal2D : IPortal, IObject2D
+	{
 	}
 
 	public class Portal2D : Object2D, IPortal2D
@@ -39,6 +53,8 @@ namespace Stratus.Models.Maps
 
 		public PortalState state => open ? PortalState.Open : PortalState.Closed;
 
+		public bool locked { get; }
+
 		public Portal2D(string name, Enumerated layer, Vector2Int cellPosition,
 			ObjectReference<bool> open)
 			: base(name, layer, cellPosition)
@@ -50,6 +66,5 @@ namespace Stratus.Models.Maps
 		{
 			open = !open;
 		}
-
 	}
 }

@@ -2,10 +2,11 @@
 using Stratus.Numerics;
 using Stratus.Models.Actors;
 using System;
+using System.Numerics;
 
 namespace Stratus.Models.Maps
 {
-    public interface IObject2D : IObject
+	public interface IObject2D : IObject
 	{
 		/// <summary>
 		/// The layer the object is in
@@ -49,5 +50,13 @@ namespace Stratus.Models.Maps
 		{
 			return name == other.name && cellPosition == other.cellPosition;
 		}
-	}	
+	}
+
+	public interface IObject3D
+	{
+		/// <summary>
+		/// The current position of the object
+		/// </summary>
+		Vector3 position { get; }
+	}
 }

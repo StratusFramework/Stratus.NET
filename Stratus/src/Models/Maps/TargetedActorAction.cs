@@ -38,9 +38,9 @@ namespace Stratus.Models.Maps.Actions
 		}
 	}
 
-	public class PortalActorAction : TargetedActorAction<IPortal2D>
+	public class PortalActorAction : TargetedActorAction<IPortal>
 	{
-		public PortalActorAction(IActor2D actor, IEnumerable<IPortal2D> targets) : base(actor, targets)
+		public PortalActorAction(IActor2D actor, IEnumerable<IPortal> targets) : base(actor, targets)
 		{
 		}
 	}
