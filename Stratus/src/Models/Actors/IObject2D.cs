@@ -52,7 +52,7 @@ namespace Stratus.Models.Maps
 		}
 	}
 
-	public interface IObject3D
+	public interface IObject3D : IObject
 	{
 		/// <summary>
 		/// The current position of the object

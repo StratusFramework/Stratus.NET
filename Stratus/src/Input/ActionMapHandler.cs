@@ -1,4 +1,5 @@
 ﻿using Stratus.Extensions;
+using Stratus.Models;
 using Stratus.Reflection;
 using Stratus.Utilities;
 
@@ -21,7 +22,13 @@ namespace Stratus.Inputs
 	public enum InputActionType
 	{
 		None,
+		/// <summary>
+		/// An input that triggers once pressed
+		/// </summary>
 		Button,
+		/// <summary>
+		/// An input with that takes several readings, such as an axis (joystick)
+		/// </summary>
 		Composite,
 	}
 
@@ -108,6 +115,16 @@ namespace Stratus.Inputs
 		public void Bind(string action, Action onAction)
 		{
 			Bind(action, InputActionType.Button, a => onAction());
+		}
+
+		public void BindPressed(Enum action, Action<TInput> onInput)
+		{
+			Bind(action.ToString(), InputActionType.Button, onInput);
+		}
+
+		public void BindPressed(string action, Action<TInput> onInput)
+		{
+			Bind(action, InputActionType.Button, onInput);
 		}
 
 		public bool Contains(string name) => actions.ContainsKey(name);
