@@ -7,7 +7,7 @@ namespace Stratus.Models
 	/// <summary>
 	/// Provides an implicit conversion from <see cref="Enum"/> to <see cref="string"/>
 	/// </summary>
-	public class Enumerated
+	public sealed class Enumerated
 	{
 		public string name { get; }
 

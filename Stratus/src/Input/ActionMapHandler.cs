@@ -105,6 +105,8 @@ namespace Stratus.Inputs
 		#endregion
 
 		#region Interface
+		public bool Contains(string name) => actions.ContainsKey(name);
+
 		public virtual void Bind(string name, InputActionType type, Action<TInput> action)
 		{
 			name = lowercase ? name.ToLowerInvariant() : name;
@@ -126,8 +128,6 @@ namespace Stratus.Inputs
 		{
 			Bind(action, InputActionType.Button, onInput);
 		}
-
-		public bool Contains(string name) => actions.ContainsKey(name);
 
 		public void Bind<TAction>(TAction action, Action onAction) where TAction : Enum
 		{

@@ -4,13 +4,14 @@ using System;
 using System.Collections.Generic;
 using Stratus.Models.Math;
 using System.Numerics;
+using static Stratus.Collections.ArrayNavigator;
 
 namespace Stratus.Collections
 {
 	/// <summary>
 	/// Base class for the array navigator
 	/// </summary>
-	public class ArrayNavigator
+	public abstract class ArrayNavigator
 	{
 		public enum Direction
 		{
@@ -21,11 +22,23 @@ namespace Stratus.Collections
 		}
 	}
 
+	public interface IArrayNavigator<T>
+	{
+		int count { get; }
+		bool valid { get; }
+		T current { get; }
+
+		T Next();
+		T Previous();
+		T Navigate(Direction dir);
+
+	}
+
 	/// <summary>
 	/// Provides a generic way to navigate a 1D array using directional axis.
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	public class ArrayNavigator<T> : ArrayNavigator
+	public class ArrayNavigator<T> : ArrayNavigator, IArrayNavigator<T>
 	{
 		//------------------------------------------------------------------------/
 		// Properties
@@ -80,17 +93,17 @@ namespace Stratus.Collections
 		/// <summary>
 		/// The length of the array
 		/// </summary>
-		public int length => values.CountOrDefault();
+		public int count => values.CountOrDefault();
 
 		/// <summary>
 		/// Whether its in a valid sate
 		/// </summary>
-		public bool valid => length > 0;
+		public bool valid => count > 0;
 
 		/// <summary>
 		/// Whether the underlying array is empty
 		/// </summary>
-		public bool empty => length == 0;
+		public bool empty => count == 0;
 
 		/// <summary>
 		/// The current index
