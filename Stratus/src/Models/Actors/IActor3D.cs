@@ -5,7 +5,7 @@ using System.Numerics;
 
 namespace Stratus.Models.Actors
 {
-	public interface IActor3D : IObject3D
+	public interface IActor3D : IObject3D, IActor
 	{
 	}
 }

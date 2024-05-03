@@ -1,4 +1,5 @@
 ﻿using Stratus.Extensions;
+using Stratus.Models.Actors;
 using Stratus.Numerics;
 
 using System;
@@ -6,6 +7,9 @@ using System.Linq;
 
 namespace Stratus.Models.Maps
 {
+	/// <summary>
+	/// An actor in 2D
+	/// </summary>
 	public interface IActor2D : IObject2D
 	{
 		/// <summary>
